@@ -1,0 +1,187 @@
+method,query_accession,query_set,query_organism,query_ec,hit,hit_organism,hit_ec,rank,evalue,bitscore,percent_identity,coverage
+blastp,A0A096XJN4,negative_control,Hypothenemus hampei,3.2.1.1,O00097,Scheffersomyces stipitis (strain ATCC 58785 / CBS 6054 / NBRC 10063 / NRRL Y-11545),1.1.1.1,1,1.9,20.4,43.75,0.03
+blastp,A0A096XJN4,negative_control,Hypothenemus hampei,3.2.1.1,N4WE73,Cochliobolus heterostrophus (strain C4 / ATCC 48331 / race T),1.1.1.1,2,4.1,19.2,44.0,0.05
+blastp,A0A096XJN4,negative_control,Hypothenemus hampei,3.2.1.1,A0A0H2ZM56,Streptococcus pneumoniae serotype 2 (strain D39 / NCTC 7466),1.1.1.1;1.2.1.3,3,5.8,19.2,50.0,0.09
+blastp,A0A096XJN4,negative_control,Hypothenemus hampei,3.2.1.1,A0A0H2URT2,Streptococcus pneumoniae serotype 4 (strain ATCC BAA-334 / TIGR4),1.1.1.1;1.2.1.3,4,5.8,19.2,34.615,0.09
+blastp,A0A096XJN4,negative_control,Hypothenemus hampei,3.2.1.1,A0A165U5V5,Euphorbia lathyris,1.1.1.1;1.1.1.-,5,9.3,18.5,37.5,0.06
+blastp,A0A0K0JFP3,negative_control,Brugia malayi,2.7.1.1,N4WE43,Cochliobolus heterostrophus (strain C4 / ATCC 48331 / race T),1.1.1.1,1,0.56,22.3,34.615,0.05
+blastp,A0A0K0JFP3,negative_control,Brugia malayi,2.7.1.1,A2XAZ3,Oryza sativa subsp. indica,1.1.1.1;1.1.1.-;1.1.1.284,2,0.91,21.9,36.842,0.03
+blastp,A0A0K0JFP3,negative_control,Brugia malayi,2.7.1.1,O00097,Scheffersomyces stipitis (strain ATCC 58785 / CBS 6054 / NBRC 10063 / NRRL Y-11545),1.1.1.1,3,1.1,21.6,30.233,0.08
+blastp,A0A0K0JFP3,negative_control,Brugia malayi,2.7.1.1,A0A7U2MMF3,Aspergillus flavus (strain ATCC 200026 / FGSC A1120 / IAM 13836 / NRRL 3357 / JCM 12722 / SRRC 167),1.1.1.1,4,2.7,20.4,43.75,0.03
+blastp,A0A0K0JFP3,negative_control,Brugia malayi,2.7.1.1,F2Z678,Yarrowia lipolytica (strain CLIB 122 / E 150),1.1.1.1,5,7.0,18.9,37.931,0.05
+blastp,A0A0K0JFP3,negative_control,Brugia malayi,2.7.1.1,E1ACQ9,Aspergillus sp. (strain MF297-2),1.1.1.1,6,8.7,18.9,38.095,0.04
+blastp,O07737,positive_query,Mycobacterium tuberculosis (strain ATCC 25618 / H37Rv),1.1.1.1,A0A7U2MMF3,Aspergillus flavus (strain ATCC 200026 / FGSC A1120 / IAM 13836 / NRRL 3357 / JCM 12722 / SRRC 167),1.1.1.1,1,8.69e-54,175.0,31.897,0.88
+blastp,O07737,positive_query,Mycobacterium tuberculosis (strain ATCC 25618 / H37Rv),1.1.1.1,A1L4Y2,Arabidopsis thaliana,1.1.1.1,2,6.12e-16,68.9,25.0,0.84
+blastp,O07737,positive_query,Mycobacterium tuberculosis (strain ATCC 25618 / H37Rv),1.1.1.1,A2XAZ3,Oryza sativa subsp. indica,1.1.1.1;1.1.1.-;1.1.1.284,3,1.76e-15,67.4,24.324,0.79
+blastp,O07737,positive_query,Mycobacterium tuberculosis (strain ATCC 25618 / H37Rv),1.1.1.1,A1A835,Escherichia coli O1:K1 / APEC,1.1.1.284;1.1.1.1;1.1.1.-,4,4.65e-15,65.9,25.356,0.84
+blastp,O07737,positive_query,Mycobacterium tuberculosis (strain ATCC 25618 / H37Rv),1.1.1.1,A7ZIA4,Escherichia coli O139:H28 (strain E24377A / ETEC),1.1.1.284;1.1.1.1;1.1.1.-,5,8.69e-15,65.1,25.356,0.84
+blastp,O07737,positive_query,Mycobacterium tuberculosis (strain ATCC 25618 / H37Rv),1.1.1.1,B1LIP1,Escherichia coli (strain SMS-3-5 / SECEC),1.1.1.284;1.1.1.1;1.1.1.-,6,6.13e-14,62.4,25.071,0.84
+blastp,O07737,positive_query,Mycobacterium tuberculosis (strain ATCC 25618 / H37Rv),1.1.1.1,O00097,Scheffersomyces stipitis (strain ATCC 58785 / CBS 6054 / NBRC 10063 / NRRL Y-11545),1.1.1.1,7,1.18e-12,58.5,23.368,0.74
+blastp,O07737,positive_query,Mycobacterium tuberculosis (strain ATCC 25618 / H37Rv),1.1.1.1,E1ACQ9,Aspergillus sp. (strain MF297-2),1.1.1.1,8,2.17e-11,54.7,29.464,0.58
+blastp,O07737,positive_query,Mycobacterium tuberculosis (strain ATCC 25618 / H37Rv),1.1.1.1,F2Z678,Yarrowia lipolytica (strain CLIB 122 / E 150),1.1.1.1,9,5.18e-11,53.5,25.461,0.68
+blastp,O07737,positive_query,Mycobacterium tuberculosis (strain ATCC 25618 / H37Rv),1.1.1.1,B4M8Y0,Drosophila virilis,1.1.1.1,10,0.47,21.9,28.205,0.1
+blastp,O07737,positive_query,Mycobacterium tuberculosis (strain ATCC 25618 / H37Rv),1.1.1.1,A5JYX5,Caenorhabditis elegans,1.1.1.1,11,2.4,20.0,25.0,0.17
+blastp,O07737,positive_query,Mycobacterium tuberculosis (strain ATCC 25618 / H37Rv),1.1.1.1,A0A165U5V5,Euphorbia lathyris,1.1.1.1;1.1.1.-,12,2.5,19.6,44.828,0.13
+blastp,O07737,positive_query,Mycobacterium tuberculosis (strain ATCC 25618 / H37Rv),1.1.1.1,A0A0H2URT2,Streptococcus pneumoniae serotype 4 (strain ATCC BAA-334 / TIGR4),1.1.1.1;1.2.1.3,13,3.6,19.2,39.024,0.11
+blastp,O07737,positive_query,Mycobacterium tuberculosis (strain ATCC 25618 / H37Rv),1.1.1.1,A0A0H2ZM56,Streptococcus pneumoniae serotype 2 (strain D39 / NCTC 7466),1.1.1.1;1.2.1.3,14,3.6,19.2,39.024,0.11
+blastp,O07737,positive_query,Mycobacterium tuberculosis (strain ATCC 25618 / H37Rv),1.1.1.1,N4WE43,Cochliobolus heterostrophus (strain C4 / ATCC 48331 / race T),1.1.1.1,15,4.1,19.2,37.5,0.06
+blastp,O13309,positive_query,Scheffersomyces stipitis (strain ATCC 58785 / CBS 6054 / NBRC 10063 / NRRL Y-11545),1.1.1.1,O00097,Scheffersomyces stipitis (strain ATCC 58785 / CBS 6054 / NBRC 10063 / NRRL Y-11545),1.1.1.1,1,0.0,570.0,80.46,1.0
+blastp,O13309,positive_query,Scheffersomyces stipitis (strain ATCC 58785 / CBS 6054 / NBRC 10063 / NRRL Y-11545),1.1.1.1,F2Z678,Yarrowia lipolytica (strain CLIB 122 / E 150),1.1.1.1,2,0.0,516.0,73.988,0.99
+blastp,O13309,positive_query,Scheffersomyces stipitis (strain ATCC 58785 / CBS 6054 / NBRC 10063 / NRRL Y-11545),1.1.1.1,E1ACQ9,Aspergillus sp. (strain MF297-2),1.1.1.1,3,5.03e-53,169.0,33.333,0.99
+blastp,O13309,positive_query,Scheffersomyces stipitis (strain ATCC 58785 / CBS 6054 / NBRC 10063 / NRRL Y-11545),1.1.1.1,A2XAZ3,Oryza sativa subsp. indica,1.1.1.1;1.1.1.-;1.1.1.284,4,1.44e-25,96.7,25.984,0.99
+blastp,O13309,positive_query,Scheffersomyces stipitis (strain ATCC 58785 / CBS 6054 / NBRC 10063 / NRRL Y-11545),1.1.1.1,A0A7U2MMF3,Aspergillus flavus (strain ATCC 200026 / FGSC A1120 / IAM 13836 / NRRL 3357 / JCM 12722 / SRRC 167),1.1.1.1,5,9.06e-24,92.0,27.606,0.97
+blastp,O13309,positive_query,Scheffersomyces stipitis (strain ATCC 58785 / CBS 6054 / NBRC 10063 / NRRL Y-11545),1.1.1.1,A1L4Y2,Arabidopsis thaliana,1.1.1.1,6,1.39e-23,90.9,24.074,0.95
+blastp,O13309,positive_query,Scheffersomyces stipitis (strain ATCC 58785 / CBS 6054 / NBRC 10063 / NRRL Y-11545),1.1.1.1,A1A835,Escherichia coli O1:K1 / APEC,1.1.1.284;1.1.1.1;1.1.1.-,7,3.17e-20,80.9,29.315,0.95
+blastp,O13309,positive_query,Scheffersomyces stipitis (strain ATCC 58785 / CBS 6054 / NBRC 10063 / NRRL Y-11545),1.1.1.1,A7ZIA4,Escherichia coli O139:H28 (strain E24377A / ETEC),1.1.1.284;1.1.1.1;1.1.1.-,8,9.64e-20,79.7,29.041,0.95
+blastp,O13309,positive_query,Scheffersomyces stipitis (strain ATCC 58785 / CBS 6054 / NBRC 10063 / NRRL Y-11545),1.1.1.1,B1LIP1,Escherichia coli (strain SMS-3-5 / SECEC),1.1.1.284;1.1.1.1;1.1.1.-,9,6.43e-19,77.0,28.767,0.95
+blastp,O13309,positive_query,Scheffersomyces stipitis (strain ATCC 58785 / CBS 6054 / NBRC 10063 / NRRL Y-11545),1.1.1.1,A5JYX5,Caenorhabditis elegans,1.1.1.1,10,0.035,25.4,29.07,0.22
+blastp,O13309,positive_query,Scheffersomyces stipitis (strain ATCC 58785 / CBS 6054 / NBRC 10063 / NRRL Y-11545),1.1.1.1,A6ZTT5,Saccharomyces cerevisiae (strain YJM789),1.1.1.1,11,0.13,23.9,35.294,0.36
+blastp,O13309,positive_query,Scheffersomyces stipitis (strain ATCC 58785 / CBS 6054 / NBRC 10063 / NRRL Y-11545),1.1.1.1,N4WE43,Cochliobolus heterostrophus (strain C4 / ATCC 48331 / race T),1.1.1.1,12,1.3,20.4,57.143,0.19
+blastp,O19053,positive_query,Oryctolagus cuniculus,1.1.1.1;1.1.1.-;1.1.1.284,A2XAZ3,Oryza sativa subsp. indica,1.1.1.1;1.1.1.-;1.1.1.284,1,0.0,510.0,66.486,0.99
+blastp,O19053,positive_query,Oryctolagus cuniculus,1.1.1.1;1.1.1.-;1.1.1.284,A1A835,Escherichia coli O1:K1 / APEC,1.1.1.284;1.1.1.1;1.1.1.-,2,1.18e-171,474.0,63.043,0.98
+blastp,O19053,positive_query,Oryctolagus cuniculus,1.1.1.1;1.1.1.-;1.1.1.284,A7ZIA4,Escherichia coli O139:H28 (strain E24377A / ETEC),1.1.1.284;1.1.1.1;1.1.1.-,3,1.43e-171,474.0,63.043,0.98
+blastp,O19053,positive_query,Oryctolagus cuniculus,1.1.1.1;1.1.1.-;1.1.1.284,B1LIP1,Escherichia coli (strain SMS-3-5 / SECEC),1.1.1.284;1.1.1.1;1.1.1.-,4,1.11e-170,472.0,62.772,0.98
+blastp,O19053,positive_query,Oryctolagus cuniculus,1.1.1.1;1.1.1.-;1.1.1.284,A1L4Y2,Arabidopsis thaliana,1.1.1.1,5,1.41e-124,356.0,47.12,0.99
+blastp,O19053,positive_query,Oryctolagus cuniculus,1.1.1.1;1.1.1.-;1.1.1.284,O00097,Scheffersomyces stipitis (strain ATCC 58785 / CBS 6054 / NBRC 10063 / NRRL Y-11545),1.1.1.1,6,1.54e-22,87.8,28.342,0.97
+blastp,O19053,positive_query,Oryctolagus cuniculus,1.1.1.1;1.1.1.-;1.1.1.284,A0A7U2MMF3,Aspergillus flavus (strain ATCC 200026 / FGSC A1120 / IAM 13836 / NRRL 3357 / JCM 12722 / SRRC 167),1.1.1.1,7,6.34e-21,84.0,25.263,0.97
+blastp,O19053,positive_query,Oryctolagus cuniculus,1.1.1.1;1.1.1.-;1.1.1.284,E1ACQ9,Aspergillus sp. (strain MF297-2),1.1.1.1,8,4.07e-18,74.7,28.151,0.63
+blastp,O19053,positive_query,Oryctolagus cuniculus,1.1.1.1;1.1.1.-;1.1.1.284,F2Z678,Yarrowia lipolytica (strain CLIB 122 / E 150),1.1.1.1,9,2.33e-17,72.8,26.72,0.98
+blastp,O19053,positive_query,Oryctolagus cuniculus,1.1.1.1;1.1.1.-;1.1.1.284,B4M8Y0,Drosophila virilis,1.1.1.1,10,0.41,22.3,28.333,0.15
+blastp,O19053,positive_query,Oryctolagus cuniculus,1.1.1.1;1.1.1.-;1.1.1.284,N4WE43,Cochliobolus heterostrophus (strain C4 / ATCC 48331 / race T),1.1.1.1,11,6.7,18.5,43.75,0.04
+blastp,O31186,positive_query,Rhizobium meliloti (strain 1021),1.1.1.1,O00097,Scheffersomyces stipitis (strain ATCC 58785 / CBS 6054 / NBRC 10063 / NRRL Y-11545),1.1.1.1,1,2.06e-89,263.0,42.982,0.99
+blastp,O31186,positive_query,Rhizobium meliloti (strain 1021),1.1.1.1,F2Z678,Yarrowia lipolytica (strain CLIB 122 / E 150),1.1.1.1,2,3.84e-85,252.0,40.643,0.99
+blastp,O31186,positive_query,Rhizobium meliloti (strain 1021),1.1.1.1,E1ACQ9,Aspergillus sp. (strain MF297-2),1.1.1.1,3,6.71e-60,187.0,33.728,0.99
+blastp,O31186,positive_query,Rhizobium meliloti (strain 1021),1.1.1.1,A1A835,Escherichia coli O1:K1 / APEC,1.1.1.284;1.1.1.1;1.1.1.-,4,3.03e-21,84.0,35.246,0.65
+blastp,O31186,positive_query,Rhizobium meliloti (strain 1021),1.1.1.1,A7ZIA4,Escherichia coli O139:H28 (strain E24377A / ETEC),1.1.1.284;1.1.1.1;1.1.1.-,5,3.63e-21,83.6,35.246,0.65
+blastp,O31186,positive_query,Rhizobium meliloti (strain 1021),1.1.1.1,A2XAZ3,Oryza sativa subsp. indica,1.1.1.1;1.1.1.-;1.1.1.284,6,3.82e-21,83.6,29.032,0.65
+blastp,O31186,positive_query,Rhizobium meliloti (strain 1021),1.1.1.1,B1LIP1,Escherichia coli (strain SMS-3-5 / SECEC),1.1.1.284;1.1.1.1;1.1.1.-,7,2.32e-20,81.3,32.377,0.65
+blastp,O31186,positive_query,Rhizobium meliloti (strain 1021),1.1.1.1,A0A7U2MMF3,Aspergillus flavus (strain ATCC 200026 / FGSC A1120 / IAM 13836 / NRRL 3357 / JCM 12722 / SRRC 167),1.1.1.1,8,6.54e-20,80.5,27.596,0.94
+blastp,O31186,positive_query,Rhizobium meliloti (strain 1021),1.1.1.1,A1L4Y2,Arabidopsis thaliana,1.1.1.1,9,2.66e-18,75.5,26.133,0.97
+blastp,O31186,positive_query,Rhizobium meliloti (strain 1021),1.1.1.1,N4WE43,Cochliobolus heterostrophus (strain C4 / ATCC 48331 / race T),1.1.1.1,10,3.4,19.2,33.333,0.07
+blastp,O31186,positive_query,Rhizobium meliloti (strain 1021),1.1.1.1,A0A165U5V5,Euphorbia lathyris,1.1.1.1;1.1.1.-,11,4.8,18.5,31.25,0.14
+blastp,O45687,positive_query,Caenorhabditis elegans,1.1.1.1,O00097,Scheffersomyces stipitis (strain ATCC 58785 / CBS 6054 / NBRC 10063 / NRRL Y-11545),1.1.1.1,1,2.69e-112,322.0,46.821,0.98
+blastp,O45687,positive_query,Caenorhabditis elegans,1.1.1.1,F2Z678,Yarrowia lipolytica (strain CLIB 122 / E 150),1.1.1.1,2,7.92e-104,300.0,44.286,0.99
+blastp,O45687,positive_query,Caenorhabditis elegans,1.1.1.1,E1ACQ9,Aspergillus sp. (strain MF297-2),1.1.1.1,3,2.51e-50,162.0,30.058,0.97
+blastp,O45687,positive_query,Caenorhabditis elegans,1.1.1.1,A2XAZ3,Oryza sativa subsp. indica,1.1.1.1;1.1.1.-;1.1.1.284,4,7.14e-25,94.7,28.92,0.73
+blastp,O45687,positive_query,Caenorhabditis elegans,1.1.1.1,A1L4Y2,Arabidopsis thaliana,1.1.1.1,5,9.78e-25,94.4,27.52,0.91
+blastp,O45687,positive_query,Caenorhabditis elegans,1.1.1.1,A0A7U2MMF3,Aspergillus flavus (strain ATCC 200026 / FGSC A1120 / IAM 13836 / NRRL 3357 / JCM 12722 / SRRC 167),1.1.1.1,6,6.79e-22,86.3,30.0,0.73
+blastp,O45687,positive_query,Caenorhabditis elegans,1.1.1.1,A7ZIA4,Escherichia coli O139:H28 (strain E24377A / ETEC),1.1.1.284;1.1.1.1;1.1.1.-,7,7.17e-20,80.1,26.81,0.96
+blastp,O45687,positive_query,Caenorhabditis elegans,1.1.1.1,A1A835,Escherichia coli O1:K1 / APEC,1.1.1.284;1.1.1.1;1.1.1.-,8,2.65e-19,78.2,26.542,0.96
+blastp,O45687,positive_query,Caenorhabditis elegans,1.1.1.1,B1LIP1,Escherichia coli (strain SMS-3-5 / SECEC),1.1.1.284;1.1.1.1;1.1.1.-,9,6.21e-19,77.4,26.542,0.96
+blastp,O45687,positive_query,Caenorhabditis elegans,1.1.1.1,A0A165U5V5,Euphorbia lathyris,1.1.1.1;1.1.1.-,10,0.015,26.6,29.412,0.14
+blastp,O45687,positive_query,Caenorhabditis elegans,1.1.1.1,A5JYX5,Caenorhabditis elegans,1.1.1.1,11,0.024,26.2,42.424,0.09
+blastp,O45687,positive_query,Caenorhabditis elegans,1.1.1.1,N4WE43,Cochliobolus heterostrophus (strain C4 / ATCC 48331 / race T),1.1.1.1,12,0.15,23.5,22.727,0.17
+blastp,O45687,positive_query,Caenorhabditis elegans,1.1.1.1,B4M8Y0,Drosophila virilis,1.1.1.1,13,2.7,19.6,24.59,0.17
+blastp,O45687,positive_query,Caenorhabditis elegans,1.1.1.1,A0A0H2URT2,Streptococcus pneumoniae serotype 4 (strain ATCC BAA-334 / TIGR4),1.1.1.1;1.2.1.3,14,7.1,18.5,25.0,0.16
+blastp,O45687,positive_query,Caenorhabditis elegans,1.1.1.1,A0A0H2ZM56,Streptococcus pneumoniae serotype 2 (strain D39 / NCTC 7466),1.1.1.1;1.2.1.3,15,7.3,18.1,25.0,0.16
+phmmer,O07737,positive_query,Mycobacterium tuberculosis (strain ATCC 25618 / H37Rv),1.1.1.1,A0A7U2MMF3,Aspergillus flavus (strain ATCC 200026 / FGSC A1120 / IAM 13836 / NRRL 3357 / JCM 12722 / SRRC 167),1.1.1.1,1,1.8e-52,168.7,,0.862
+phmmer,O07737,positive_query,Mycobacterium tuberculosis (strain ATCC 25618 / H37Rv),1.1.1.1,A1A835,Escherichia coli O1:K1 / APEC,1.1.1.284;1.1.1.1;1.1.1.-,2,3.1e-22,69.2,,0.7734
+phmmer,O07737,positive_query,Mycobacterium tuberculosis (strain ATCC 25618 / H37Rv),1.1.1.1,A7ZIA4,Escherichia coli O139:H28 (strain E24377A / ETEC),1.1.1.284;1.1.1.1;1.1.1.-,3,6.4e-22,68.2,,0.7734
+phmmer,O07737,positive_query,Mycobacterium tuberculosis (strain ATCC 25618 / H37Rv),1.1.1.1,B1LIP1,Escherichia coli (strain SMS-3-5 / SECEC),1.1.1.284;1.1.1.1;1.1.1.-,4,5.1e-21,65.3,,0.7734
+phmmer,O07737,positive_query,Mycobacterium tuberculosis (strain ATCC 25618 / H37Rv),1.1.1.1,A1L4Y2,Arabidopsis thaliana,1.1.1.1,5,9.5e-19,57.8,,0.5599
+phmmer,O07737,positive_query,Mycobacterium tuberculosis (strain ATCC 25618 / H37Rv),1.1.1.1,O00097,Scheffersomyces stipitis (strain ATCC 58785 / CBS 6054 / NBRC 10063 / NRRL Y-11545),1.1.1.1,6,2.2e-18,56.6,,0.7448
+phmmer,O07737,positive_query,Mycobacterium tuberculosis (strain ATCC 25618 / H37Rv),1.1.1.1,F2Z678,Yarrowia lipolytica (strain CLIB 122 / E 150),1.1.1.1,7,1.6e-17,53.7,,0.7083
+phmmer,O07737,positive_query,Mycobacterium tuberculosis (strain ATCC 25618 / H37Rv),1.1.1.1,A2XAZ3,Oryza sativa subsp. indica,1.1.1.1;1.1.1.-;1.1.1.284,8,3.6e-16,49.3,,0.625
+phmmer,O07737,positive_query,Mycobacterium tuberculosis (strain ATCC 25618 / H37Rv),1.1.1.1,E1ACQ9,Aspergillus sp. (strain MF297-2),1.1.1.1,9,2e-14,43.5,,0.4661
+phmmer,O13309,positive_query,Scheffersomyces stipitis (strain ATCC 58785 / CBS 6054 / NBRC 10063 / NRRL Y-11545),1.1.1.1,O00097,Scheffersomyces stipitis (strain ATCC 58785 / CBS 6054 / NBRC 10063 / NRRL Y-11545),1.1.1.1,1,2.1e-198,648.7,,1.0
+phmmer,O13309,positive_query,Scheffersomyces stipitis (strain ATCC 58785 / CBS 6054 / NBRC 10063 / NRRL Y-11545),1.1.1.1,F2Z678,Yarrowia lipolytica (strain CLIB 122 / E 150),1.1.1.1,2,1.4e-177,580.2,,0.9943
+phmmer,O13309,positive_query,Scheffersomyces stipitis (strain ATCC 58785 / CBS 6054 / NBRC 10063 / NRRL Y-11545),1.1.1.1,E1ACQ9,Aspergillus sp. (strain MF297-2),1.1.1.1,3,4.4e-55,177.4,,0.9885
+phmmer,O13309,positive_query,Scheffersomyces stipitis (strain ATCC 58785 / CBS 6054 / NBRC 10063 / NRRL Y-11545),1.1.1.1,A1A835,Escherichia coli O1:K1 / APEC,1.1.1.284;1.1.1.1;1.1.1.-,4,1.9e-29,93.1,,0.9511
+phmmer,O13309,positive_query,Scheffersomyces stipitis (strain ATCC 58785 / CBS 6054 / NBRC 10063 / NRRL Y-11545),1.1.1.1,A7ZIA4,Escherichia coli O139:H28 (strain E24377A / ETEC),1.1.1.284;1.1.1.1;1.1.1.-,5,5.1e-29,91.7,,0.9511
+phmmer,O13309,positive_query,Scheffersomyces stipitis (strain ATCC 58785 / CBS 6054 / NBRC 10063 / NRRL Y-11545),1.1.1.1,B1LIP1,Escherichia coli (strain SMS-3-5 / SECEC),1.1.1.284;1.1.1.1;1.1.1.-,6,3.5e-28,89.0,,0.9511
+phmmer,O13309,positive_query,Scheffersomyces stipitis (strain ATCC 58785 / CBS 6054 / NBRC 10063 / NRRL Y-11545),1.1.1.1,A2XAZ3,Oryza sativa subsp. indica,1.1.1.1;1.1.1.-;1.1.1.284,7,4.2e-28,88.7,,0.819
+phmmer,O13309,positive_query,Scheffersomyces stipitis (strain ATCC 58785 / CBS 6054 / NBRC 10063 / NRRL Y-11545),1.1.1.1,A1L4Y2,Arabidopsis thaliana,1.1.1.1,8,1.2e-26,84.0,,0.6466
+phmmer,O13309,positive_query,Scheffersomyces stipitis (strain ATCC 58785 / CBS 6054 / NBRC 10063 / NRRL Y-11545),1.1.1.1,A0A7U2MMF3,Aspergillus flavus (strain ATCC 200026 / FGSC A1120 / IAM 13836 / NRRL 3357 / JCM 12722 / SRRC 167),1.1.1.1,9,1.4e-25,80.4,,0.9598
+phmmer,O19053,positive_query,Oryctolagus cuniculus,1.1.1.1;1.1.1.-;1.1.1.284,A2XAZ3,Oryza sativa subsp. indica,1.1.1.1;1.1.1.-;1.1.1.284,1,6.5e-171,558.6,,0.9866
+phmmer,O19053,positive_query,Oryctolagus cuniculus,1.1.1.1;1.1.1.-;1.1.1.284,A1A835,Escherichia coli O1:K1 / APEC,1.1.1.284;1.1.1.1;1.1.1.-,2,9.9e-166,541.5,,0.9813
+phmmer,O19053,positive_query,Oryctolagus cuniculus,1.1.1.1;1.1.1.-;1.1.1.284,A7ZIA4,Escherichia coli O139:H28 (strain E24377A / ETEC),1.1.1.284;1.1.1.1;1.1.1.-,3,1.2e-165,541.2,,0.9813
+phmmer,O19053,positive_query,Oryctolagus cuniculus,1.1.1.1;1.1.1.-;1.1.1.284,B1LIP1,Escherichia coli (strain SMS-3-5 / SECEC),1.1.1.284;1.1.1.1;1.1.1.-,4,8.9e-165,538.4,,0.9813
+phmmer,O19053,positive_query,Oryctolagus cuniculus,1.1.1.1;1.1.1.-;1.1.1.284,A1L4Y2,Arabidopsis thaliana,1.1.1.1,5,4.2e-114,371.6,,0.9947
+phmmer,O19053,positive_query,Oryctolagus cuniculus,1.1.1.1;1.1.1.-;1.1.1.284,O00097,Scheffersomyces stipitis (strain ATCC 58785 / CBS 6054 / NBRC 10063 / NRRL Y-11545),1.1.1.1,6,8.7e-28,87.6,,0.9626
+phmmer,O19053,positive_query,Oryctolagus cuniculus,1.1.1.1;1.1.1.-;1.1.1.284,F2Z678,Yarrowia lipolytica (strain CLIB 122 / E 150),1.1.1.1,7,5.6e-24,75.0,,0.9572
+phmmer,O19053,positive_query,Oryctolagus cuniculus,1.1.1.1;1.1.1.-;1.1.1.284,A0A7U2MMF3,Aspergillus flavus (strain ATCC 200026 / FGSC A1120 / IAM 13836 / NRRL 3357 / JCM 12722 / SRRC 167),1.1.1.1,8,1.3e-22,70.6,,0.754
+phmmer,O19053,positive_query,Oryctolagus cuniculus,1.1.1.1;1.1.1.-;1.1.1.284,E1ACQ9,Aspergillus sp. (strain MF297-2),1.1.1.1,9,3.6e-21,65.8,,0.6337
+phmmer,O31186,positive_query,Rhizobium meliloti (strain 1021),1.1.1.1,O00097,Scheffersomyces stipitis (strain ATCC 58785 / CBS 6054 / NBRC 10063 / NRRL Y-11545),1.1.1.1,1,2.1e-91,297.0,,0.9912
+phmmer,O31186,positive_query,Rhizobium meliloti (strain 1021),1.1.1.1,F2Z678,Yarrowia lipolytica (strain CLIB 122 / E 150),1.1.1.1,2,6e-87,282.3,,0.9794
+phmmer,O31186,positive_query,Rhizobium meliloti (strain 1021),1.1.1.1,E1ACQ9,Aspergillus sp. (strain MF297-2),1.1.1.1,3,6.5e-62,200.0,,0.9882
+phmmer,O31186,positive_query,Rhizobium meliloti (strain 1021),1.1.1.1,A1A835,Escherichia coli O1:K1 / APEC,1.1.1.284;1.1.1.1;1.1.1.-,4,5.6e-29,91.7,,0.9588
+phmmer,O31186,positive_query,Rhizobium meliloti (strain 1021),1.1.1.1,A7ZIA4,Escherichia coli O139:H28 (strain E24377A / ETEC),1.1.1.284;1.1.1.1;1.1.1.-,5,7e-29,91.4,,0.9588
+phmmer,O31186,positive_query,Rhizobium meliloti (strain 1021),1.1.1.1,B1LIP1,Escherichia coli (strain SMS-3-5 / SECEC),1.1.1.284;1.1.1.1;1.1.1.-,6,4.9e-28,88.6,,0.9588
+phmmer,O31186,positive_query,Rhizobium meliloti (strain 1021),1.1.1.1,A0A7U2MMF3,Aspergillus flavus (strain ATCC 200026 / FGSC A1120 / IAM 13836 / NRRL 3357 / JCM 12722 / SRRC 167),1.1.1.1,7,6.8e-24,75.0,,0.9176
+phmmer,O31186,positive_query,Rhizobium meliloti (strain 1021),1.1.1.1,A2XAZ3,Oryza sativa subsp. indica,1.1.1.1;1.1.1.-;1.1.1.284,8,1.1e-20,64.5,,0.7765
+phmmer,O31186,positive_query,Rhizobium meliloti (strain 1021),1.1.1.1,A1L4Y2,Arabidopsis thaliana,1.1.1.1,9,8.5e-19,58.2,,0.9353
+phmmer,O45687,positive_query,Caenorhabditis elegans,1.1.1.1,O00097,Scheffersomyces stipitis (strain ATCC 58785 / CBS 6054 / NBRC 10063 / NRRL Y-11545),1.1.1.1,1,4.3e-112,364.9,,0.9829
+phmmer,O45687,positive_query,Caenorhabditis elegans,1.1.1.1,F2Z678,Yarrowia lipolytica (strain CLIB 122 / E 150),1.1.1.1,2,7.8e-104,337.7,,0.9943
+phmmer,O45687,positive_query,Caenorhabditis elegans,1.1.1.1,E1ACQ9,Aspergillus sp. (strain MF297-2),1.1.1.1,3,1.9e-52,168.7,,0.9772
+phmmer,O45687,positive_query,Caenorhabditis elegans,1.1.1.1,A7ZIA4,Escherichia coli O139:H28 (strain E24377A / ETEC),1.1.1.284;1.1.1.1;1.1.1.-,4,9.8e-30,94.0,,0.7949
+phmmer,O45687,positive_query,Caenorhabditis elegans,1.1.1.1,A1A835,Escherichia coli O1:K1 / APEC,1.1.1.284;1.1.1.1;1.1.1.-,5,2.6e-29,92.6,,0.7949
+phmmer,O45687,positive_query,Caenorhabditis elegans,1.1.1.1,B1LIP1,Escherichia coli (strain SMS-3-5 / SECEC),1.1.1.284;1.1.1.1;1.1.1.-,6,8.5e-29,90.9,,0.7949
+phmmer,O45687,positive_query,Caenorhabditis elegans,1.1.1.1,A1L4Y2,Arabidopsis thaliana,1.1.1.1,7,4.1e-28,88.7,,0.8917
+phmmer,O45687,positive_query,Caenorhabditis elegans,1.1.1.1,A2XAZ3,Oryza sativa subsp. indica,1.1.1.1;1.1.1.-;1.1.1.284,8,2.3e-27,86.3,,0.7407
+phmmer,O45687,positive_query,Caenorhabditis elegans,1.1.1.1,A0A7U2MMF3,Aspergillus flavus (strain ATCC 200026 / FGSC A1120 / IAM 13836 / NRRL 3357 / JCM 12722 / SRRC 167),1.1.1.1,9,2.9e-24,76.0,,0.7436
+hmmsearch,O07737,positive_query,Mycobacterium tuberculosis (strain ATCC 25618 / H37Rv),1.1.1.1,EC_1_1_1_1_reference,n/a (profile),1.1.1.1,1,1.3e-27,85.5,,0.8958
+hmmsearch,O13309,positive_query,Scheffersomyces stipitis (strain ATCC 58785 / CBS 6054 / NBRC 10063 / NRRL Y-11545),1.1.1.1,EC_1_1_1_1_reference,n/a (profile),1.1.1.1,1,5.7e-101,327.3,,1.0
+hmmsearch,O19053,positive_query,Oryctolagus cuniculus,1.1.1.1;1.1.1.-;1.1.1.284,EC_1_1_1_1_reference,n/a (profile),1.1.1.1,1,1.5e-99,322.6,,1.0
+hmmsearch,O31186,positive_query,Rhizobium meliloti (strain 1021),1.1.1.1,EC_1_1_1_1_reference,n/a (profile),1.1.1.1,1,7e-60,191.9,,0.9971
+hmmsearch,O45687,positive_query,Caenorhabditis elegans,1.1.1.1,EC_1_1_1_1_reference,n/a (profile),1.1.1.1,1,1.2e-71,230.6,,1.0
+diamond,O07737,positive_query,Mycobacterium tuberculosis (strain ATCC 25618 / H37Rv),1.1.1.1,A0A7U2MMF3,Aspergillus flavus (strain ATCC 200026 / FGSC A1120 / IAM 13836 / NRRL 3357 / JCM 12722 / SRRC 167),1.1.1.1,1,1.85e-48,160.0,31.9,0.878
+diamond,O07737,positive_query,Mycobacterium tuberculosis (strain ATCC 25618 / H37Rv),1.1.1.1,A1A835,Escherichia coli O1:K1 / APEC,1.1.1.284;1.1.1.1;1.1.1.-,2,1.36e-18,76.6,25.1,0.883
+diamond,O07737,positive_query,Mycobacterium tuberculosis (strain ATCC 25618 / H37Rv),1.1.1.1,A7ZIA4,Escherichia coli O139:H28 (strain E24377A / ETEC),1.1.1.284;1.1.1.1;1.1.1.-,3,2.47e-18,75.9,25.1,0.883
+diamond,O07737,positive_query,Mycobacterium tuberculosis (strain ATCC 25618 / H37Rv),1.1.1.1,B1LIP1,Escherichia coli (strain SMS-3-5 / SECEC),1.1.1.284;1.1.1.1;1.1.1.-,4,1.94e-17,73.2,24.9,0.883
+diamond,O07737,positive_query,Mycobacterium tuberculosis (strain ATCC 25618 / H37Rv),1.1.1.1,A2XAZ3,Oryza sativa subsp. indica,1.1.1.1;1.1.1.-;1.1.1.284,5,3.98e-14,63.2,26.7,0.612
+diamond,O07737,positive_query,Mycobacterium tuberculosis (strain ATCC 25618 / H37Rv),1.1.1.1,A1L4Y2,Arabidopsis thaliana,1.1.1.1,6,3.11e-13,60.5,26.1,0.615
+diamond,O07737,positive_query,Mycobacterium tuberculosis (strain ATCC 25618 / H37Rv),1.1.1.1,O00097,Scheffersomyces stipitis (strain ATCC 58785 / CBS 6054 / NBRC 10063 / NRRL Y-11545),1.1.1.1,7,6.26e-13,59.3,24.7,0.734
+diamond,O07737,positive_query,Mycobacterium tuberculosis (strain ATCC 25618 / H37Rv),1.1.1.1,F2Z678,Yarrowia lipolytica (strain CLIB 122 / E 150),1.1.1.1,8,6.3e-11,53.1,26.4,0.628
+diamond,O07737,positive_query,Mycobacterium tuberculosis (strain ATCC 25618 / H37Rv),1.1.1.1,E1ACQ9,Aspergillus sp. (strain MF297-2),1.1.1.1,9,5.99e-10,50.1,30.5,0.427
+diamond,O13309,positive_query,Scheffersomyces stipitis (strain ATCC 58785 / CBS 6054 / NBRC 10063 / NRRL Y-11545),1.1.1.1,O00097,Scheffersomyces stipitis (strain ATCC 58785 / CBS 6054 / NBRC 10063 / NRRL Y-11545),1.1.1.1,1,1.51e-213,578.0,80.5,1.0
+diamond,O13309,positive_query,Scheffersomyces stipitis (strain ATCC 58785 / CBS 6054 / NBRC 10063 / NRRL Y-11545),1.1.1.1,F2Z678,Yarrowia lipolytica (strain CLIB 122 / E 150),1.1.1.1,2,1.34e-189,518.0,74.0,0.994
+diamond,O13309,positive_query,Scheffersomyces stipitis (strain ATCC 58785 / CBS 6054 / NBRC 10063 / NRRL Y-11545),1.1.1.1,E1ACQ9,Aspergillus sp. (strain MF297-2),1.1.1.1,3,3.72e-55,175.0,33.1,0.989
+diamond,O13309,positive_query,Scheffersomyces stipitis (strain ATCC 58785 / CBS 6054 / NBRC 10063 / NRRL Y-11545),1.1.1.1,A1A835,Escherichia coli O1:K1 / APEC,1.1.1.284;1.1.1.1;1.1.1.-,4,4.62e-26,97.8,29.3,0.948
+diamond,O13309,positive_query,Scheffersomyces stipitis (strain ATCC 58785 / CBS 6054 / NBRC 10063 / NRRL Y-11545),1.1.1.1,A7ZIA4,Escherichia coli O139:H28 (strain E24377A / ETEC),1.1.1.284;1.1.1.1;1.1.1.-,5,1.18e-25,96.7,29.0,0.948
+diamond,O13309,positive_query,Scheffersomyces stipitis (strain ATCC 58785 / CBS 6054 / NBRC 10063 / NRRL Y-11545),1.1.1.1,A2XAZ3,Oryza sativa subsp. indica,1.1.1.1;1.1.1.-;1.1.1.284,6,6.38e-25,94.7,26.2,0.989
+diamond,O13309,positive_query,Scheffersomyces stipitis (strain ATCC 58785 / CBS 6054 / NBRC 10063 / NRRL Y-11545),1.1.1.1,B1LIP1,Escherichia coli (strain SMS-3-5 / SECEC),1.1.1.284;1.1.1.1;1.1.1.-,7,1.05e-24,94.0,28.8,0.948
+diamond,O13309,positive_query,Scheffersomyces stipitis (strain ATCC 58785 / CBS 6054 / NBRC 10063 / NRRL Y-11545),1.1.1.1,A1L4Y2,Arabidopsis thaliana,1.1.1.1,8,1.13e-21,85.5,26.3,0.672
+diamond,O13309,positive_query,Scheffersomyces stipitis (strain ATCC 58785 / CBS 6054 / NBRC 10063 / NRRL Y-11545),1.1.1.1,A0A7U2MMF3,Aspergillus flavus (strain ATCC 200026 / FGSC A1120 / IAM 13836 / NRRL 3357 / JCM 12722 / SRRC 167),1.1.1.1,9,1.85e-21,85.1,27.1,0.971
+diamond,O19053,positive_query,Oryctolagus cuniculus,1.1.1.1;1.1.1.-;1.1.1.284,A2XAZ3,Oryza sativa subsp. indica,1.1.1.1;1.1.1.-;1.1.1.284,1,1.32e-182,503.0,66.3,0.989
+diamond,O19053,positive_query,Oryctolagus cuniculus,1.1.1.1;1.1.1.-;1.1.1.284,A1A835,Escherichia coli O1:K1 / APEC,1.1.1.284;1.1.1.1;1.1.1.-,2,1.03e-176,487.0,63.0,0.984
+diamond,O19053,positive_query,Oryctolagus cuniculus,1.1.1.1;1.1.1.-;1.1.1.284,A7ZIA4,Escherichia coli O139:H28 (strain E24377A / ETEC),1.1.1.284;1.1.1.1;1.1.1.-,3,1.47e-176,487.0,63.0,0.984
+diamond,O19053,positive_query,Oryctolagus cuniculus,1.1.1.1;1.1.1.-;1.1.1.284,B1LIP1,Escherichia coli (strain SMS-3-5 / SECEC),1.1.1.284;1.1.1.1;1.1.1.-,4,1.7e-175,484.0,62.8,0.984
+diamond,O19053,positive_query,Oryctolagus cuniculus,1.1.1.1;1.1.1.-;1.1.1.284,A1L4Y2,Arabidopsis thaliana,1.1.1.1,5,1.58e-120,345.0,47.0,0.995
+diamond,O19053,positive_query,Oryctolagus cuniculus,1.1.1.1;1.1.1.-;1.1.1.284,O00097,Scheffersomyces stipitis (strain ATCC 58785 / CBS 6054 / NBRC 10063 / NRRL Y-11545),1.1.1.1,6,1.65e-27,102.0,27.9,0.963
+diamond,O19053,positive_query,Oryctolagus cuniculus,1.1.1.1;1.1.1.-;1.1.1.284,F2Z678,Yarrowia lipolytica (strain CLIB 122 / E 150),1.1.1.1,7,1.08e-21,85.5,26.1,0.957
+diamond,O19053,positive_query,Oryctolagus cuniculus,1.1.1.1;1.1.1.-;1.1.1.284,A0A7U2MMF3,Aspergillus flavus (strain ATCC 200026 / FGSC A1120 / IAM 13836 / NRRL 3357 / JCM 12722 / SRRC 167),1.1.1.1,8,1.5e-20,82.8,25.3,0.971
+diamond,O19053,positive_query,Oryctolagus cuniculus,1.1.1.1;1.1.1.-;1.1.1.284,E1ACQ9,Aspergillus sp. (strain MF297-2),1.1.1.1,9,1.67e-19,79.0,25.3,0.957
+diamond,O31186,positive_query,Rhizobium meliloti (strain 1021),1.1.1.1,O00097,Scheffersomyces stipitis (strain ATCC 58785 / CBS 6054 / NBRC 10063 / NRRL Y-11545),1.1.1.1,1,2.36e-94,276.0,43.8,0.988
+diamond,O31186,positive_query,Rhizobium meliloti (strain 1021),1.1.1.1,F2Z678,Yarrowia lipolytica (strain CLIB 122 / E 150),1.1.1.1,2,2.43e-89,263.0,41.2,0.988
+diamond,O31186,positive_query,Rhizobium meliloti (strain 1021),1.1.1.1,E1ACQ9,Aspergillus sp. (strain MF297-2),1.1.1.1,3,1.24e-61,191.0,34.0,0.994
+diamond,O31186,positive_query,Rhizobium meliloti (strain 1021),1.1.1.1,A1A835,Escherichia coli O1:K1 / APEC,1.1.1.284;1.1.1.1;1.1.1.-,4,6.13e-27,100.0,31.0,0.968
+diamond,O31186,positive_query,Rhizobium meliloti (strain 1021),1.1.1.1,A7ZIA4,Escherichia coli O139:H28 (strain E24377A / ETEC),1.1.1.284;1.1.1.1;1.1.1.-,5,8.4e-27,99.8,31.0,0.968
+diamond,O31186,positive_query,Rhizobium meliloti (strain 1021),1.1.1.1,B1LIP1,Escherichia coli (strain SMS-3-5 / SECEC),1.1.1.284;1.1.1.1;1.1.1.-,6,7.62e-26,97.1,30.7,0.968
+diamond,O31186,positive_query,Rhizobium meliloti (strain 1021),1.1.1.1,A2XAZ3,Oryza sativa subsp. indica,1.1.1.1;1.1.1.-;1.1.1.284,7,8.73e-20,79.7,28.6,0.65
+diamond,O31186,positive_query,Rhizobium meliloti (strain 1021),1.1.1.1,A0A7U2MMF3,Aspergillus flavus (strain ATCC 200026 / FGSC A1120 / IAM 13836 / NRRL 3357 / JCM 12722 / SRRC 167),1.1.1.1,8,1.1e-19,79.7,27.6,0.944
+diamond,O31186,positive_query,Rhizobium meliloti (strain 1021),1.1.1.1,A1L4Y2,Arabidopsis thaliana,1.1.1.1,9,4.85e-17,71.6,26.1,0.968
+diamond,O45687,positive_query,Caenorhabditis elegans,1.1.1.1,O00097,Scheffersomyces stipitis (strain ATCC 58785 / CBS 6054 / NBRC 10063 / NRRL Y-11545),1.1.1.1,1,2.31e-118,337.0,46.8,0.983
+diamond,O45687,positive_query,Caenorhabditis elegans,1.1.1.1,F2Z678,Yarrowia lipolytica (strain CLIB 122 / E 150),1.1.1.1,2,1.52e-109,315.0,44.3,0.994
+diamond,O45687,positive_query,Caenorhabditis elegans,1.1.1.1,E1ACQ9,Aspergillus sp. (strain MF297-2),1.1.1.1,3,7.1e-52,166.0,30.9,0.974
+diamond,O45687,positive_query,Caenorhabditis elegans,1.1.1.1,A7ZIA4,Escherichia coli O139:H28 (strain E24377A / ETEC),1.1.1.284;1.1.1.1;1.1.1.-,4,2.85e-27,101.0,26.7,0.932
+diamond,O45687,positive_query,Caenorhabditis elegans,1.1.1.1,A1A835,Escherichia coli O1:K1 / APEC,1.1.1.284;1.1.1.1;1.1.1.-,5,1.01e-26,99.8,26.4,0.932
+diamond,O45687,positive_query,Caenorhabditis elegans,1.1.1.1,B1LIP1,Escherichia coli (strain SMS-3-5 / SECEC),1.1.1.284;1.1.1.1;1.1.1.-,6,2.58e-26,98.6,26.4,0.932
+diamond,O45687,positive_query,Caenorhabditis elegans,1.1.1.1,A2XAZ3,Oryza sativa subsp. indica,1.1.1.1;1.1.1.-;1.1.1.284,7,1.41e-25,96.7,29.1,0.766
+diamond,O45687,positive_query,Caenorhabditis elegans,1.1.1.1,A1L4Y2,Arabidopsis thaliana,1.1.1.1,8,3.52e-24,92.8,27.8,0.909
+diamond,O45687,positive_query,Caenorhabditis elegans,1.1.1.1,A0A7U2MMF3,Aspergillus flavus (strain ATCC 200026 / FGSC A1120 / IAM 13836 / NRRL 3357 / JCM 12722 / SRRC 167),1.1.1.1,9,1.43e-21,85.5,30.0,0.732
+diamond-default,O13309,positive_query,Scheffersomyces stipitis (strain ATCC 58785 / CBS 6054 / NBRC 10063 / NRRL Y-11545),1.1.1.1,O00097,Scheffersomyces stipitis (strain ATCC 58785 / CBS 6054 / NBRC 10063 / NRRL Y-11545),1.1.1.1,1,1.51e-213,578.0,80.5,1.0
+diamond-default,O13309,positive_query,Scheffersomyces stipitis (strain ATCC 58785 / CBS 6054 / NBRC 10063 / NRRL Y-11545),1.1.1.1,F2Z678,Yarrowia lipolytica (strain CLIB 122 / E 150),1.1.1.1,2,1.34e-189,518.0,74.0,0.994
+diamond-default,O13309,positive_query,Scheffersomyces stipitis (strain ATCC 58785 / CBS 6054 / NBRC 10063 / NRRL Y-11545),1.1.1.1,E1ACQ9,Aspergillus sp. (strain MF297-2),1.1.1.1,3,3.72e-55,175.0,33.1,0.989
+diamond-default,O13309,positive_query,Scheffersomyces stipitis (strain ATCC 58785 / CBS 6054 / NBRC 10063 / NRRL Y-11545),1.1.1.1,A1A835,Escherichia coli O1:K1 / APEC,1.1.1.284;1.1.1.1;1.1.1.-,4,4.62e-26,97.8,29.3,0.948
+diamond-default,O13309,positive_query,Scheffersomyces stipitis (strain ATCC 58785 / CBS 6054 / NBRC 10063 / NRRL Y-11545),1.1.1.1,A7ZIA4,Escherichia coli O139:H28 (strain E24377A / ETEC),1.1.1.284;1.1.1.1;1.1.1.-,5,1.18e-25,96.7,29.0,0.948
+diamond-default,O13309,positive_query,Scheffersomyces stipitis (strain ATCC 58785 / CBS 6054 / NBRC 10063 / NRRL Y-11545),1.1.1.1,B1LIP1,Escherichia coli (strain SMS-3-5 / SECEC),1.1.1.284;1.1.1.1;1.1.1.-,6,1.05e-24,94.0,28.8,0.948
+diamond-default,O19053,positive_query,Oryctolagus cuniculus,1.1.1.1;1.1.1.-;1.1.1.284,A2XAZ3,Oryza sativa subsp. indica,1.1.1.1;1.1.1.-;1.1.1.284,1,1.32e-182,503.0,66.3,0.989
+diamond-default,O19053,positive_query,Oryctolagus cuniculus,1.1.1.1;1.1.1.-;1.1.1.284,A1A835,Escherichia coli O1:K1 / APEC,1.1.1.284;1.1.1.1;1.1.1.-,2,1.03e-176,487.0,63.0,0.984
+diamond-default,O19053,positive_query,Oryctolagus cuniculus,1.1.1.1;1.1.1.-;1.1.1.284,A7ZIA4,Escherichia coli O139:H28 (strain E24377A / ETEC),1.1.1.284;1.1.1.1;1.1.1.-,3,1.47e-176,487.0,63.0,0.984
+diamond-default,O19053,positive_query,Oryctolagus cuniculus,1.1.1.1;1.1.1.-;1.1.1.284,B1LIP1,Escherichia coli (strain SMS-3-5 / SECEC),1.1.1.284;1.1.1.1;1.1.1.-,4,1.7e-175,484.0,62.8,0.984
+diamond-default,O19053,positive_query,Oryctolagus cuniculus,1.1.1.1;1.1.1.-;1.1.1.284,A1L4Y2,Arabidopsis thaliana,1.1.1.1,5,1.58e-120,345.0,47.0,0.995
+diamond-default,O31186,positive_query,Rhizobium meliloti (strain 1021),1.1.1.1,O00097,Scheffersomyces stipitis (strain ATCC 58785 / CBS 6054 / NBRC 10063 / NRRL Y-11545),1.1.1.1,1,2.36e-94,276.0,43.8,0.988
+diamond-default,O31186,positive_query,Rhizobium meliloti (strain 1021),1.1.1.1,F2Z678,Yarrowia lipolytica (strain CLIB 122 / E 150),1.1.1.1,2,2.43e-89,263.0,41.2,0.988
+diamond-default,O31186,positive_query,Rhizobium meliloti (strain 1021),1.1.1.1,E1ACQ9,Aspergillus sp. (strain MF297-2),1.1.1.1,3,1.24e-61,191.0,34.0,0.994
+diamond-default,O45687,positive_query,Caenorhabditis elegans,1.1.1.1,O00097,Scheffersomyces stipitis (strain ATCC 58785 / CBS 6054 / NBRC 10063 / NRRL Y-11545),1.1.1.1,1,2.31e-118,337.0,46.8,0.983
+diamond-default,O45687,positive_query,Caenorhabditis elegans,1.1.1.1,F2Z678,Yarrowia lipolytica (strain CLIB 122 / E 150),1.1.1.1,2,1.52e-109,315.0,44.3,0.994

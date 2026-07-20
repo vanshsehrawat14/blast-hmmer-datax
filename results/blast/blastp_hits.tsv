@@ -1,0 +1,83 @@
+O07737	sp|A0A7U2MMF3|	31.897	348	88	8.69e-54	175	Zinc-type alcohol dehydrogenase B | OS=Aspergillus flavus (strain ATCC 200026 / FGSC A1120 / IAM 13836 / NRRL 3357 / JCM 12722 / SRRC 167) | EC=1.1.1.1
+O07737	sp|A1L4Y2|	25.000	368	84	6.12e-16	68.9	Alcohol dehydrogenase-like 3 | OS=Arabidopsis thaliana | EC=1.1.1.1
+O07737	sp|A2XAZ3|	24.324	333	79	1.76e-15	67.4	Alcohol dehydrogenase class-3 | OS=Oryza sativa subsp. indica | EC=1.1.1.1;1.1.1.-;1.1.1.284
+O07737	sp|A1A835|	25.356	351	84	4.65e-15	65.9	S-(hydroxymethyl)glutathione dehydrogenase | OS=Escherichia coli O1:K1 / APEC | EC=1.1.1.284;1.1.1.1;1.1.1.-
+O07737	sp|A7ZIA4|	25.356	351	84	8.69e-15	65.1	S-(hydroxymethyl)glutathione dehydrogenase | OS=Escherichia coli O139:H28 (strain E24377A / ETEC) | EC=1.1.1.284;1.1.1.1;1.1.1.-
+O07737	sp|B1LIP1|	25.071	351	84	6.13e-14	62.4	S-(hydroxymethyl)glutathione dehydrogenase | OS=Escherichia coli (strain SMS-3-5 / SECEC) | EC=1.1.1.284;1.1.1.1;1.1.1.-
+O07737	sp|O00097|	23.368	291	74	1.18e-12	58.5	Alcohol dehydrogenase 1 | OS=Scheffersomyces stipitis (strain ATCC 58785 / CBS 6054 / NBRC 10063 / NRRL Y-11545) | EC=1.1.1.1
+O07737	sp|E1ACQ9|	29.464	224	58	2.17e-11	54.7	Alcohol dehydrogenase notN | OS=Aspergillus sp. (strain MF297-2) | EC=1.1.1.1
+O07737	sp|E1ACQ9|	26.316	57	58	4.4	18.9	Alcohol dehydrogenase notN | OS=Aspergillus sp. (strain MF297-2) | EC=1.1.1.1
+O07737	sp|F2Z678|	25.461	271	68	5.18e-11	53.5	Alcohol dehydrogenase 2 | OS=Yarrowia lipolytica (strain CLIB 122 / E 150) | EC=1.1.1.1
+O07737	sp|B4M8Y0|	28.205	39	10	0.47	21.9	Alcohol dehydrogenase | OS=Drosophila virilis | EC=1.1.1.1
+O07737	sp|A5JYX5|	25.000	64	17	2.4	20.0	Protein dhs-3 | OS=Caenorhabditis elegans | EC=1.1.1.1
+O07737	sp|A0A165U5V5|	44.828	29	13	2.5	19.6	Short chain aldehyde dehydrogenase 1 | OS=Euphorbia lathyris | EC=1.1.1.1;1.1.1.-
+O07737	sp|A0A165U5V5|	37.500	24	13	7.5	18.1	Short chain aldehyde dehydrogenase 1 | OS=Euphorbia lathyris | EC=1.1.1.1;1.1.1.-
+O07737	sp|A0A0H2URT2|	39.024	41	11	3.6	19.2	Aldehyde-alcohol dehydrogenase | OS=Streptococcus pneumoniae serotype 4 (strain ATCC BAA-334 / TIGR4) | EC=1.1.1.1;1.2.1.3
+O07737	sp|A0A0H2ZM56|	39.024	41	11	3.6	19.2	Aldehyde-alcohol dehydrogenase | OS=Streptococcus pneumoniae serotype 2 (strain D39 / NCTC 7466) | EC=1.1.1.1;1.2.1.3
+O07737	sp|N4WE43|	37.500	24	6	4.1	19.2	Dehydrogenase RED2 | OS=Cochliobolus heterostrophus (strain C4 / ATCC 48331 / race T) | EC=1.1.1.1
+O13309	sp|O00097|	80.460	348	100	0.0	570	Alcohol dehydrogenase 1 | OS=Scheffersomyces stipitis (strain ATCC 58785 / CBS 6054 / NBRC 10063 / NRRL Y-11545) | EC=1.1.1.1
+O13309	sp|F2Z678|	73.988	346	99	0.0	516	Alcohol dehydrogenase 2 | OS=Yarrowia lipolytica (strain CLIB 122 / E 150) | EC=1.1.1.1
+O13309	sp|E1ACQ9|	33.333	345	99	5.03e-53	169	Alcohol dehydrogenase notN | OS=Aspergillus sp. (strain MF297-2) | EC=1.1.1.1
+O13309	sp|A2XAZ3|	25.984	381	99	1.44e-25	96.7	Alcohol dehydrogenase class-3 | OS=Oryza sativa subsp. indica | EC=1.1.1.1;1.1.1.-;1.1.1.284
+O13309	sp|A0A7U2MMF3|	27.606	355	97	9.06e-24	92.0	Zinc-type alcohol dehydrogenase B | OS=Aspergillus flavus (strain ATCC 200026 / FGSC A1120 / IAM 13836 / NRRL 3357 / JCM 12722 / SRRC 167) | EC=1.1.1.1
+O13309	sp|A1L4Y2|	24.074	378	95	1.39e-23	90.9	Alcohol dehydrogenase-like 3 | OS=Arabidopsis thaliana | EC=1.1.1.1
+O13309	sp|A1A835|	29.315	365	95	3.17e-20	80.9	S-(hydroxymethyl)glutathione dehydrogenase | OS=Escherichia coli O1:K1 / APEC | EC=1.1.1.284;1.1.1.1;1.1.1.-
+O13309	sp|A7ZIA4|	29.041	365	95	9.64e-20	79.7	S-(hydroxymethyl)glutathione dehydrogenase | OS=Escherichia coli O139:H28 (strain E24377A / ETEC) | EC=1.1.1.284;1.1.1.1;1.1.1.-
+O13309	sp|B1LIP1|	28.767	365	95	6.43e-19	77.0	S-(hydroxymethyl)glutathione dehydrogenase | OS=Escherichia coli (strain SMS-3-5 / SECEC) | EC=1.1.1.284;1.1.1.1;1.1.1.-
+O13309	sp|A5JYX5|	29.070	86	22	0.035	25.4	Protein dhs-3 | OS=Caenorhabditis elegans | EC=1.1.1.1
+O13309	sp|A6ZTT5|	35.294	34	36	0.13	23.9	Alcohol dehydrogenase 4 | OS=Saccharomyces cerevisiae (strain YJM789) | EC=1.1.1.1
+O13309	sp|A6ZTT5|	25.263	95	36	5.1	18.9	Alcohol dehydrogenase 4 | OS=Saccharomyces cerevisiae (strain YJM789) | EC=1.1.1.1
+O13309	sp|N4WE43|	57.143	14	19	1.3	20.4	Dehydrogenase RED2 | OS=Cochliobolus heterostrophus (strain C4 / ATCC 48331 / race T) | EC=1.1.1.1
+O13309	sp|N4WE43|	33.333	24	19	1.4	20.4	Dehydrogenase RED2 | OS=Cochliobolus heterostrophus (strain C4 / ATCC 48331 / race T) | EC=1.1.1.1
+O13309	sp|N4WE43|	24.138	29	19	5.4	18.5	Dehydrogenase RED2 | OS=Cochliobolus heterostrophus (strain C4 / ATCC 48331 / race T) | EC=1.1.1.1
+O19053	sp|A2XAZ3|	66.486	370	99	0.0	510	Alcohol dehydrogenase class-3 | OS=Oryza sativa subsp. indica | EC=1.1.1.1;1.1.1.-;1.1.1.284
+O19053	sp|A1A835|	63.043	368	98	1.18e-171	474	S-(hydroxymethyl)glutathione dehydrogenase | OS=Escherichia coli O1:K1 / APEC | EC=1.1.1.284;1.1.1.1;1.1.1.-
+O19053	sp|A7ZIA4|	63.043	368	98	1.43e-171	474	S-(hydroxymethyl)glutathione dehydrogenase | OS=Escherichia coli O139:H28 (strain E24377A / ETEC) | EC=1.1.1.284;1.1.1.1;1.1.1.-
+O19053	sp|B1LIP1|	62.772	368	98	1.11e-170	472	S-(hydroxymethyl)glutathione dehydrogenase | OS=Escherichia coli (strain SMS-3-5 / SECEC) | EC=1.1.1.284;1.1.1.1;1.1.1.-
+O19053	sp|A1L4Y2|	47.120	382	99	1.41e-124	356	Alcohol dehydrogenase-like 3 | OS=Arabidopsis thaliana | EC=1.1.1.1
+O19053	sp|O00097|	28.342	374	97	1.54e-22	87.8	Alcohol dehydrogenase 1 | OS=Scheffersomyces stipitis (strain ATCC 58785 / CBS 6054 / NBRC 10063 / NRRL Y-11545) | EC=1.1.1.1
+O19053	sp|A0A7U2MMF3|	25.263	380	97	6.34e-21	84.0	Zinc-type alcohol dehydrogenase B | OS=Aspergillus flavus (strain ATCC 200026 / FGSC A1120 / IAM 13836 / NRRL 3357 / JCM 12722 / SRRC 167) | EC=1.1.1.1
+O19053	sp|E1ACQ9|	28.151	238	63	4.07e-18	74.7	Alcohol dehydrogenase notN | OS=Aspergillus sp. (strain MF297-2) | EC=1.1.1.1
+O19053	sp|F2Z678|	26.720	378	98	2.33e-17	72.8	Alcohol dehydrogenase 2 | OS=Yarrowia lipolytica (strain CLIB 122 / E 150) | EC=1.1.1.1
+O19053	sp|B4M8Y0|	28.333	60	15	0.41	22.3	Alcohol dehydrogenase | OS=Drosophila virilis | EC=1.1.1.1
+O19053	sp|N4WE43|	43.750	16	4	6.7	18.5	Dehydrogenase RED2 | OS=Cochliobolus heterostrophus (strain C4 / ATCC 48331 / race T) | EC=1.1.1.1
+O31186	sp|O00097|	42.982	342	99	2.06e-89	263	Alcohol dehydrogenase 1 | OS=Scheffersomyces stipitis (strain ATCC 58785 / CBS 6054 / NBRC 10063 / NRRL Y-11545) | EC=1.1.1.1
+O31186	sp|F2Z678|	40.643	342	99	3.84e-85	252	Alcohol dehydrogenase 2 | OS=Yarrowia lipolytica (strain CLIB 122 / E 150) | EC=1.1.1.1
+O31186	sp|E1ACQ9|	33.728	338	99	6.71e-60	187	Alcohol dehydrogenase notN | OS=Aspergillus sp. (strain MF297-2) | EC=1.1.1.1
+O31186	sp|A1A835|	35.246	244	65	3.03e-21	84.0	S-(hydroxymethyl)glutathione dehydrogenase | OS=Escherichia coli O1:K1 / APEC | EC=1.1.1.284;1.1.1.1;1.1.1.-
+O31186	sp|A7ZIA4|	35.246	244	65	3.63e-21	83.6	S-(hydroxymethyl)glutathione dehydrogenase | OS=Escherichia coli O139:H28 (strain E24377A / ETEC) | EC=1.1.1.284;1.1.1.1;1.1.1.-
+O31186	sp|A2XAZ3|	29.032	248	65	3.82e-21	83.6	Alcohol dehydrogenase class-3 | OS=Oryza sativa subsp. indica | EC=1.1.1.1;1.1.1.-;1.1.1.284
+O31186	sp|B1LIP1|	32.377	244	65	2.32e-20	81.3	S-(hydroxymethyl)glutathione dehydrogenase | OS=Escherichia coli (strain SMS-3-5 / SECEC) | EC=1.1.1.284;1.1.1.1;1.1.1.-
+O31186	sp|A0A7U2MMF3|	27.596	337	94	6.54e-20	80.5	Zinc-type alcohol dehydrogenase B | OS=Aspergillus flavus (strain ATCC 200026 / FGSC A1120 / IAM 13836 / NRRL 3357 / JCM 12722 / SRRC 167) | EC=1.1.1.1
+O31186	sp|A1L4Y2|	26.133	375	97	2.66e-18	75.5	Alcohol dehydrogenase-like 3 | OS=Arabidopsis thaliana | EC=1.1.1.1
+O31186	sp|N4WE43|	33.333	24	7	3.4	19.2	Dehydrogenase RED2 | OS=Cochliobolus heterostrophus (strain C4 / ATCC 48331 / race T) | EC=1.1.1.1
+O31186	sp|A0A165U5V5|	31.250	48	14	4.8	18.5	Short chain aldehyde dehydrogenase 1 | OS=Euphorbia lathyris | EC=1.1.1.1;1.1.1.-
+O45687	sp|O00097|	46.821	346	98	2.69e-112	322	Alcohol dehydrogenase 1 | OS=Scheffersomyces stipitis (strain ATCC 58785 / CBS 6054 / NBRC 10063 / NRRL Y-11545) | EC=1.1.1.1
+O45687	sp|F2Z678|	44.286	350	99	7.92e-104	300	Alcohol dehydrogenase 2 | OS=Yarrowia lipolytica (strain CLIB 122 / E 150) | EC=1.1.1.1
+O45687	sp|E1ACQ9|	30.058	346	97	2.51e-50	162	Alcohol dehydrogenase notN | OS=Aspergillus sp. (strain MF297-2) | EC=1.1.1.1
+O45687	sp|A2XAZ3|	28.920	287	73	7.14e-25	94.7	Alcohol dehydrogenase class-3 | OS=Oryza sativa subsp. indica | EC=1.1.1.1;1.1.1.-;1.1.1.284
+O45687	sp|A1L4Y2|	27.520	367	91	9.78e-25	94.4	Alcohol dehydrogenase-like 3 | OS=Arabidopsis thaliana | EC=1.1.1.1
+O45687	sp|A0A7U2MMF3|	30.000	270	73	6.79e-22	86.3	Zinc-type alcohol dehydrogenase B | OS=Aspergillus flavus (strain ATCC 200026 / FGSC A1120 / IAM 13836 / NRRL 3357 / JCM 12722 / SRRC 167) | EC=1.1.1.1
+O45687	sp|A7ZIA4|	26.810	373	96	7.17e-20	80.1	S-(hydroxymethyl)glutathione dehydrogenase | OS=Escherichia coli O139:H28 (strain E24377A / ETEC) | EC=1.1.1.284;1.1.1.1;1.1.1.-
+O45687	sp|A1A835|	26.542	373	96	2.65e-19	78.2	S-(hydroxymethyl)glutathione dehydrogenase | OS=Escherichia coli O1:K1 / APEC | EC=1.1.1.284;1.1.1.1;1.1.1.-
+O45687	sp|B1LIP1|	26.542	373	96	6.21e-19	77.4	S-(hydroxymethyl)glutathione dehydrogenase | OS=Escherichia coli (strain SMS-3-5 / SECEC) | EC=1.1.1.284;1.1.1.1;1.1.1.-
+O45687	sp|A0A165U5V5|	29.412	51	14	0.015	26.6	Short chain aldehyde dehydrogenase 1 | OS=Euphorbia lathyris | EC=1.1.1.1;1.1.1.-
+O45687	sp|A5JYX5|	42.424	33	9	0.024	26.2	Protein dhs-3 | OS=Caenorhabditis elegans | EC=1.1.1.1
+O45687	sp|N4WE43|	22.727	44	17	0.15	23.5	Dehydrogenase RED2 | OS=Cochliobolus heterostrophus (strain C4 / ATCC 48331 / race T) | EC=1.1.1.1
+O45687	sp|N4WE43|	57.143	14	17	2.7	19.6	Dehydrogenase RED2 | OS=Cochliobolus heterostrophus (strain C4 / ATCC 48331 / race T) | EC=1.1.1.1
+O45687	sp|B4M8Y0|	24.590	61	17	2.7	19.6	Alcohol dehydrogenase | OS=Drosophila virilis | EC=1.1.1.1
+O45687	sp|A0A0H2URT2|	25.000	68	16	7.1	18.5	Aldehyde-alcohol dehydrogenase | OS=Streptococcus pneumoniae serotype 4 (strain ATCC BAA-334 / TIGR4) | EC=1.1.1.1;1.2.1.3
+O45687	sp|A0A0H2ZM56|	25.000	68	16	7.3	18.1	Aldehyde-alcohol dehydrogenase | OS=Streptococcus pneumoniae serotype 2 (strain D39 / NCTC 7466) | EC=1.1.1.1;1.2.1.3
+A0A096XJN4	sp|O00097|	43.750	16	3	1.9	20.4	Alcohol dehydrogenase 1 | OS=Scheffersomyces stipitis (strain ATCC 58785 / CBS 6054 / NBRC 10063 / NRRL Y-11545) | EC=1.1.1.1
+A0A096XJN4	sp|N4WE73|	44.000	25	5	4.1	19.2	Dehydrogenase OXI1 | OS=Cochliobolus heterostrophus (strain C4 / ATCC 48331 / race T) | EC=1.1.1.1
+A0A096XJN4	sp|A0A0H2ZM56|	50.000	18	9	5.8	19.2	Aldehyde-alcohol dehydrogenase | OS=Streptococcus pneumoniae serotype 2 (strain D39 / NCTC 7466) | EC=1.1.1.1;1.2.1.3
+A0A096XJN4	sp|A0A0H2ZM56|	34.615	26	9	5.9	19.2	Aldehyde-alcohol dehydrogenase | OS=Streptococcus pneumoniae serotype 2 (strain D39 / NCTC 7466) | EC=1.1.1.1;1.2.1.3
+A0A096XJN4	sp|A0A0H2URT2|	34.615	26	9	5.8	19.2	Aldehyde-alcohol dehydrogenase | OS=Streptococcus pneumoniae serotype 4 (strain ATCC BAA-334 / TIGR4) | EC=1.1.1.1;1.2.1.3
+A0A096XJN4	sp|A0A0H2URT2|	50.000	18	9	5.8	19.2	Aldehyde-alcohol dehydrogenase | OS=Streptococcus pneumoniae serotype 4 (strain ATCC BAA-334 / TIGR4) | EC=1.1.1.1;1.2.1.3
+A0A096XJN4	sp|A0A165U5V5|	37.500	32	6	9.3	18.5	Short chain aldehyde dehydrogenase 1 | OS=Euphorbia lathyris | EC=1.1.1.1;1.1.1.-
+A0A0K0JFP3	sp|N4WE43|	34.615	26	5	0.56	22.3	Dehydrogenase RED2 | OS=Cochliobolus heterostrophus (strain C4 / ATCC 48331 / race T) | EC=1.1.1.1
+A0A0K0JFP3	sp|A2XAZ3|	36.842	19	3	0.91	21.9	Alcohol dehydrogenase class-3 | OS=Oryza sativa subsp. indica | EC=1.1.1.1;1.1.1.-;1.1.1.284
+A0A0K0JFP3	sp|O00097|	30.233	43	8	1.1	21.6	Alcohol dehydrogenase 1 | OS=Scheffersomyces stipitis (strain ATCC 58785 / CBS 6054 / NBRC 10063 / NRRL Y-11545) | EC=1.1.1.1
+A0A0K0JFP3	sp|A0A7U2MMF3|	43.750	16	3	2.7	20.4	Zinc-type alcohol dehydrogenase B | OS=Aspergillus flavus (strain ATCC 200026 / FGSC A1120 / IAM 13836 / NRRL 3357 / JCM 12722 / SRRC 167) | EC=1.1.1.1
+A0A0K0JFP3	sp|F2Z678|	37.931	29	5	7.0	18.9	Alcohol dehydrogenase 2 | OS=Yarrowia lipolytica (strain CLIB 122 / E 150) | EC=1.1.1.1
+A0A0K0JFP3	sp|E1ACQ9|	38.095	21	4	8.7	18.9	Alcohol dehydrogenase notN | OS=Aspergillus sp. (strain MF297-2) | EC=1.1.1.1

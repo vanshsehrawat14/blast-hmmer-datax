@@ -1,0 +1,17 @@
+#                                                               --- full sequence ---- --- best 1 domain ---- --- domain number estimation ----
+# target name        accession  query name           accession    E-value  score  bias   E-value  score  bias   exp reg clu  ov env dom rep inc description of target
+#------------------- ---------- -------------------- ---------- --------- ------ ----- --------- ------ -----   --- --- --- --- --- --- --- --- ---------------------
+O13309               -          EC_1_1_1_1_reference -           5.7e-101  327.3   0.3  6.4e-101  327.1   0.3   1.0   1   0   0   1   1   1   1 Alcohol dehydrogenase 2 | OS=Scheffersomyces stipitis (strain ATCC 58785 / CBS 6054 / NBRC 10063 / NRRL Y-11545) | EC=1.1.1.1
+O19053               -          EC_1_1_1_1_reference -            1.5e-99  322.6   5.8   1.7e-99  322.4   5.8   1.0   1   0   0   1   1   1   1 Alcohol dehydrogenase class-3 | OS=Oryctolagus cuniculus | EC=1.1.1.1;1.1.1.-;1.1.1.284
+O45687               -          EC_1_1_1_1_reference -            1.2e-71  230.6   0.4   1.3e-71  230.5   0.4   1.0   1   0   0   1   1   1   1 Alcohol dehydrogenase 2 | OS=Caenorhabditis elegans | EC=1.1.1.1
+O31186               -          EC_1_1_1_1_reference -              7e-60  191.9   0.0   2.1e-59  190.3   0.0   1.6   1   1   0   1   1   1   1 Alcohol dehydrogenase | OS=Rhizobium meliloti (strain 1021) | EC=1.1.1.1
+O07737               -          EC_1_1_1_1_reference -            1.3e-27   85.5   0.0   2.6e-26   81.3   0.0   2.0   1   1   0   1   1   1   1 Probable zinc-binding alcohol dehydrogenase Rv1895 | OS=Mycobacterium tuberculosis (strain ATCC 25618 / H37Rv) | EC=1.1.1.1
+#
+# Program:         hmmsearch
+# Version:         3.4 (Aug 2023)
+# Pipeline mode:   SEARCH
+# Query file:      data/processed/ec_1_1_1_1.hmm
+# Target file:     data/raw/queries_all.fasta
+# Option settings: hmmsearch -o results/hmmer/hmmsearch_full.txt --tblout results/hmmer/hmmsearch_tblout.txt --domtblout results/hmmer/hmmsearch_domtblout.txt data/processed/ec_1_1_1_1.hmm data/raw/queries_all.fasta 
+# Date:            Mon Jul 20 13:57:20 2026
+# [ok]

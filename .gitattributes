@@ -1,0 +1,15 @@
+# These are executed inside Linux/WSL. A CRLF checkout on Windows breaks the
+# shebang line, so pin them to LF regardless of core.autocrlf.
+*.sh   text eol=lf
+*.py   text eol=lf
+Makefile text eol=lf
+
+# Bioinformatics formats are parsed by Unix tools; keep them LF.
+*.fasta text eol=lf
+*.afa   text eol=lf
+*.tsv   text eol=lf
+*.hmm   text eol=lf
+
+*.md   text
+*.yml  text
+*.json text

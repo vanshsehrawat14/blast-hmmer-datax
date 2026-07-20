@@ -1,0 +1,52 @@
+{
+  "retrieved_utc": "2026-07-20T20:57:12.113563+00:00",
+  "retrieval_date": "2026-07-20",
+  "api_endpoint": "https://rest.uniprot.org/uniprotkb/search",
+  "target_ec": "1.1.1.1",
+  "reference_query": "(ec:1.1.1.1) AND (reviewed:true) AND (fragment:false)",
+  "negative_control_queries": [
+    "(ec:3.2.1.1) AND (reviewed:true) AND (fragment:false)",
+    "(ec:2.7.1.1) AND (reviewed:true) AND (fragment:false)"
+  ],
+  "selection_rule": "Entries sorted by accession; deduplicated by accession and by identical sequence; first 20 -> reference, next 5 -> positive queries. Negative controls: lowest accession for each control EC that is not also annotated EC 1.1.1.1.",
+  "counts": {
+    "reference": 20,
+    "positive_query": 5,
+    "negative_control": 2
+  },
+  "accessions": {
+    "reference": [
+      "A0A0H2URT2",
+      "A0A0H2ZM56",
+      "A0A0S1X9S7",
+      "A0A165U5V5",
+      "A0A7U2MMF3",
+      "A1A835",
+      "A1L4Y2",
+      "A2XAZ3",
+      "A5JYX5",
+      "A6ZTT5",
+      "A7ZIA4",
+      "B1LIP1",
+      "B4M8Y0",
+      "E1ACQ9",
+      "F2Z678",
+      "F8DVL8",
+      "N4WE43",
+      "N4WE73",
+      "N4WW42",
+      "O00097"
+    ],
+    "positive_query": [
+      "O07737",
+      "O13309",
+      "O19053",
+      "O31186",
+      "O45687"
+    ],
+    "negative_control": [
+      "A0A096XJN4",
+      "A0A0K0JFP3"
+    ]
+  }
+}

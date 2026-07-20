@@ -1,0 +1,14 @@
+name: blast-hmmer-datax
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - python=3.12
+  - blast=2.16.0
+  - hmmer=3.4
+  - mafft=7.526
+  # Optional fourth aligner, used by `make diamond`. The BLAST and HMMER
+  # pipeline runs without it.
+  - diamond=2.2.4
+  - requests=2.32.*
+  - pandas=2.2.*

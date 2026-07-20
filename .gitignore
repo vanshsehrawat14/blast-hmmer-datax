@@ -1,0 +1,39 @@
+# BLAST database indexes (regenerate with `make blast`)
+data/processed/blastdb/
+
+# DIAMOND database index (regenerate with `make diamond`)
+data/processed/diamonddb/
+
+# Generated alignment and profile (regenerate with `make hmmer`)
+data/processed/reference_aligned.afa
+data/processed/ec_1_1_1_1.hmm
+
+# Regenerable tool dumps: logs, full-text and pairwise output. Rebuilt by
+# `make`. The tabular (*_tblout/*_domtblout/*_hits.tsv) and normalized results
+# are kept as committed evidence.
+results/*/*.log
+results/hmmer/*_full.txt
+results/blast/blastp_pairwise.txt
+results/diamond/diamond_pairwise.txt
+
+# Environments
+.conda/
+envs/
+venv/
+.venv/
+micromamba/
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Local notes not intended for the repository
+NOTES.local.md
+scratch/

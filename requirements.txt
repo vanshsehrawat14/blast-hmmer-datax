@@ -1,0 +1,8 @@
+# Python dependencies only.
+#
+# BLAST+, HMMER and MAFFT are NOT pip-installable. They come from the conda
+# environment in environment.yml, which is the supported way to set this
+# project up. Use this file only if you are installing the Python side into
+# an existing interpreter that already has those three tools on PATH.
+requests==2.32.5
+pandas==2.2.3
