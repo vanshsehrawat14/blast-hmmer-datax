@@ -156,6 +156,13 @@ def job_page(request: Request, job_id: str):
         "settings": settings,
         "result": result,
         "method_labels": METHOD_LABELS,
+        # Each method has its own reporting threshold; a no-hit message that
+        # quoted the wrong one would be misleading the moment they diverge.
+        "thresholds": {
+            "blastp": settings.blast_evalue,
+            "phmmer": settings.phmmer_evalue,
+            "hmmscan": settings.hmmscan_evalue,
+        },
     })
 
 

@@ -62,8 +62,8 @@
       <p class="alert muted-box">
         <strong>No hits.</strong> Nothing in the
         {% if m.method == 'hmmscan' %}profile database{% else %}reference set{% endif %}
-        scored better than the reporting threshold
-        (E ≤ {{ '%.0e'|format(settings.blast_evalue if m.method == 'blastp' else settings.phmmer_evalue) }}).
+        scored better than that method's reporting threshold
+        (E ≤ {{ '%.0e'|format(thresholds[m.method]) }}).
         For a real protein this usually means the reference set has no close
         relative — it is not evidence that the protein is not an enzyme.
       </p>
