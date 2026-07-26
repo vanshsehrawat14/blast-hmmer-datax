@@ -27,14 +27,27 @@ RUN pip install --no-deps -e .
 
 # Artifacts live on a mounted volume, never in the image. The copied EnzymeX
 # database is not packaged or redistributed.
+#
+# The mount point is created and chowned here rather than at runtime: Docker
+# seeds a fresh named volume from the image's directory, so without this the
+# volume comes up root-owned and the unprivileged service user cannot write
+# the reference build into it.
+USER root
+RUN mkdir -p /srv/data && chown -R $MAMBA_USER:$MAMBA_USER /srv/data
+USER $MAMBA_USER
+
 ENV ENZYMEX_REFERENCE_DIR=/srv/data/reference \
     ENZYMEX_JOB_DIR=/srv/data/jobs \
     PYTHONUNBUFFERED=1
 VOLUME ["/srv/data"]
 
 EXPOSE 8000
+
+# Absolute interpreter path: HEALTHCHECK does not go through the image's
+# ENTRYPOINT, so the conda environment is not activated for it and a bare
+# `python` is not on PATH. /health returns 503 until the reference build has
+# run, which is the behaviour we want reported.
 HEALTHCHECK --interval=30s --timeout=10s --start-period=20s --retries=3 \
-  CMD python -c "import urllib.request,sys; \
-sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=5).status == 200 else 1)"
+  CMD ["/opt/conda/bin/python", "-c", "import urllib.request,sys;sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=5).status == 200 else 1)"]
 
 CMD ["uvicorn", "app.web.app:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "2"]
