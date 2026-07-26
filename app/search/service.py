@@ -14,12 +14,13 @@ is visible rather than silently thinned.
 from __future__ import annotations
 
 import logging
+import sqlite3
 import threading
 import time
 
 from app.config import Settings
 from app.fasta import SequenceRecord, write_fasta
-from app.jobs import cleanup, job_dir, new_job_id, save
+from app.jobs import cleanup, discard_raw_outputs, job_dir, new_job_id, save
 from app.references import blast_build, hmmer_build
 from app.references.manifest import read_manifest
 from app.references.metadata import MetadataStore, ProfileMeta, ReferenceMeta
@@ -125,7 +126,6 @@ def run_search(settings: Settings, records: list[SequenceRecord],
                        outcomes, manifest, elapsed)
     save(settings, result)
     if not settings.keep_raw_outputs:
-        from app.jobs import discard_raw_outputs
         discard_raw_outputs(settings, job_id)
     return result
 
@@ -147,7 +147,9 @@ def _assemble(settings: Settings, job_id: str, build_id: str,
             with MetadataStore(settings.metadata_db) as store:
                 refs = store.references(ref_ids)
                 profiles = store.profiles(family_ids)
-        except (OSError, ValueError) as exc:
+        except (OSError, ValueError, sqlite3.Error) as exc:
+            # A hit without metadata still carries its score and identifier,
+            # which is more useful than failing the whole search.
             log.warning("metadata lookup failed: %s", exc)
 
     queries = []
@@ -250,7 +252,8 @@ def reference_status(settings: Settings) -> dict:
         try:
             with MetadataStore(settings.metadata_db) as store:
                 references, profiles = store.reference_count(), store.profile_count()
-        except (OSError, ValueError):
+        except (OSError, ValueError, sqlite3.Error):
+            # Reported as null counts by /health rather than a 500.
             pass
 
     return {

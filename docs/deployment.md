@@ -25,6 +25,14 @@ The image is built from `environment.yml`, so BLAST+, HMMER, MAFFT and
 MMseqs2 are the same pinned versions the manifest will record. Artifacts live
 on a named volume mounted at `/srv/data`, never in the image.
 
+If the copied MySQL runs on the Docker host rather than a separate machine,
+`ENZYMEX_DB_HOST=127.0.0.1` in `.env` points at the *container's* loopback. Use
+`host.docker.internal` instead:
+
+```bash
+docker compose run --rm -e ENZYMEX_DB_HOST=host.docker.internal refbuild
+```
+
 `refbuild` is a one-off container, not a service. It reads the whole copied
 table and forks MAFFT once per family; it must never be reachable from a
 request.
