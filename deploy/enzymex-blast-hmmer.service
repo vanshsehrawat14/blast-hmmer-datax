@@ -1,0 +1,49 @@
+# systemd unit for the non-Docker deployment path.
+#
+#   sudo cp deploy/enzymex-blast-hmmer.service /etc/systemd/system/
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now enzymex-blast-hmmer
+#
+# Adjust User, WorkingDirectory and the micromamba path to match the server.
+# The service account needs read access to the repository and write access to
+# ENZYMEX_REFERENCE_DIR and ENZYMEX_JOB_DIR, and nothing else.
+
+[Unit]
+Description=EnzymeX BLAST/HMMER standalone test server
+Documentation=file:///opt/blast-hmmer-datax/README.md
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=exec
+User=enzymex
+Group=enzymex
+WorkingDirectory=/opt/blast-hmmer-datax
+
+# Credentials come from a root-owned file readable only by the service user.
+EnvironmentFile=/etc/enzymex-blast-hmmer.env
+
+ExecStart=/opt/micromamba/bin/micromamba run -n blast-hmmer-datax \
+    uvicorn app.web.app:app --host 127.0.0.1 --port 8000 --workers 2
+
+Restart=on-failure
+RestartSec=5s
+
+# The application runs untrusted input through external binaries, so the unit
+# gives it as little of the system as it can still work with.
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=strict
+ProtectHome=yes
+ReadWritePaths=/opt/blast-hmmer-datax/var
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictSUIDSGID=yes
+RestrictNamespaces=yes
+LockPersonality=yes
+MemoryMax=4G
+TasksMax=256
+
+[Install]
+WantedBy=multi-user.target

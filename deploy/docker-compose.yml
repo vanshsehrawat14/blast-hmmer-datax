@@ -1,0 +1,59 @@
+# Test-server deployment.
+#
+#   cd deploy
+#   cp ../.env.example ../.env      # fill in the copied-database credentials
+#   docker compose build
+#   docker compose run --rm refbuild        # one-off: build reference artifacts
+#   docker compose up -d web
+#   curl localhost:8000/health
+#
+# The copied EnzymeX MySQL instance is NOT defined here. It lives wherever you
+# restored the copy; point ENZYMEX_DB_HOST at it. Nothing in this file packages
+# or redistributes EnzymeX data.
+
+name: enzymex-blast-hmmer-test
+
+services:
+  web:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    image: enzymex-blast-hmmer:latest
+    env_file: ../.env
+    environment:
+      # Container-internal paths; the host location is the volume below.
+      ENZYMEX_REFERENCE_DIR: /srv/data/reference
+      ENZYMEX_JOB_DIR: /srv/data/jobs
+    volumes:
+      - artifacts:/srv/data
+    ports:
+      - "127.0.0.1:8000:8000"
+    restart: unless-stopped
+    # Bounds the box a synchronous search can consume. BLAST and HMMER are
+    # both memory-hungry in proportion to the reference database; raise these
+    # if the copied enzymesdata is large.
+    deploy:
+      resources:
+        limits:
+          cpus: "4.0"
+          memory: 4G
+
+  # One-off reference build. `docker compose run --rm refbuild` rather than a
+  # long-running service: it reads the whole copied table and must never be
+  # triggered by a user request.
+  refbuild:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    image: enzymex-blast-hmmer:latest
+    env_file: ../.env
+    environment:
+      ENZYMEX_REFERENCE_DIR: /srv/data/reference
+      ENZYMEX_JOB_DIR: /srv/data/jobs
+    volumes:
+      - artifacts:/srv/data
+    profiles: ["build"]
+    command: ["python", "-m", "app.references.cli", "all"]
+
+volumes:
+  artifacts:
