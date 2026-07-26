@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block title %}Submit protein sequences — BLAST/HMMER test server{% endblock %}
+
+{% block content %}
+<h1>Compare protein sequences against copied EnzymeX references</h1>
+<p class="lede">
+  Paste or upload protein sequences in FASTA format. They are searched against
+  references exported from a copy of the EnzymeX <code>enzymesdata</code> table
+  using BLAST and HMMER. Results are <strong>sequence-comparison evidence</strong>,
+  not EC number predictions — ECPICK, HIT-EC and CLEAN are not run here.
+</p>
+
+{% if error %}
+<div class="alert error" role="alert">
+  <strong>Submission rejected.</strong> {{ error }}
+</div>
+{% endif %}
+
+{% if not status.artifacts.references_fasta %}
+<div class="alert warn" role="alert">
+  <strong>No reference build on this server yet.</strong>
+  Run <code>enzymex-refbuild all</code> against the copied database before submitting.
+</div>
+{% endif %}
+
+<form method="post" action="/search" enctype="multipart/form-data" class="submit-form">
+  <label for="sequences">FASTA sequences</label>
+  <textarea id="sequences" name="sequences" rows="12" spellcheck="false"
+            placeholder="{{ example }}">{{ submitted_text or '' }}</textarea>
+
+  <div class="row">
+    <div class="field">
+      <label for="fasta_file">…or upload a file</label>
+      <input type="file" id="fasta_file" name="fasta_file" accept=".fasta,.fa,.faa,.txt">
+      <p class="hint">A file replaces the pasted text. Maximum
+        {{ settings.max_upload_bytes // 1000 }} kB.</p>
+    </div>
+
+    <fieldset class="field">
+      <legend>Methods</legend>
+      {% for m in methods %}
+      {% set info = status.methods[m] %}
+      <label class="check">
+        <input type="checkbox" name="methods" value="{{ m }}"
+               {% if (selected_methods and m in selected_methods) or (not selected_methods and info.enabled and info.ok) %}checked{% endif %}
+               {% if not info.enabled or not info.ok %}disabled{% endif %}>
+        {{ method_labels[m] }}
+        {% if not info.enabled %}<span class="tag">disabled</span>
+        {% elif not info.ok %}<span class="tag">unavailable</span>{% endif %}
+      </label>
+      {% endfor %}
+      <p class="hint">Leave all unchecked to run every available method.</p>
+    </fieldset>
+  </div>
+
+  <button type="submit">Run search</button>
+</form>
+
+<section class="limits">
+  <h2>Limits on this test server</h2>
+  <ul>
+    <li>At most {{ settings.max_query_sequences }} sequences per submission.</li>
+    <li>At most {{ settings.max_query_length }} residues per sequence.</li>
+    <li>Protein sequences only — nucleotide input is rejected.</li>
+    <li>Searches run synchronously and are cut off at
+        {{ settings.blast_timeout_seconds }}s (BLAST) /
+        {{ settings.hmmer_timeout_seconds }}s (HMMER).</li>
+    <li>Results are kept for {{ settings.job_retention_hours }} hours, then deleted.</li>
+  </ul>
+</section>
+
+<section class="reference-summary">
+  <h2>What you are searching</h2>
+  <dl>
+    <dt>Reference sequences</dt>
+    <dd>{{ status.reference_sequences if status.reference_sequences is not none else '—' }}</dd>
+    <dt>Profile HMMs</dt>
+    <dd>{{ status.profiles if status.profiles is not none else '—' }}</dd>
+    <dt>Build</dt>
+    <dd><code>{{ status.reference_build_id or 'not built' }}</code>
+        {% if status.built_at %}<span class="muted">({{ status.built_at }})</span>{% endif %}</dd>
+  </dl>
+</section>
+{% endblock %}

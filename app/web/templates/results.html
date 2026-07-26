@@ -1,0 +1,192 @@
+{% extends "base.html" %}
+{% block title %}Results {{ result.job_id }} — BLAST/HMMER test server{% endblock %}
+{% block build_id %}{{ result.reference_build_id }}{% endblock %}
+
+{% block content %}
+<h1>Sequence-comparison evidence</h1>
+
+<div class="job-meta">
+  <span>Job <code>{{ result.job_id }}</code></span>
+  <span>Build <code>{{ result.reference_build_id }}</code></span>
+  <span>{{ result.queries|length }} sequence{{ '' if result.queries|length == 1 else 's' }}</span>
+  <span>{{ result.total_runtime_seconds }}s total</span>
+  <span class="downloads">
+    <a href="/jobs/{{ result.job_id }}/results.csv">CSV</a>
+    <a href="/jobs/{{ result.job_id }}/results.json">JSON</a>
+  </span>
+</div>
+
+<div class="alert info">
+  <strong>How to read this.</strong> BLAST and HMMER report that a submitted
+  sequence resembles something in the reference set. That is evidence of
+  homology, and homologues frequently share function — but not always, and a
+  shared EC number is not established by similarity alone. This server runs no
+  EC prediction model; in EnzymeX these tables would sit alongside ECPICK,
+  HIT-EC and CLEAN predictions, not replace them.
+  <a href="/about">What the columns mean →</a>
+</div>
+
+{% if result.notes %}
+<div class="alert warn">
+  {% for note in result.notes %}<p>{{ note }}</p>{% endfor %}
+</div>
+{% endif %}
+
+{% for q in result.queries %}
+<section class="query">
+  <h2>
+    <span class="qid">{{ q.query_id }}</span>
+    {{ q.query_description }}
+    <span class="muted">{{ q.query_length }} aa</span>
+  </h2>
+
+  {% for m in q.methods %}
+  <div class="method">
+    <h3>
+      {{ method_labels[m.method] }}
+      {% if m.method_version %}<span class="muted mono">{{ m.method_version }}</span>{% endif %}
+      {% if m.runtime_seconds is not none %}<span class="muted">{{ m.runtime_seconds }}s</span>{% endif %}
+    </h3>
+
+    {% if m.status.value == 'failed' %}
+      <p class="alert error">
+        <strong>{{ m.error_code.value.replace('_', ' ') if m.error_code else 'failed' }}.</strong>
+        {{ m.error_message }}
+        The other methods on this page ran independently and are unaffected.
+      </p>
+
+    {% elif m.status.value == 'disabled' %}
+      <p class="alert muted-box">Not run: {{ m.error_message }}</p>
+
+    {% elif m.status.value == 'no_hits' %}
+      <p class="alert muted-box">
+        <strong>No hits.</strong> Nothing in the
+        {% if m.method == 'hmmscan' %}profile database{% else %}reference set{% endif %}
+        scored better than the reporting threshold
+        (E ≤ {{ '%.0e'|format(settings.blast_evalue if m.method == 'blastp' else settings.phmmer_evalue) }}).
+        For a real protein this usually means the reference set has no close
+        relative — it is not evidence that the protein is not an enzyme.
+      </p>
+
+    {% elif m.method == 'blastp' %}
+      <div class="scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th><th>Reference</th><th>Description</th><th>EC</th><th>Source</th>
+            <th class="num">Identity</th><th class="num">Aln len</th>
+            <th class="num">Query cov</th><th class="num">Subject cov</th>
+            <th class="num">E-value</th><th class="num">Bit score</th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for h in m.hits %}
+          <tr>
+            <td>{{ h.rank }}</td>
+            <td class="mono">{{ h.hit_id }}</td>
+            <td class="desc">{{ h.hit_description or '—' }}</td>
+            <td class="mono">{{ h.hit_ec or '—' }}</td>
+            <td>{{ h.hit_source or '—' }}</td>
+            <td class="num">{{ h.percent_identity|pct1 }}</td>
+            <td class="num">{{ h.alignment_length if h.alignment_length is not none else '—' }}</td>
+            <td class="num {{ 'weak' if h.query_coverage is not none and h.query_coverage < 0.5 }}">{{ h.query_coverage|frac }}</td>
+            <td class="num">{{ h.subject_coverage|frac }}</td>
+            <td class="num mono">{{ h.evalue|evalue }}</td>
+            <td class="num">{{ h.bitscore|round(1) }}</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+      </div>
+      <p class="footnote">
+        Identity and alignment length describe the single best-scoring local
+        alignment; coverage is summed over all high-scoring pairs for that
+        reference. High identity over a short stretch is not strong evidence —
+        read the coverage column alongside it.
+      </p>
+
+    {% elif m.method == 'phmmer' %}
+      <div class="scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th><th>Reference</th><th>Description</th><th>EC</th><th>Source</th>
+            <th class="num">Query cov</th><th class="num">Subject cov</th>
+            <th class="num">Seq E-value</th><th class="num">Seq bits</th>
+            <th class="num">Best dom E</th><th class="num">Dom bits</th>
+            <th class="num">Query region</th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for h in m.hits %}
+          <tr>
+            <td>{{ h.rank }}</td>
+            <td class="mono">{{ h.hit_id }}</td>
+            <td class="desc">{{ h.hit_description or '—' }}</td>
+            <td class="mono">{{ h.hit_ec or '—' }}</td>
+            <td>{{ h.hit_source or '—' }}</td>
+            <td class="num {{ 'weak' if h.query_coverage is not none and h.query_coverage < 0.5 }}">{{ h.query_coverage|frac }}</td>
+            <td class="num">{{ h.subject_coverage|frac }}</td>
+            <td class="num mono">{{ h.evalue|evalue }}</td>
+            <td class="num">{{ h.bitscore|round(1) }}</td>
+            <td class="num mono">{{ h.domain_evalue|evalue }}</td>
+            <td class="num">{{ h.domain_bitscore|round(1) if h.domain_bitscore is not none else '—' }}</td>
+            <td class="num mono">{{ h.domain_start }}–{{ h.domain_end }}{% if h.domain_count and h.domain_count > 1 %} <span class="muted">(+{{ h.domain_count - 1 }})</span>{% endif %}</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+      </div>
+      <p class="footnote">
+        phmmer reports no percent identity, so that column does not exist here.
+        Its E-values are computed against this reference database under HMMER's
+        own model and are <strong>not</strong> comparable with the BLAST
+        E-values above, even for the same hit.
+      </p>
+
+    {% else %}
+      <div class="scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th><th>Profile</th><th>Family</th><th>Consensus EC</th>
+            <th class="num">EC purity</th><th class="num">Members</th>
+            <th class="num">Query cov</th><th class="num">Profile cov</th>
+            <th class="num">Seq E-value</th><th class="num">Seq bits</th>
+            <th class="num">Dom bits</th><th class="num">Query region</th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for h in m.hits %}
+          <tr>
+            <td>{{ h.rank }}</td>
+            <td class="mono">{{ h.hit_id }}</td>
+            <td class="desc">{{ h.hit_description or '—' }}</td>
+            <td class="mono">{{ h.hit_ec or 'unannotated' }}</td>
+            <td class="num">{{ h.family_ec_purity|frac }}</td>
+            <td class="num">{{ h.family_size if h.family_size is not none else '—' }}</td>
+            <td class="num {{ 'weak' if h.query_coverage is not none and h.query_coverage < 0.5 }}">{{ h.query_coverage|frac }}</td>
+            <td class="num">{{ h.subject_coverage|frac }}</td>
+            <td class="num mono">{{ h.evalue|evalue }}</td>
+            <td class="num">{{ h.bitscore|round(1) }}</td>
+            <td class="num">{{ h.domain_bitscore|round(1) if h.domain_bitscore is not none else '—' }}</td>
+            <td class="num mono">{{ h.domain_start }}–{{ h.domain_end }}{% if h.domain_count and h.domain_count > 1 %} <span class="muted">(+{{ h.domain_count - 1 }})</span>{% endif %}</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+      </div>
+      <p class="footnote">
+        Each profile models one cluster of homologous references, not one EC
+        number. <em>EC purity</em> is the share of annotated members carrying
+        the consensus EC — a low value means the family spans several
+        reactions and the EC shown should not be read as a prediction. These
+        E-values are computed against the profile database and are on a third
+        scale again, comparable neither to BLAST nor to phmmer.
+      </p>
+    {% endif %}
+  </div>
+  {% endfor %}
+</section>
+{% endfor %}
+{% endblock %}

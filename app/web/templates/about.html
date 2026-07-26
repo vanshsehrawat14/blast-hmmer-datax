@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% block title %}Methods and columns — BLAST/HMMER test server{% endblock %}
+
+{% block content %}
+<h1>What these methods do, and what the numbers mean</h1>
+
+<h2>The three searches</h2>
+<dl class="prose">
+  <dt>BLAST (<code>blastp</code>)</dt>
+  <dd>
+    Compares the submitted sequence with each reference separately and reports
+    local alignments. It has no concept of a protein family: every hit is a
+    pairwise result.
+  </dd>
+
+  <dt>HMMER (<code>phmmer</code>)</dt>
+  <dd>
+    Builds a profile from the submitted sequence and scores every reference
+    against it under HMMER's probabilistic model. A single sequence carries no
+    position-specific conservation, so in practice phmmer ranks much like
+    BLAST — but the score, the statistics and the implementation are
+    independent, which is exactly why running both is informative.
+    It covers <strong>every</strong> exported reference.
+  </dd>
+
+  <dt>HMMER profiles (<code>hmmscan</code>)</dt>
+  <dd>
+    Scores the submitted sequence against profile hidden Markov models built
+    from aligned families of references. A profile knows which positions a
+    family conserves, so it can recognise a distant relative that no single
+    family member closely resembles. It covers only the part of the reference
+    set that clustered into families passing quality control — see below.
+  </dd>
+</dl>
+
+<h2>Why profiles are not built per EC number</h2>
+<p class="prose">
+  An EC number names a reaction, not a family. Enzymes catalysing the same
+  reaction are often unrelated in sequence and structure — analogous enzymes
+  are a well-documented phenomenon, not an edge case. Aligning everything that
+  shares an EC number and calling the result a profile would produce a model
+  of nothing, with E-values to match.
+</p>
+<p class="prose">
+  So the references are clustered by sequence similarity first
+  ({{ '%.0f'|format(settings.cluster_min_seq_id * 100) }}% identity,
+  {{ '%.0f'|format(settings.cluster_coverage * 100) }}% bidirectional coverage),
+  and EC annotation is attached to the resulting families afterwards. One EC
+  can therefore produce several profiles, and each profile reports how
+  homogeneous its members' EC annotations actually are.
+  Clusters below {{ settings.profile_min_members }} members, clusters whose
+  alignment is mostly gaps, and profiles shorter than
+  {{ settings.profile_min_match_states }} match states are skipped and counted
+  in the build manifest rather than modelled badly.
+</p>
+
+<h2>The columns</h2>
+<dl class="prose">
+  <dt>E-value</dt>
+  <dd>
+    How many hits this good you would expect by chance in a database this size.
+    Lower is stronger. It scales with database size, so E-values from different
+    methods here are on different scales: BLAST and phmmer score against
+    {{ status.reference_sequences or 'the' }} reference sequences, hmmscan
+    against {{ status.profiles or 'the' }} profiles. Do not compare them across
+    tables. BLAST prints <code>0.0</code> when the value underflows.
+  </dd>
+  <dt>Bit score</dt>
+  <dd>
+    Alignment score normalised so it does not depend on database size. Higher
+    is stronger, and it is the more stable number to compare between searches
+    of the same kind.
+  </dd>
+  <dt>Percent identity</dt>
+  <dd>
+    Share of aligned positions that are identical — BLAST only. Meaningless
+    without coverage: 50% identity over 16 residues is noise.
+  </dd>
+  <dt>Query coverage / subject coverage</dt>
+  <dd>
+    Fraction of the submitted sequence, and of the reference or profile,
+    covered by the alignment. Coverage below 50% is greyed out on the results
+    page: a strong score over a fraction of the protein usually means one
+    shared domain, not the same function.
+  </dd>
+  <dt>Domain columns</dt>
+  <dd>
+    HMMER decomposes a match into domains. The reported domain E-value is the
+    <em>independent</em> one, which is the value to use when asking whether a
+    single domain match is significant on its own. Coordinates are always
+    positions on the submitted sequence.
+  </dd>
+</dl>
+
+<h2>Current build</h2>
+<table class="kv">
+  <tr><th>Build id</th><td class="mono">{{ status.reference_build_id or 'not built' }}</td></tr>
+  <tr><th>Built at</th><td>{{ status.built_at or '—' }}</td></tr>
+  <tr><th>Reference sequences</th><td>{{ status.reference_sequences if status.reference_sequences is not none else '—' }}</td></tr>
+  <tr><th>Profile HMMs</th><td>{{ status.profiles if status.profiles is not none else '—' }}</td></tr>
+  {% for name, version in status.tool_versions.items() %}
+  <tr><th>{{ name }}</th><td class="mono">{{ version or 'unknown' }}</td></tr>
+  {% endfor %}
+</table>
+{% endblock %}
