@@ -1,8 +1,19 @@
-# These are executed inside Linux/WSL. A CRLF checkout on Windows breaks the
-# shebang line, so pin them to LF regardless of core.autocrlf.
+# The repository is developed on Windows and deployed on Linux, so everything
+# that a Linux process reads is pinned to LF regardless of core.autocrlf.
+# A CRLF checkout breaks shebang lines, Docker builds and systemd units.
 *.sh   text eol=lf
 *.py   text eol=lf
 Makefile text eol=lf
+Dockerfile text eol=lf
+*.service text eol=lf
+.env.example text eol=lf
+.dockerignore text eol=lf
+
+# Templates and static assets are served verbatim; keep them LF so byte
+# offsets and checksums match between a Windows checkout and the server.
+*.html text eol=lf
+*.css  text eol=lf
+*.toml text eol=lf
 
 # Bioinformatics formats are parsed by Unix tools; keep them LF.
 *.fasta text eol=lf
