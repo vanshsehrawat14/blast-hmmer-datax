@@ -149,5 +149,19 @@ def main() -> int:
     return 0
 
 
+def test_proof_of_concept_outputs():
+    """pytest entry point for the checks above.
+
+    The proof-of-concept results are committed, so this normally runs from a
+    fresh clone. It skips rather than fails if someone has run `make clean`.
+    """
+    import pytest
+
+    if not (ROOT / "results/comparison/all_hits.csv").exists():
+        pytest.skip("proof-of-concept results absent; run `make poc-all`")
+    FAILURES.clear()
+    assert main() == 0, f"failed checks: {FAILURES}"
+
+
 if __name__ == "__main__":
     sys.exit(main())

@@ -351,7 +351,7 @@ def main() -> int:
     rows += parse_hmmsearch(args.hmmer_dir / "hmmsearch_tblout.txt",
                             args.hmmer_dir / "hmmsearch_domtblout.txt", meta)
 
-    # DIAMOND is optional: include it only if `make diamond` has been run.
+    # DIAMOND is optional: include it only if `make poc-diamond` has been run.
     for fname, method in (("diamond_hits.tsv", "diamond"),
                           ("diamond_hits_default.tsv", "diamond-default")):
         path = args.diamond_dir / fname
@@ -359,7 +359,7 @@ def main() -> int:
             rows += parse_tabular(path, meta, method)
         else:
             print(f"[parse] skipping {method}: {path} not found "
-                  f"(run `make diamond` to include it)")
+                  f"(run `make poc-diamond` to include it)")
 
     write_outputs(rows, args.outdir)
     write_report(rows, meta, args.outdir)

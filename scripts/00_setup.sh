@@ -31,10 +31,19 @@ echo "[setup] creating environment from environment.yml"
 echo
 echo "[setup] installed versions:"
 "$MM" run -n blast-hmmer-datax blastp -version | head -1
-"$MM" run -n blast-hmmer-datax hmmsearch -h | sed -n 2p
+"$MM" run -n blast-hmmer-datax hmmscan -h | sed -n 2p
 "$MM" run -n blast-hmmer-datax mafft --version 2>&1 | head -1
+"$MM" run -n blast-hmmer-datax mmseqs version 2>/dev/null | tail -1 | sed 's/^/mmseqs /'
 "$MM" run -n blast-hmmer-datax python --version
 
+# The application package itself, so `enzymex-refbuild` and `app.*` resolve.
+echo "[setup] installing the application (editable, no dependency resolution)"
+"$MM" run -n blast-hmmer-datax pip install --no-deps -e . >/dev/null
+
 echo
-echo "[setup] done. Run the full experiment with:"
-echo "  make all"
+echo "[setup] done. Next:"
+echo "  cp .env.example .env    # copied-database credentials"
+echo "  make refbuild           # build the test server's reference artifacts"
+echo "  make serve              # http://127.0.0.1:8000"
+echo
+echo "  make poc-all            # or: the original proof-of-concept pipeline"

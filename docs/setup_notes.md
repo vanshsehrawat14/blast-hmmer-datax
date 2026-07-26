@@ -1,7 +1,9 @@
 # Setup notes
 
-Environment decisions, constraints, and assumptions made while building this
-proof of concept.
+Environment decisions, constraints, and assumptions made while building the
+original proof of concept (`scripts/0*`, `make poc-*`). Still accurate for the
+toolchain, which the test server shares. For deploying the test server itself
+see [deployment.md](deployment.md).
 
 ## Operating system
 
@@ -94,7 +96,7 @@ first, so an existing conda installation works without changes.
   column is comparable in spirit, not to the decimal.
 - **Only two negative controls.** Enough to show the tools distinguish
   unrelated proteins; not enough to characterise a false-positive rate.
-- **UniProt is a moving target.** Re-running `make data` against a future
+- **UniProt is a moving target.** Re-running `make poc-data` against a future
   release may return a different set. The committed FASTA and metadata files
   are the record of what this run used.
 - **MAFFT `--auto` chooses its strategy from input size**, selecting L-INS-i
@@ -106,8 +108,8 @@ first, so an existing conda installation works without changes.
 
 ```bash
 make versions   # print resolved tool versions
-make all        # full pipeline, ends with the test suite
-make test       # checks only
+make poc-all    # full pipeline, ends with the test suite
+make poc-test   # checks only
 ```
 
 `tests/test_pipeline.py` verifies sequence counts, that no negative control is
@@ -115,7 +117,7 @@ annotated EC 1.1.1.1, that every expected output file exists and is non-empty,
 that each sensitive method found all five positive queries, and that positives
 beat negatives by at least ten orders of magnitude in E-value.
 
-DIAMOND checks are skipped automatically when `make diamond` has not been run,
+DIAMOND checks are skipped automatically when `make poc-diamond` has not been run,
 so the test suite passes on a BLAST-and-HMMER-only install. When DIAMOND is
 present, the suite also asserts that its default mode finds no more queries
 than `--very-sensitive` — so a future DIAMOND release that changes default
