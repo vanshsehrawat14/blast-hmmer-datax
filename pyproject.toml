@@ -1,0 +1,41 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "enzymex-blast-hmmer"
+version = "0.2.0"
+description = "Standalone test server for BLAST and HMMER protein comparison against a copied EnzymeX enzymesdata table"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.30",
+    "jinja2>=3.1",
+    "pydantic>=2.7",
+    "pydantic-settings>=2.3",
+    "python-multipart>=0.0.9",
+    # PyMySQL is pure Python, so the reference build needs no MySQL client
+    # headers or compiler on the test server. cryptography is required for
+    # MySQL 8's default caching_sha2_password auth.
+    "PyMySQL>=1.1",
+    "cryptography>=42",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0", "httpx>=0.27"]
+
+[project.scripts]
+enzymex-refbuild = "app.references.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["app*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+# Anything that shells out to blastp/phmmer/hmmscan/mafft/mmseqs is marked
+# `tools`; anything needing a live MySQL fixture is marked `mysql`. Both are
+# deselectable so the unit suite runs on a machine with neither.
+markers = [
+    "tools: requires BLAST+/HMMER/MAFFT/MMseqs2 on PATH",
+    "mysql: requires a reachable copied-EnzymeX MySQL instance",
+]

@@ -1,10 +1,22 @@
-# BLAST database indexes (regenerate with `make blast`)
+# Secrets. Never commit.
+.env
+!.env.example
+
+# Generated reference artifacts, job scratch, and the local MySQL fixture
+# cache. All of it is rebuilt by `make refbuild`; none of it belongs in git.
+var/
+
+# ---------------------------------------------------------------------------
+# Proof-of-concept pipeline (scripts/0*.sh, Makefile poc-* targets)
+# ---------------------------------------------------------------------------
+
+# BLAST database indexes (regenerate with `make poc-blast`)
 data/processed/blastdb/
 
-# DIAMOND database index (regenerate with `make diamond`)
+# DIAMOND database index (regenerate with `make poc-diamond`)
 data/processed/diamonddb/
 
-# Generated alignment and profile (regenerate with `make hmmer`)
+# Generated alignment and profile (regenerate with `make poc-hmmer`)
 data/processed/reference_aligned.afa
 data/processed/ec_1_1_1_1.hmm
 
@@ -26,7 +38,10 @@ micromamba/
 # Python
 __pycache__/
 *.py[cod]
+*.egg-info/
 .pytest_cache/
+build/
+dist/
 
 # OS / editor
 .DS_Store
