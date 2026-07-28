@@ -24,3 +24,7 @@ Dockerfile text eol=lf
 *.md   text
 *.yml  text
 *.json text
+
+# Screenshots in docs/. Never touch these.
+*.jpg binary
+*.png binary

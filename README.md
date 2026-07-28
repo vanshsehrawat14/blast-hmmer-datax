@@ -8,7 +8,7 @@ from a *copy* of the EnzymeX `enzymesdata` table.
 > EnzymeX production codebase and does not modify the live EnzymeX service.**
 > Nothing here has been deployed to, or pushed at, the EnzymeX repository.
 > Once reviewed, the modules under `app/search/` and `app/references/` are
-> intended to be lifted into EnzymeX — see [`docs/integration.md`](docs/integration.md).
+> intended to be lifted into EnzymeX; see [`docs/integration.md`](docs/integration.md).
 
 Part of a UNLV independent study.
 
@@ -82,7 +82,7 @@ per-EC profile would have merged unrelated folds into a model of nothing.
 So the pipeline clusters first (MMseqs2, 35% identity / 80% bidirectional
 coverage), gates each cluster on size, length consistency, alignment quality
 and profile length, and attaches EC annotation to the surviving families
-afterwards — reporting `ec_purity` per family instead of assuming it.
+afterwards, reporting `ec_purity` per family instead of assuming it.
 
 `hmmscan` is used rather than the faster `hmmsearch` because `hmmsearch`
 computes E-values against the *submitted* set, which would make the same
@@ -128,6 +128,7 @@ These are measurements of this build, not performance claims about the tools.
 
 | | |
 |---|---|
+| [HANDOFF.md](HANDOFF.md) | verified setup, build and test figures, demo inputs and expected output, transfer plan |
 | [architecture.md](docs/architecture.md) | module layout, framework choice, execution model |
 | [science.md](docs/science.md) | what each method measures, the HMMER design, citations |
 | [database.md](docs/database.md) | copied-database setup, schema discovery, data quality |
@@ -156,8 +157,8 @@ These are measurements of this build, not performance claims about the tools.
 
 ## The proof of concept
 
-The original experiment — BLAST, HMMER and DIAMOND over 27 curated EC 1.1.1.1
-sequences from UniProt, normalized into one schema — is still here and still
+The original experiment (BLAST, HMMER and DIAMOND over 27 curated EC 1.1.1.1
+sequences from UniProt, normalized into one schema) is still here and still
 runs (`make poc-all`, output in
 [`results/comparison/comparison_report.md`](results/comparison/comparison_report.md)).
 
