@@ -41,6 +41,48 @@ production is one hostname. Requiring a second, explicit variable means that
 pointing the tool at production takes two deliberate edits, not one careless
 one.
 
+## Local fixture database (development only)
+
+Without EnzymeX access there is no copy to point at, so `scripts/dev_seed_fixture.py`
+builds a stand-in with the same schema. It is not part of the deployment path.
+Any MySQL 8+ works; the steps below use a throwaway conda instance so nothing is
+installed system-wide.
+
+```bash
+micromamba create -y -n mysql-fixture -c conda-forge mysql-server
+DD=$HOME/mysql-fixture-data
+micromamba run -n mysql-fixture mysqld --initialize-insecure --datadir=$DD --user=$(whoami)
+setsid nohup micromamba run -n mysql-fixture mysqld \
+  --datadir=$DD --port=3307 --socket=$DD/mysql.sock --bind-address=127.0.0.1 --mysqlx=0 \
+  > $DD/server.log 2>&1 < /dev/null &
+```
+
+The conda `mysql-server` package ships no `mysql` client, so create the database
+and the read-only account with pymysql from the project environment:
+
+```bash
+micromamba run -n blast-hmmer-datax python - <<'PY'
+import pymysql
+c = pymysql.connect(host="127.0.0.1", port=3307, user="root", password="")
+with c.cursor() as cur:
+    cur.execute("CREATE DATABASE IF NOT EXISTS enzymex_copy CHARACTER SET utf8mb4")
+    cur.execute("CREATE USER IF NOT EXISTS %s@%s IDENTIFIED BY %s", ("enzymex_ro", "%", "fixture_ro_pw"))
+    cur.execute("GRANT SELECT ON enzymex_copy.* TO %s@%s", ("enzymex_ro", "%"))
+    cur.execute("FLUSH PRIVILEGES")
+PY
+
+python scripts/dev_seed_fixture.py --port 3307 --user root --password ""
+```
+
+The seed downloads reviewed UniProtKB entries for twelve EC numbers (~15 s) and
+caches them in `var/fixture/uniprot.json`, so a re-seed needs no network. It
+loads 2,677 rows: 2,667 clean, 10 deliberately damaged, plus a 111-sequence
+holdout written to `var/fixture/holdout_queries.fasta` that is excluded from the
+table and therefore usable as positive queries.
+
+Point `.env` at it with `ENZYMEX_DB_PORT=3307`, `ENZYMEX_DB_USER=enzymex_ro`,
+`ENZYMEX_DB_PASSWORD=fixture_ro_pw` and `ENZYMEX_DB_CONFIRM_COPY=true`.
+
 ## Inspect before building
 
 ```bash
@@ -101,7 +143,7 @@ build that silently changes between runs. If the copy has no key, export from
 a view that supplies one.
 
 Table and column names are validated against `[A-Za-z0-9_$]` before being
-interpolated into any statement — identifiers cannot be passed as bound
+interpolated into any statement. Identifiers cannot be passed as bound
 parameters, so they are checked instead of quoted-and-hoped. All values are
 bound.
 
@@ -125,8 +167,8 @@ Duplicates are merged rather than dropped: the extra rows go into
 `reference_duplicate` in the metadata database, so a hit can still be traced
 back to every `enzymesdata` row it represents.
 
-Sequences are normalised before validation — case folded, whitespace and
-residue numbering removed, gap characters stripped — so a row stored as
+Sequences are normalised before validation (case folded, whitespace and
+residue numbering removed, gap characters stripped), so a row stored as
 wrapped FASTA with column numbers still exports correctly.
 
 EC values are normalised to a sorted, deduplicated, semicolon-joined string.
