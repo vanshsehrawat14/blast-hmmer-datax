@@ -3,6 +3,11 @@
 Tests never read the developer's `.env`: every Settings object is built with
 `_env_file=None` and explicit values, so a test run cannot accidentally point
 at a real database or a real reference build.
+
+`_env_file=None` does not cover the *process* environment, which
+pydantic-settings always reads. `_isolate_environment` below closes that gap,
+because the documented way to run the `mysql` tests is to export `ENZYMEX_DB_*`
+into the shell, and those variables would otherwise reach every other test too.
 """
 
 from __future__ import annotations
@@ -26,6 +31,20 @@ ADH1_YEAST = (
     "SVSEAAIEASTRYVRANGTTVLVGMPAGAKCCSDVFNQVVKSISIVGSYVGNRADTREALDFFARGLVKSPIKVVGLSTLPE"
     "IYEKMEKGQIVGRYVVDTSK"
 )
+
+
+@pytest.fixture(autouse=True)
+def _isolate_environment(request, monkeypatch):
+    """Strip ambient `ENZYMEX_*` variables from every non-`mysql` test.
+
+    Without this, running the suite in a shell configured for the copied
+    database silently changes what the unit tests measure: thresholds, feature
+    flags and artifact paths all come from the same prefix.
+    """
+    if request.node.get_closest_marker("mysql"):
+        return
+    for key in [k for k in os.environ if k.startswith("ENZYMEX_")]:
+        monkeypatch.delenv(key, raising=False)
 
 
 @pytest.fixture

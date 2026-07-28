@@ -47,7 +47,11 @@ def test_identifier_validation_rejects_anything_unquotable(bad):
 
 
 def test_dsn_summary_never_contains_the_password():
-    s = Settings(_env_file=None, db_password="hunter2", db_user="u", db_name="d")
+    # Host and port are pinned here rather than left to the defaults: this
+    # module is marked `mysql`, so it runs with ENZYMEX_DB_* exported and
+    # would otherwise assert against the caller's connection settings.
+    s = Settings(_env_file=None, db_password="hunter2", db_user="u", db_name="d",
+                 db_host="127.0.0.1", db_port=3306)
     assert "hunter2" not in s.dsn_summary()
     assert "hunter2" not in repr(s)
     assert s.dsn_summary() == "u@127.0.0.1:3306/d"
