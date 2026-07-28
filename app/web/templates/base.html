@@ -9,8 +9,8 @@
 </head>
 <body>
 <div class="banner" role="note">
-  Independent test environment — not the official EnzymeX production service.
-  Nothing here modifies the live EnzymeX site.
+  Independent test environment. Not the official EnzymeX service, and nothing
+  here touches the live site.
 </div>
 
 <header class="site">
@@ -29,10 +29,9 @@
 <footer>
   <p>
     Reference build
-    <code>{% block build_id %}{{ (status.reference_build_id if status else none) or 'not built' }}{% endblock %}</code>.
-    Evidence on this server comes from a <em>copy</em> of the EnzymeX
-    <code>enzymesdata</code> table. Sequence similarity is evidence of
-    homology, not proof of enzyme function.
+    <code>{% block build_id %}{{ (status.reference_build_id if status else none) or 'not built' }}{% endblock %}</code>,
+    searched against a <em>copy</em> of the EnzymeX <code>enzymesdata</code>
+    table. Sequence similarity is evidence of homology, not proof of function.
   </p>
 </footer>
 </body>

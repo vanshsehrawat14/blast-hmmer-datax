@@ -45,7 +45,7 @@ docker compose restart web
 ```
 
 Compose caps the web container at 4 CPU / 4 GB. Raise both if the copied
-`enzymesdata` is large — BLAST and HMMER memory scales with the reference
+`enzymesdata` is large. BLAST and HMMER memory scales with the reference
 database.
 
 ## micromamba + systemd
@@ -108,7 +108,7 @@ Two things matter:
   of the application's own timeout message.
 
 This is a test server. If it is reachable beyond the machine, put
-authentication in front of it — there is none built in.
+authentication in front of it. There is none built in.
 
 ## Health
 
@@ -135,7 +135,7 @@ authentication in front of it — there is none built in.
 | status | HTTP | meaning |
 |---|---|---|
 | `ok` | 200 | artifacts present, at least one method usable, copy reachable |
-| `degraded` | 200 | as above, but the copied database is unreachable — searches still work, rebuilds will not |
+| `degraded` | 200 | as above, but the copied database is unreachable; searches still work, rebuilds will not |
 | `unavailable` | 503 | no usable artifacts; run the reference build |
 
 The database probe is deliberately not fatal: a user request never touches

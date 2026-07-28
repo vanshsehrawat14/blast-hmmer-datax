@@ -1,13 +1,14 @@
 {% extends "base.html" %}
-{% block title %}Submit protein sequences — BLAST/HMMER test server{% endblock %}
+{% block title %}Submit protein sequences | BLAST/HMMER test server{% endblock %}
 
 {% block content %}
 <h1>Compare protein sequences against copied EnzymeX references</h1>
 <p class="lede">
-  Paste or upload protein sequences in FASTA format. They are searched against
-  references exported from a copy of the EnzymeX <code>enzymesdata</code> table
-  using BLAST and HMMER. Results are <strong>sequence-comparison evidence</strong>,
-  not EC number predictions — ECPICK, HIT-EC and CLEAN are not run here.
+  Paste or upload protein sequences in FASTA format. BLAST and HMMER search them
+  against references exported from a copy of the EnzymeX
+  <code>enzymesdata</code> table. What you get back is
+  <strong>sequence-comparison evidence</strong>, not EC predictions. ECPICK,
+  HIT-EC and CLEAN are not run here.
 </p>
 
 {% if error %}
@@ -30,7 +31,7 @@
 
   <div class="row">
     <div class="field">
-      <label for="fasta_file">…or upload a file</label>
+      <label for="fasta_file">or upload a file</label>
       <input type="file" id="fasta_file" name="fasta_file" accept=".fasta,.fa,.faa,.txt">
       <p class="hint">A file replaces the pasted text. Maximum
         {{ settings.max_upload_bytes // 1000 }} kB.</p>
@@ -61,7 +62,7 @@
   <ul>
     <li>At most {{ settings.max_query_sequences }} sequences per submission.</li>
     <li>At most {{ settings.max_query_length }} residues per sequence.</li>
-    <li>Protein sequences only — nucleotide input is rejected.</li>
+    <li>Protein sequences only. Nucleotide input is rejected.</li>
     <li>Searches run synchronously and are cut off at
         {{ settings.blast_timeout_seconds }}s (BLAST) /
         {{ settings.hmmer_timeout_seconds }}s (HMMER).</li>

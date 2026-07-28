@@ -38,7 +38,7 @@ Relative paths resolve against the repository root.
 Bare names by default, resolved through `PATH`. Set absolute paths when the
 service account's `PATH` does not include the conda environment.
 
-## Export filters — all feed the build id
+## Export filters (all feed the build id)
 
 | variable | default | notes |
 |---|---|---|

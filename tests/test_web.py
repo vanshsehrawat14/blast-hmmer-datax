@@ -75,7 +75,7 @@ def test_index_renders_with_no_reference_build(client):
     r = client.get("/")
     assert r.status_code == 200
     assert "No reference build on this server yet" in r.text
-    assert "not the official EnzymeX production service" in r.text
+    assert "Not the official EnzymeX service" in r.text
 
 
 def test_about_page_explains_the_columns(client):

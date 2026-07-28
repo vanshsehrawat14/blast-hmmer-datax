@@ -209,8 +209,8 @@ def parse_submission(
                 chars = reason.split(":", 1)[1]
                 raise FastaError(
                     f"Sequence {i} ('{label}') contains characters that are not "
-                    f"amino acids: {chars}. This server accepts protein "
-                    f"sequences only — nucleotide input will fail here."
+                    f"amino acids: {chars}. This server takes protein sequences "
+                    f"only; nucleotide input will fail here."
                 )
             if reason == "too_long":
                 raise FastaError(
@@ -226,8 +226,8 @@ def parse_submission(
                 raise FastaError(
                     f"Sequence {i} ('{label}') looks like a nucleotide sequence: "
                     f"almost every residue is A, C, G, T, U or N. Those are also "
-                    f"valid amino acid letters, so translate the sequence before "
-                    f"submitting it — searching it as a protein gives nonsense."
+                    f"valid amino acid letters, so translate it before submitting. "
+                    f"Searching it as a protein gives nonsense."
                 )
             raise FastaError(f"Sequence {i} ('{label}') is not a usable protein sequence ({reason}).")
 

@@ -74,7 +74,7 @@ profile gates). So:
 Every result row and every results page carries that id.
 
 BLAST index files are excluded from the manifest's checksum list because
-`makeblastdb` embeds a creation timestamp — including them would make an
+`makeblastdb` embeds a creation timestamp, so including them would make an
 identical build look non-reproducible.
 
 ## Rebuilding after the copy changes
@@ -105,12 +105,12 @@ Where the time goes as the copy grows:
 * **makeblastdb** is linear and fast.
 * **mmseqs clustering** is the step designed for this scale and is the least
   of the worries.
-* **MAFFT + hmmbuild is the bottleneck** — one subprocess pair per accepted
+* **MAFFT + hmmbuild is the bottleneck**: one subprocess pair per accepted
   cluster, ~1.8 s each here. A copy producing 10,000 accepted clusters would
   take roughly 5 hours single-threaded. `ENZYMEX_PROFILE_MAX_MEMBERS` bounds
   the per-cluster cost but not the cluster count. If that becomes a problem,
   raise `ENZYMEX_PROFILE_MIN_MEMBERS` (fewer, larger families) or parallelise
-  the per-family loop — it is embarrassingly parallel and currently serial for
+  the per-family loop, which is embarrassingly parallel and currently serial for
   simplicity.
 * **phmmer at search time** scales with the number of references, not with the
   build. 1.2 s per query against 2,380 references; expect roughly linear
@@ -128,6 +128,6 @@ python -m json.tool var/reference/build_manifest.json | head -40
 ```
 
 It records the build id, timestamp, platform, the source database identity
-(host, name, table — never credentials), the settings that fed the id,
+(host, name, table, never credentials), the settings that fed the id,
 versions of every tool used, SHA-256 of each artifact, and the full export,
 BLAST and HMMER statistics including every skip reason and count.

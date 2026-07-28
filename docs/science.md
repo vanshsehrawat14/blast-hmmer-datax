@@ -13,7 +13,7 @@ which numbers may honestly be compared with which.
 
 `blastp` and `phmmer` are the universal baseline. Both compare the submitted
 sequence against every exported reference, so absence of a hit means the
-reference set has no detectable relative — not that the profile layer happened
+reference set has no detectable relative, not that the profile layer happened
 to skip something.
 
 `phmmer` is not redundant with BLAST. It builds a profile from the query and
@@ -31,7 +31,7 @@ built from sequence-similarity clusters, not from EC groups.**
 ### Why not one profile per EC number
 
 An EC number names a *reaction*, not a family. Enzymes catalysing the same
-reaction are frequently non-homologous — "analogous enzymes" are common enough
+reaction are frequently non-homologous; "analogous enzymes" are common enough
 to have been surveyed systematically (Galperin, Walker & Koonin, *Genome
 Research* 8:779, 1998). Aligning every sequence sharing an EC number and
 running `hmmbuild` over the result produces a profile whose match states model
@@ -50,7 +50,7 @@ gives:
 | 1.1.1.1 | alcohol dehydrogenase | 5 |
 | 5.3.1.9 | glucose-6-phosphate isomerase | 5 |
 
-Superoxide dismutase and carbonic anhydrase are the textbook cases — Cu/Zn,
+Superoxide dismutase and carbonic anhydrase are the textbook cases. Cu/Zn,
 Mn/Fe and Ni SODs, and the α/β/γ carbonic anhydrase classes, are unrelated
 folds doing the same chemistry. A per-EC profile would have merged them.
 
@@ -78,21 +78,21 @@ profiles.hmm  ──►  hmmscan
 ```
 
 EC annotation is attached to a family *after* clustering. One EC may therefore
-produce several profiles, each reporting `ec_purity` — the share of its
+produce several profiles, each reporting `ec_purity`, the share of its
 annotated members carrying the consensus EC. A low purity is shown on the
 results page as a warning that the EC should not be read as a prediction.
 
 ### Clustering parameters, and why
 
-* `--min-seq-id 0.35` — above the alignment twilight zone. Below roughly
+* `--min-seq-id 0.35`, above the alignment twilight zone. Below roughly
   20–35% identity, pairwise alignments stop being reliably correct (Rost,
   *Protein Engineering* 12:85, 1999), and an MSA built from them is not worth
   modelling.
-* `-c 0.80 --cov-mode 0` — 80% coverage required on *both* sequences. This is
+* `-c 0.80 --cov-mode 0`, so 80% coverage is required on *both* sequences. This is
   the gate that keeps a short fragment from joining a family by matching one
   domain of a large multidomain protein, and it is what makes a single MSA of
   the cluster defensible.
-* `--cluster-mode 0` (greedy set cover) — every member meets the threshold
+* `--cluster-mode 0` (greedy set cover), so every member meets the threshold
   against its representative, so cluster membership has a stated meaning
   rather than being the result of transitive chaining.
 * MMseqs2 is used rather than CD-HIT because it handles the scale a copied
@@ -106,7 +106,7 @@ results page as a warning that the EC should not be read as a prediction.
 | minimum members | 5 | below this there is too little data to estimate position-specific emissions; phmmer already covers these sequences |
 | length filter | 0.7×–1.4× cluster median | keeps fragments and fusions out of the alignment |
 | members after filter | 5 | a cluster split between fragments and full-length loses both sides and is dropped |
-| maximum members | 500 (subsampled) | a runtime bound on MAFFT, not a scientific claim — hmmbuild's Henikoff position-based weighting already discounts redundancy |
+| maximum members | 500 (subsampled) | a runtime bound on MAFFT, not a scientific claim; hmmbuild's Henikoff position-based weighting already discounts redundancy |
 | alignment core columns | ≥ 0.5 × median member length | rejects gap-dominated alignments, i.e. clusters that are not alignable end to end whatever the clustering thresholds said |
 | profile match states | ≥ 40 and ≥ 0.5 × median member length | a profile far shorter than its members is modelling a fragment |
 
@@ -126,7 +126,7 @@ size of whatever is playing the role of the database:
   database, which is fixed by the build.
 
 Reproducibility of the reported statistic is worth more than the speed
-difference at this scale — measured at 0.27 s for one sequence against 64
+difference at this scale, measured at 0.27 s for one sequence against 64
 profiles.
 
 ## Reading the numbers
@@ -146,7 +146,7 @@ noise. The results page greys out query coverage below 50% for this reason.
 
 **BLAST aggregation is deliberately mixed.** For each (query, subject) pair,
 E-value, bit score, identity and alignment length come from the single
-best-scoring HSP — what BLAST itself reports as the hit's score — while
+best-scoring HSP (what BLAST itself reports as the hit's score) while
 coverage is summed over all HSPs, because a hit that aligns in three pieces
 really does cover three pieces. Subject coverage is computed here by merging
 HSP intervals; BLAST+ has no `scovs` field.
@@ -173,4 +173,4 @@ Sequence similarity is evidence of homology. Homologues frequently share
 function, but not always, and a shared EC number is not established by
 similarity alone. This server runs no EC prediction model. In EnzymeX these
 tables would sit alongside ECPICK, HIT-EC and CLEAN predictions as supporting
-evidence — not replace them.
+evidence, not replace them.

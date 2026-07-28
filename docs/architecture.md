@@ -79,7 +79,7 @@ FastAPI with server-rendered Jinja2 templates.
 * Server-rendered HTML with one stylesheet and no JavaScript: this is a
   results table on an internal test box, and a build step would be pure cost.
 * Legacy EnzymeX runs on Pyramid. That is not a reason to pick Pyramid here,
-  and it costs nothing later — the framework only appears in `app/web/`.
+  and it costs nothing later; the framework only appears in `app/web/`.
 
 ## Persistence
 
@@ -96,9 +96,9 @@ is in it.
 
 Searches run synchronously inside the request, bounded by:
 
-* `ENZYMEX_MAX_CONCURRENT_JOBS` — a process-wide semaphore; excess requests
+* `ENZYMEX_MAX_CONCURRENT_JOBS`: a process-wide semaphore; excess requests
   get 503 rather than queueing until the box runs out of memory;
-* `ENZYMEX_BLAST_TIMEOUT_SECONDS` / `ENZYMEX_HMMER_TIMEOUT_SECONDS` — every
+* `ENZYMEX_BLAST_TIMEOUT_SECONDS` / `ENZYMEX_HMMER_TIMEOUT_SECONDS`: every
   child is killed by process group on expiry;
 * `ENZYMEX_MAX_QUERY_SEQUENCES` and `ENZYMEX_MAX_QUERY_LENGTH`.
 

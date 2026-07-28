@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Methods and columns — BLAST/HMMER test server{% endblock %}
+{% block title %}Methods and columns | BLAST/HMMER test server{% endblock %}
 
 {% block content %}
 <h1>What these methods do, and what the numbers mean</h1>
@@ -17,10 +17,10 @@
   <dd>
     Builds a profile from the submitted sequence and scores every reference
     against it under HMMER's probabilistic model. A single sequence carries no
-    position-specific conservation, so in practice phmmer ranks much like
-    BLAST — but the score, the statistics and the implementation are
-    independent, which is exactly why running both is informative.
-    It covers <strong>every</strong> exported reference.
+    position-specific conservation, so phmmer usually ranks much like BLAST.
+    The score, the statistics and the implementation are still independent,
+    which is the point of running both. Covers <strong>every</strong> exported
+    reference.
   </dd>
 
   <dt>HMMER profiles (<code>hmmscan</code>)</dt>
@@ -29,17 +29,17 @@
     from aligned families of references. A profile knows which positions a
     family conserves, so it can recognise a distant relative that no single
     family member closely resembles. It covers only the part of the reference
-    set that clustered into families passing quality control — see below.
+    set that clustered into families passing quality control (see below).
   </dd>
 </dl>
 
 <h2>Why profiles are not built per EC number</h2>
 <p class="prose">
   An EC number names a reaction, not a family. Enzymes catalysing the same
-  reaction are often unrelated in sequence and structure — analogous enzymes
-  are a well-documented phenomenon, not an edge case. Aligning everything that
-  shares an EC number and calling the result a profile would produce a model
-  of nothing, with E-values to match.
+  reaction are often unrelated in sequence and structure; analogous enzymes are
+  well documented, not an edge case. Aligning everything that shares an EC
+  number and calling the result a profile gives a model of nothing, with
+  E-values to match.
 </p>
 <p class="prose">
   So the references are clustered by sequence similarity first
@@ -73,15 +73,15 @@
   </dd>
   <dt>Percent identity</dt>
   <dd>
-    Share of aligned positions that are identical — BLAST only. Meaningless
+    Share of aligned positions that are identical. BLAST only. Meaningless
     without coverage: 50% identity over 16 residues is noise.
   </dd>
   <dt>Query coverage / subject coverage</dt>
   <dd>
     Fraction of the submitted sequence, and of the reference or profile,
     covered by the alignment. Coverage below 50% is greyed out on the results
-    page: a strong score over a fraction of the protein usually means one
-    shared domain, not the same function.
+    page: a strong score over part of a protein usually means one shared
+    domain, not the same function.
   </dd>
   <dt>Domain columns</dt>
   <dd>

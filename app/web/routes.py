@@ -28,8 +28,8 @@ log = logging.getLogger(__name__)
 router = APIRouter()
 templates = Jinja2Templates(directory=str(TEMPLATE_DIR))
 # Jinja2Templates autoescapes .html by default; make it explicit so a future
-# refactor cannot quietly turn it off. Every user string on the results page —
-# FASTA headers above all — depends on this.
+# refactor cannot quietly turn it off. Every user string on the results page
+# depends on it, FASTA headers above all.
 templates.env.autoescape = True
 
 

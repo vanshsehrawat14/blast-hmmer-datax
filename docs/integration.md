@@ -54,8 +54,8 @@ call; the only thing to replace is the template.
 
 4. **Replace `app/web/` with EnzymeX views and templates.** The results page
    here is a reference implementation of *what to show*, not markup to lift.
-   The three tables are deliberately separate — see the E-value comparability
-   note in `docs/science.md` — and that separation should survive the port.
+   The three tables are deliberately separate (see the E-value comparability
+   note in `docs/science.md`) and that separation should survive the port.
 
 5. **Decide on execution mode.** Synchronous is fine at the scale measured
    here. EnzymeX already runs ECPICK, HIT-EC and CLEAN through a scheduler; if
@@ -66,8 +66,8 @@ call; the only thing to replace is the template.
 6. **Reconcile with DIAMOND.** EnzymeX already uses DIAMOND internally to
    retrieve similar proteins. DIAMOND and blastp answer the same question at
    different sensitivity, so on the real page they should either be presented
-   together with the difference labelled, or one of them should be dropped —
-   showing both without explanation invites the reader to treat two E-values
+   together with the difference labelled, or one of them should be dropped.
+   Showing both without explanation invites the reader to treat two E-values
    from different tools as comparable. The proof-of-concept comparison in
    `results/comparison/comparison_report.md` quantifies the difference on a
    small set: DIAMOND's default mode missed the most distant positive query
@@ -75,8 +75,8 @@ call; the only thing to replace is the template.
 
 7. **Settle identifier policy.** References here are `EXR<enzymesdata.id>`.
    If EnzymeX would rather surface UniProt accessions on the page, the
-   mapping is already in `metadata.sqlite3` (`source_pk`, `description`) —
-   change the display, not the internal identifier, because the internal one
+   mapping is already in `metadata.sqlite3` (`source_pk`, `description`).
+   Change the display, not the internal identifier, because the internal one
    is what keeps deflines safe for the tools.
 
 ## Suggested order of work
@@ -96,7 +96,7 @@ call; the only thing to replace is the template.
 
 * Profile HMMs cover only QC-passing clusters, never the whole reference set.
   The page must keep saying so.
-* `phmmer` is the slowest method and scales with reference count — it is the
+* `phmmer` is the slowest method and scales with reference count. It is the
   first thing to hit a timeout on a large copy.
 * There is no authentication, rate limiting or CSRF protection here; EnzymeX
   presumably has its own, and this code assumes it.

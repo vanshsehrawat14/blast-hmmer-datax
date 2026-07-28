@@ -45,8 +45,8 @@ first, so an existing conda installation works without changes.
 ## Assumptions
 
 - **UniProt entries with EC 1.1.1.1 are a reasonable proxy for "the same
-  enzyme family."** This is not strictly true — EC numbers classify reaction
-  chemistry, not sequence ancestry — and several reference entries carry
+  enzyme family."** This is not strictly true. EC numbers classify reaction
+  chemistry, not sequence ancestry, and several reference entries carry
   additional EC numbers (for example `1.1.1.284`, S-(hydroxymethyl)glutathione
   dehydrogenase). Entries were kept as long as 1.1.1.1 is among their
   annotations.
@@ -70,11 +70,11 @@ first, so an existing conda installation works without changes.
   database. The parser swaps them back so the normalized table is consistently
   query-centric.
 - The initial UniProt query returned 250 entries, of which 222 survived
-  deduplication and EC filtering — a reminder that Swiss-Prot contains many
+  deduplication and EC filtering, a reminder that Swiss-Prot contains many
   near-identical entries for the same protein across closely related strains.
 - DIAMOND's **default mode silently missed** the most distant positive query
   (`O07737`, ~32% identity), which every other method found. It reports no
-  error — the hit simply is not there. `--very-sensitive` recovers it. Anything
+  error; the hit simply is not there. `--very-sensitive` recovers it. Anything
   built on DIAMOND should set sensitivity deliberately rather than accept the
   default.
 - DIAMOND does not implement BLAST's `qcovs` output field. `diamond blastp`
@@ -120,6 +120,6 @@ beat negatives by at least ten orders of magnitude in E-value.
 DIAMOND checks are skipped automatically when `make poc-diamond` has not been run,
 so the test suite passes on a BLAST-and-HMMER-only install. When DIAMOND is
 present, the suite also asserts that its default mode finds no more queries
-than `--very-sensitive` — so a future DIAMOND release that changes default
+than `--very-sensitive`, so a future DIAMOND release that changes default
 sensitivity shows up as a test result rather than a silent change in the
 report.

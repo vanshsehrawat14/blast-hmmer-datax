@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Results {{ result.job_id }} — BLAST/HMMER test server{% endblock %}
+{% block title %}Results {{ result.job_id }} | BLAST/HMMER test server{% endblock %}
 {% block build_id %}{{ result.reference_build_id }}{% endblock %}
 
 {% block content %}
@@ -17,13 +17,12 @@
 </div>
 
 <div class="alert info">
-  <strong>How to read this.</strong> BLAST and HMMER report that a submitted
-  sequence resembles something in the reference set. That is evidence of
-  homology, and homologues frequently share function — but not always, and a
-  shared EC number is not established by similarity alone. This server runs no
-  EC prediction model; in EnzymeX these tables would sit alongside ECPICK,
-  HIT-EC and CLEAN predictions, not replace them.
-  <a href="/about">What the columns mean →</a>
+  <strong>How to read this.</strong> These tables say a submitted sequence
+  resembles something in the reference set. Homologues often share function,
+  but not always, and similarity alone does not establish a shared EC number.
+  No EC prediction model runs here. In EnzymeX these tables would sit next to
+  ECPICK, HIT-EC and CLEAN, not replace them.
+  <a href="/about">What the columns mean</a>
 </div>
 
 {% if result.notes %}
@@ -64,8 +63,8 @@
         {% if m.method == 'hmmscan' %}profile database{% else %}reference set{% endif %}
         scored better than that method's reporting threshold
         (E ≤ {{ '%.0e'|format(thresholds[m.method]) }}).
-        For a real protein this usually means the reference set has no close
-        relative — it is not evidence that the protein is not an enzyme.
+        For a real protein this usually means the reference set holds no close
+        relative. It is not evidence that the protein is not an enzyme.
       </p>
 
     {% elif m.method == 'blastp' %}
@@ -100,9 +99,9 @@
       </div>
       <p class="footnote">
         Identity and alignment length describe the single best-scoring local
-        alignment; coverage is summed over all high-scoring pairs for that
-        reference. High identity over a short stretch is not strong evidence —
-        read the coverage column alongside it.
+        alignment; coverage is summed over every high-scoring pair for that
+        reference. High identity over a short stretch is weak evidence, so read
+        the coverage column alongside it.
       </p>
 
     {% elif m.method == 'phmmer' %}
@@ -139,9 +138,9 @@
       </div>
       <p class="footnote">
         phmmer reports no percent identity, so that column does not exist here.
-        Its E-values are computed against this reference database under HMMER's
-        own model and are <strong>not</strong> comparable with the BLAST
-        E-values above, even for the same hit.
+        Its E-values come from HMMER's own model over this reference database
+        and are <strong>not</strong> comparable with the BLAST E-values above,
+        even for the same hit.
       </p>
 
     {% else %}
@@ -179,10 +178,10 @@
       <p class="footnote">
         Each profile models one cluster of homologous references, not one EC
         number. <em>EC purity</em> is the share of annotated members carrying
-        the consensus EC — a low value means the family spans several
-        reactions and the EC shown should not be read as a prediction. These
-        E-values are computed against the profile database and are on a third
-        scale again, comparable neither to BLAST nor to phmmer.
+        the consensus EC. A low value means the family spans several reactions,
+        so the EC shown is not a prediction. These E-values are scored against
+        the profile database, a third scale again, comparable neither to BLAST
+        nor to phmmer.
       </p>
     {% endif %}
   </div>

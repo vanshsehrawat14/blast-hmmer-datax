@@ -25,8 +25,8 @@ than fail, so a fresh clone with no tools installed still runs the unit suite.
 
 ## The end-to-end test
 
-`tests/test_e2e.py` builds a genuine reference set — `makeblastdb`, MMseqs2
-clustering, MAFFT, `hmmbuild`, `hmmpress` — from the 20 curated EC 1.1.1.1
+`tests/test_e2e.py` builds a genuine reference set (`makeblastdb`, MMseqs2
+clustering, MAFFT, `hmmbuild`, `hmmpress`) from the 20 curated EC 1.1.1.1
 sequences committed under `data/raw/`, then runs the real tools against the
 held-out positive and negative queries from the same set. It asserts:
 
@@ -40,7 +40,7 @@ held-out positive and negative queries from the same set. It asserts:
 * a missing executable, a nonzero exit, a timeout and absent artifacts each
   produce a structured failure rather than an exception;
 * two jobs get separate directories with their own raw outputs;
-* the whole thing works through HTTP — form post, 303, results page, CSV and
+* the whole thing works through HTTP: form post, 303, results page, CSV and
   JSON downloads.
 
 ## Manual verification procedure
