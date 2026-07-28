@@ -129,6 +129,7 @@ These are measurements of this build, not performance claims about the tools.
 | | |
 |---|---|
 | [HANDOFF.md](HANDOFF.md) | verified setup, build and test figures, demo inputs and expected output, transfer plan |
+| [pipeline.md](docs/pipeline.md) | end to end walkthrough: where the copy enters, what each method does, what is shown |
 | [architecture.md](docs/architecture.md) | module layout, framework choice, execution model |
 | [science.md](docs/science.md) | what each method measures, the HMMER design, citations |
 | [database.md](docs/database.md) | copied-database setup, schema discovery, data quality |
