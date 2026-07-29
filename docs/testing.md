@@ -7,7 +7,13 @@ make test-tools     # the end-to-end suite (needs BLAST+/HMMER/MAFFT/MMseqs2)
 make test-db        # the MySQL layer (needs credentials for a COPY)
 ```
 
-157 tests, ~20 s on a laptop. Tests that need something absent skip rather
+The external Swiss-Prot fold supplied for implementation validation is kept
+out of Git. `make validate-external` checks its split, reproduces a
+deterministic BLAST subset and rebuilds a leakage-safe EnzymeX reference for
+the BLAST/HMMER comparison. See
+[`external-validation.md`](external-validation.md).
+
+170 tests, ~20 s on a laptop. Tests that need something absent skip rather
 than fail, so a fresh clone with no tools installed still runs the unit suite.
 
 | file | covers |
@@ -22,6 +28,7 @@ than fail, so a fresh clone with no tools installed still runs the unit suite.
 | `test_database.py` | the real driver: copy acknowledgement, identifier validation, read-only session, key-ordered streaming |
 | `test_e2e.py` | real tools, real artifacts, real HTTP |
 | `test_pipeline.py` | the original proof-of-concept outputs |
+| `test_external_validation.py` | fold leakage checks, streaming BLAST analysis, EC metrics and filtered-reference construction |
 
 ## The end-to-end test
 

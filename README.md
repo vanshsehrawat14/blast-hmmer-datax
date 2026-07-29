@@ -48,6 +48,7 @@ Docker Compose and systemd paths are in [`docs/deployment.md`](docs/deployment.m
 | `make serve` / `make serve-prod` | development / production-style server |
 | `make health` | pretty-print `/health` |
 | `make test` / `make test-unit` | full suite / no external tools or database |
+| `make validate-external` | reproduce the external BLAST fold and benchmark a leakage-safe EnzymeX build |
 | `make clean` | delete everything under `var/` |
 | `make poc-all` | the original EC 1.1.1.1 comparison (below) |
 
@@ -138,6 +139,7 @@ These are measurements of this build, not performance claims about the tools.
 | [configuration.md](docs/configuration.md) | every environment variable |
 | [security.md](docs/security.md) | subprocess safety, input validation, secrets |
 | [testing.md](docs/testing.md) | suite layout, manual procedure, runtime figures |
+| [external-validation.md](docs/external-validation.md) | supplied fold reproduction, leakage controls and benchmark cohorts |
 | [integration.md](docs/integration.md) | what to change when EnzymeX access is granted |
 | [setup_notes.md](docs/setup_notes.md) | environment notes from the proof of concept |
 | [ATTRIBUTION.md](ATTRIBUTION.md) | tool versions, exact commands, citations, licences |

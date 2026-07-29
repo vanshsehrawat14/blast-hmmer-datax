@@ -22,7 +22,8 @@ HOST ?= 127.0.0.1
 
 .PHONY: help env inspect export blast hmmer refbuild status serve serve-prod \
         health test test-unit test-tools test-db clean clean-jobs versions \
-        poc-all poc-data poc-blast poc-hmmer poc-diamond poc-parse poc-test poc-clean
+        validate-external poc-all poc-data poc-blast poc-hmmer poc-diamond \
+        poc-parse poc-test poc-clean
 
 help:
 	@echo "Test server"
@@ -38,6 +39,7 @@ help:
 	@echo "  make health      - curl the health endpoint"
 	@echo "  make test        - full test suite"
 	@echo "  make test-unit   - tests that need no external tools or database"
+	@echo "  make validate-external - reproduce the supplied fold and benchmark this build"
 	@echo "  make clean-jobs  - delete stored job directories"
 	@echo "  make clean       - delete every generated artifact under var/"
 	@echo "  make versions    - print installed tool versions"
@@ -90,6 +92,18 @@ test-tools:
 # Needs ENZYMEX_DB_* in the environment or .env, pointing at a COPY.
 test-db:
 	$(RUN) python -m pytest -q -m mysql
+
+# External files are intentionally not committed. Pass their paths explicitly:
+# make validate-external VALIDATION_ANNOTATIONS=... VALIDATION_FOLDS=... \
+#      VALIDATION_BASELINE=...
+validate-external:
+	@test -n "$(VALIDATION_ANNOTATIONS)" || (echo "set VALIDATION_ANNOTATIONS" && exit 2)
+	@test -n "$(VALIDATION_FOLDS)" || (echo "set VALIDATION_FOLDS" && exit 2)
+	@test -n "$(VALIDATION_BASELINE)" || (echo "set VALIDATION_BASELINE" && exit 2)
+	$(RUN) python scripts/validate_external.py \
+	  --annotations "$(VALIDATION_ANNOTATIONS)" \
+	  --folds "$(VALIDATION_FOLDS)" \
+	  --baseline-tsv "$(VALIDATION_BASELINE)"
 
 # ---------------------------------------------------------------- housekeeping
 versions:

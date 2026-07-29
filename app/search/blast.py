@@ -20,6 +20,24 @@ from app.search.subprocess_utils import ToolNotFound, run_tool, tool_version
 log = logging.getLogger(__name__)
 
 
+def blastp_args(settings: Settings, query_fasta: Path, out_path: Path) -> list[str]:
+    """Build the exact blastp argument list used by the request path."""
+    return [
+        "-query", str(query_fasta),
+        "-db", str(settings.blast_db),
+        "-outfmt", BLAST_OUTFMT,
+        "-out", str(out_path),
+        "-evalue", str(settings.blast_evalue),
+        "-max_target_seqs", str(settings.blast_max_target_seqs),
+        "-num_threads", str(settings.search_threads),
+        # Composition-based statistics (Yu, Wootton & Altschul 2003) is
+        # blastp's default and is what makes E-values from a compositionally
+        # biased query trustworthy. Stated explicitly so a future change to it
+        # is a visible decision rather than a silent default drift.
+        "-comp_based_stats", "2",
+    ]
+
+
 def run_blastp(settings: Settings, job_dir: Path, query_fasta: Path) -> SearchOutcome:
     db = settings.blast_db
     # .pin is the index makeblastdb always writes for a protein database;
@@ -32,20 +50,7 @@ def run_blastp(settings: Settings, job_dir: Path, query_fasta: Path) -> SearchOu
         )
 
     out_path = job_dir / "blastp_hits.tsv"
-    args = [
-        "-query", str(query_fasta),
-        "-db", str(db),
-        "-outfmt", BLAST_OUTFMT,
-        "-out", str(out_path),
-        "-evalue", str(settings.blast_evalue),
-        "-max_target_seqs", str(settings.blast_max_target_seqs),
-        "-num_threads", str(settings.search_threads),
-        # Composition-based statistics (Yu, Wootton & Altschul 2003) is
-        # blastp's default and is what makes E-values from a compositionally
-        # biased query trustworthy. Stated explicitly so a future change to it
-        # is a visible decision rather than a silent default drift.
-        "-comp_based_stats", "2",
-    ]
+    args = blastp_args(settings, query_fasta, out_path)
 
     try:
         run = run_tool(

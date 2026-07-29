@@ -1,7 +1,7 @@
 # Handoff
 
 Final state of the standalone BLAST/HMMER test server, verified end to end on
-2026-07-28. Everything below was re-run from a clean `var/` on this commit.
+2026-07-29. Everything below was re-run from a clean `var/` on this commit.
 
 > Independent test environment. Not the official EnzymeX codebase, nothing was
 > pushed at the EnzymeX repository, and no EnzymeX service was touched.
@@ -143,8 +143,8 @@ make test-db     # needs ENZYMEX_DB_* pointing at a copy
 
 | run | result |
 |---|---|
-| `make test`, no DB credentials exported | **144 passed, 13 skipped** (22.7 s) |
-| `make test`, credentials exported | **157 passed, 0 skipped** (23.8 s) |
+| `make test`, no DB credentials exported | **157 passed, 13 skipped** (20.7 s) |
+| `make test`, credentials exported | **170 passed, 0 skipped** (20.9 s) |
 
 The 13 skips are the `mysql`-marked tests in `tests/test_database.py`; they run
 only when `ENZYMEX_DB_PASSWORD` is in the environment. `tests/test_e2e.py`
@@ -236,6 +236,23 @@ mapping would pass every unit test.
 8. **Secrets and artifacts.** `git ls-files` shows no `.env`, no `var/`, no
    BLAST/DIAMOND index and no `.hmm`. `/health` reports
    `enzymex_ro@127.0.0.1:3307/enzymex_copy` and never the password.
+
+## External fold validation (2026-07-29)
+
+The supplied Swiss-Prot fold was also validated independently. The split has
+no accession or exact-sequence overlap, and BLAST 2.16 selected the same raw
+top subject as the shared BLAST+ 2.5.0 output for all 452 sampled queries with
+hits in both runs. For the copied development EnzymeX build, removing all 241
+references matching a test sequence left 2,139 references. On the 373
+truth-selected queries covered by those reference ECs, BLAST and phmmer had
+82.57% and 82.04% top-hit EC overlap, while taking 10.1 s and 133.3 s. hmmscan
+reached 98.57% only on the much narrower 279-query profile-covered slice.
+
+This supports BLAST as the default sequence-evidence search, with profile HMMs
+as optional family evidence. It does not support adding phmmer to every job
+for nearly identical retrieval on this data. The full method, scope limits,
+raw-artifact hashes and results are in
+[`results/validation/fold_0_report.md`](results/validation/fold_0_report.md).
 
 ## 10. Known limitations
 

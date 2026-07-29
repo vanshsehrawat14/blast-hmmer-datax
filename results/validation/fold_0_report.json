@@ -1,0 +1,2971 @@
+{
+  "enzymex": {
+    "artifacts": {
+      "blast_tsv": "c966224a215ac454048265e19d4397fa152a04410a8a89026899e17c33e13232",
+      "hmmscan_domtblout": "cb6ce89ff304ac013aa9e0cbb381d39f7887d99d3b1974e686fefdc151f021c3",
+      "hmmscan_tblout": "6f86d30686bf861be83d1d31e8235f864115a749c058d997c6377368e3d46b63",
+      "metadata_sqlite": "5fb4551880289eb33b221be78681237c0f074d40fc8a7409d889bf73f3762a0d",
+      "phmmer_domtblout": "ec66c5e4db6bcd6db7dde6d89c88e07909ee1c6bb0570df1fdc5763ea882fa5b",
+      "phmmer_tblout": "65a9bee134e37df8fe51e16751b27b64682ef021dabd4fd2796fb28ff2a6824f",
+      "profiles_hmm": "a670881c2b16329cd8bd56aa880350dd4cb9b27acb449aaff22941dc98f97292",
+      "query_fasta": "05fb20925b6a634cde7834c3b14ecd2cfd16bc969a5f692f2b2b84e1bc5f7245",
+      "references_fasta": "573f4cc443549f6d1672a4099e9264365a882d824546fc2b8035ec3071a82757"
+    },
+    "blast_top_hit_identity": {
+      "profile_common_single_label": {
+        "median_percent_identity": 88.916,
+        "top_hits_with_identity": 279
+      },
+      "profile_outside": {
+        "median_percent_identity": 30.942,
+        "top_hits_with_identity": 50
+      },
+      "reference_covered": {
+        "median_percent_identity": 85.253,
+        "top_hits_with_identity": 329
+      }
+    },
+    "build": {
+      "blast": {
+        "build_seconds": 0.32,
+        "bytes": 1062934,
+        "db_path": "blastdb/references",
+        "files": [
+          "references.pdb",
+          "references.phr",
+          "references.pin",
+          "references.pjs",
+          "references.pot",
+          "references.psq",
+          "references.ptf",
+          "references.pto"
+        ],
+        "makeblastdb_version": "makeblastdb: 2.16.0+"
+      },
+      "hmmer": {
+        "accepted_cluster_size": {
+          "max": 196,
+          "median": 14,
+          "min": 5
+        },
+        "accepted_member_count": 1878,
+        "bytes": 20052566,
+        "clusters_accepted": 60,
+        "clusters_skipped": 172,
+        "clusters_skipped_by_reason": {
+          "too_few_members": 172
+        },
+        "clusters_total": 232,
+        "distinct_consensus_ec": 15,
+        "hmmer_seconds": 134.13,
+        "match_states": {
+          "max": 917,
+          "min": 143
+        },
+        "mean_ec_purity": 1.0,
+        "mean_pairwise_identity": {
+          "median": 0.57,
+          "min": 0.3597
+        },
+        "members_covered": 1878,
+        "pressed": true,
+        "profile_member_coverage": 0.878,
+        "profiles": 60,
+        "profiles_built": 60,
+        "profiles_skipped_at_build": 0,
+        "profiles_skipped_by_reason": {},
+        "profiles_with_ec": 60,
+        "reference_sequences": 2139
+      }
+    },
+    "cohorts": {
+      "exact_set_eligible": {
+        "definition": "reference-covered queries whose complete truth EC set is fully represented",
+        "queries": 362
+      },
+      "profile_common_single_label": {
+        "definition": "single-label queries whose EC is a filtered profile consensus",
+        "queries": 279
+      },
+      "profile_outside": {
+        "definition": "reference-covered queries outside the profile-common single-label slice",
+        "queries": 94
+      },
+      "reference_covered": {
+        "definition": "fold test queries sharing at least one complete EC with the filtered reference",
+        "queries": 373,
+        "residues": 138932
+      }
+    },
+    "configuration": {
+      "blast_evalue": 0.001,
+      "blast_max_target_seqs": 500,
+      "build_threads": 16,
+      "cluster_coverage": 0.8,
+      "cluster_min_seq_id": 0.35,
+      "hmmscan_evalue": 0.001,
+      "max_hits_per_query": 25,
+      "phmmer_evalue": 0.001,
+      "profile_max_members": 500,
+      "profile_min_match_states": 40,
+      "profile_min_members": 5,
+      "search_threads": 16
+    },
+    "methods": {
+      "blastp": {
+        "runtime_seconds": 10.13,
+        "scopes": {
+          "exact_set_eligible": {
+            "per_ec_macro_top1_rate": 0.6733766233766234,
+            "per_ec_top1": {
+              "1.1.1.1": {
+                "support": 22,
+                "top1_correct": 22,
+                "top1_rate": 1.0
+              },
+              "1.1.1.103": {
+                "support": 13,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.105": {
+                "support": 2,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.284": {
+                "support": 4,
+                "top1_correct": 3,
+                "top1_rate": 0.75
+              },
+              "1.1.1.37": {
+                "support": 47,
+                "top1_correct": 47,
+                "top1_rate": 1.0
+              },
+              "1.1.1.399": {
+                "support": 2,
+                "top1_correct": 2,
+                "top1_rate": 1.0
+              },
+              "1.1.1.95": {
+                "support": 3,
+                "top1_correct": 3,
+                "top1_rate": 1.0
+              },
+              "1.11.1.6": {
+                "support": 14,
+                "top1_correct": 14,
+                "top1_rate": 1.0
+              },
+              "1.11.1.9": {
+                "support": 6,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.15.1.1": {
+                "support": 38,
+                "top1_correct": 38,
+                "top1_rate": 1.0
+              },
+              "1.2.1.10": {
+                "support": 14,
+                "top1_correct": 1,
+                "top1_rate": 0.07142857142857142
+              },
+              "1.2.1.3": {
+                "support": 10,
+                "top1_correct": 4,
+                "top1_rate": 0.4
+              },
+              "1.20.4.2": {
+                "support": 1,
+                "top1_correct": 1,
+                "top1_rate": 1.0
+              },
+              "1.6.5.4": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.8.5.1": {
+                "support": 2,
+                "top1_correct": 1,
+                "top1_rate": 0.5
+              },
+              "2.5.1.18": {
+                "support": 32,
+                "top1_correct": 32,
+                "top1_rate": 1.0
+              },
+              "2.7.1.1": {
+                "support": 5,
+                "top1_correct": 5,
+                "top1_rate": 1.0
+              },
+              "2.7.1.2": {
+                "support": 10,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "3.1.1.7": {
+                "support": 2,
+                "top1_correct": 2,
+                "top1_rate": 1.0
+              },
+              "3.2.1.1": {
+                "support": 12,
+                "top1_correct": 12,
+                "top1_rate": 1.0
+              },
+              "3.2.1.2": {
+                "support": 3,
+                "top1_correct": 3,
+                "top1_rate": 1.0
+              },
+              "3.2.1.41": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "3.4.21.4": {
+                "support": 7,
+                "top1_correct": 7,
+                "top1_rate": 1.0
+              },
+              "4.2.1.1": {
+                "support": 14,
+                "top1_correct": 14,
+                "top1_rate": 1.0
+              },
+              "4.2.1.69": {
+                "support": 2,
+                "top1_correct": 2,
+                "top1_rate": 1.0
+              },
+              "4.4.1.20": {
+                "support": 2,
+                "top1_correct": 2,
+                "top1_rate": 1.0
+              },
+              "4.5.1.1": {
+                "support": 1,
+                "top1_correct": 1,
+                "top1_rate": 1.0
+              },
+              "5.2.1.2": {
+                "support": 2,
+                "top1_correct": 2,
+                "top1_rate": 1.0
+              },
+              "5.3.1.8": {
+                "support": 4,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "5.3.1.9": {
+                "support": 55,
+                "top1_correct": 55,
+                "top1_rate": 1.0
+              },
+              "5.3.99.2": {
+                "support": 2,
+                "top1_correct": 1,
+                "top1_rate": 0.5
+              },
+              "5.3.99.3": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "6.1.1.1": {
+                "support": 45,
+                "top1_correct": 45,
+                "top1_rate": 1.0
+              }
+            },
+            "ranking": {
+              "any_ec_hit_at_25": 0.850828729281768,
+              "any_ec_hit_at_5": 0.8480662983425414,
+              "any_ec_hits_at_25": 308,
+              "any_ec_hits_at_5": 307,
+              "mean_reciprocal_rank_first_ec_overlap": 0.8450945923321614
+            },
+            "top1": {
+              "all_true_ecs_predicted": 302,
+              "all_true_ecs_predicted_rate": 0.8342541436464088,
+              "any_ec_overlap": 305,
+              "any_ec_overlap_rate": 0.8425414364640884,
+              "ec_token_micro_f1": 0.8495339547270306,
+              "ec_token_micro_precision": 0.8575268817204301,
+              "ec_token_micro_recall": 0.841688654353562,
+              "exact_ec_set": 280,
+              "exact_ec_set_rate": 0.7734806629834254,
+              "missing_hit_metadata": 0,
+              "no_extra_ecs_predicted": 282,
+              "no_extra_ecs_predicted_rate": 0.7790055248618785,
+              "no_hits": 39,
+              "predictions": 323,
+              "queries": 362,
+              "unannotated_top_hits": 0
+            }
+          },
+          "profile_common_single_label": {
+            "per_ec_macro_top1_rate": 1.0,
+            "per_ec_top1": {
+              "1.1.1.1": {
+                "support": 17,
+                "top1_correct": 17,
+                "top1_rate": 1.0
+              },
+              "1.1.1.37": {
+                "support": 46,
+                "top1_correct": 46,
+                "top1_rate": 1.0
+              },
+              "1.11.1.6": {
+                "support": 14,
+                "top1_correct": 14,
+                "top1_rate": 1.0
+              },
+              "1.15.1.1": {
+                "support": 38,
+                "top1_correct": 38,
+                "top1_rate": 1.0
+              },
+              "2.5.1.18": {
+                "support": 26,
+                "top1_correct": 26,
+                "top1_rate": 1.0
+              },
+              "2.7.1.1": {
+                "support": 5,
+                "top1_correct": 5,
+                "top1_rate": 1.0
+              },
+              "3.1.1.7": {
+                "support": 2,
+                "top1_correct": 2,
+                "top1_rate": 1.0
+              },
+              "3.2.1.1": {
+                "support": 12,
+                "top1_correct": 12,
+                "top1_rate": 1.0
+              },
+              "3.4.21.4": {
+                "support": 7,
+                "top1_correct": 7,
+                "top1_rate": 1.0
+              },
+              "4.2.1.1": {
+                "support": 12,
+                "top1_correct": 12,
+                "top1_rate": 1.0
+              },
+              "5.3.1.9": {
+                "support": 55,
+                "top1_correct": 55,
+                "top1_rate": 1.0
+              },
+              "6.1.1.1": {
+                "support": 45,
+                "top1_correct": 45,
+                "top1_rate": 1.0
+              }
+            },
+            "ranking": {
+              "any_ec_hit_at_25": 1.0,
+              "any_ec_hit_at_5": 1.0,
+              "any_ec_hits_at_25": 279,
+              "any_ec_hits_at_5": 279,
+              "mean_reciprocal_rank_first_ec_overlap": 1.0
+            },
+            "top1": {
+              "all_true_ecs_predicted": 279,
+              "all_true_ecs_predicted_rate": 1.0,
+              "any_ec_overlap": 279,
+              "any_ec_overlap_rate": 1.0,
+              "ec_token_micro_f1": 0.9841269841269841,
+              "ec_token_micro_precision": 0.96875,
+              "ec_token_micro_recall": 1.0,
+              "exact_ec_set": 272,
+              "exact_ec_set_rate": 0.974910394265233,
+              "missing_hit_metadata": 0,
+              "no_extra_ecs_predicted": 272,
+              "no_extra_ecs_predicted_rate": 0.974910394265233,
+              "no_hits": 0,
+              "predictions": 279,
+              "queries": 279,
+              "unannotated_top_hits": 0
+            }
+          },
+          "profile_outside": {
+            "per_ec_macro_top1_rate": 0.3109815354713314,
+            "per_ec_top1": {
+              "1.1.1.1": {
+                "support": 5,
+                "top1_correct": 5,
+                "top1_rate": 1.0
+              },
+              "1.1.1.103": {
+                "support": 13,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.105": {
+                "support": 4,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.184": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.189": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.19": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.196": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.197": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.2": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.20": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.209": {
+                "support": 2,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.21": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.284": {
+                "support": 4,
+                "top1_correct": 3,
+                "top1_rate": 0.75
+              },
+              "1.1.1.300": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.315": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.37": {
+                "support": 2,
+                "top1_correct": 2,
+                "top1_rate": 1.0
+              },
+              "1.1.1.372": {
+                "support": 2,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.399": {
+                "support": 2,
+                "top1_correct": 2,
+                "top1_rate": 1.0
+              },
+              "1.1.1.53": {
+                "support": 2,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.54": {
+                "support": 2,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.71": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.95": {
+                "support": 3,
+                "top1_correct": 3,
+                "top1_rate": 1.0
+              },
+              "1.1.1.96": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.11.1.12": {
+                "support": 2,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.11.1.9": {
+                "support": 8,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.2.1.10": {
+                "support": 14,
+                "top1_correct": 1,
+                "top1_rate": 0.07142857142857142
+              },
+              "1.2.1.19": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.2.1.28": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.2.1.3": {
+                "support": 12,
+                "top1_correct": 5,
+                "top1_rate": 0.4166666666666667
+              },
+              "1.2.1.31": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.2.1.36": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.2.1.8": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.20.4.2": {
+                "support": 1,
+                "top1_correct": 1,
+                "top1_rate": 1.0
+              },
+              "1.6.5.4": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.8.5.1": {
+                "support": 2,
+                "top1_correct": 1,
+                "top1_rate": 0.5
+              },
+              "2.5.1.18": {
+                "support": 6,
+                "top1_correct": 6,
+                "top1_rate": 1.0
+              },
+              "2.7.1.1": {
+                "support": 1,
+                "top1_correct": 1,
+                "top1_rate": 1.0
+              },
+              "2.7.1.2": {
+                "support": 10,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "2.7.1.59": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "3.2.1.2": {
+                "support": 3,
+                "top1_correct": 3,
+                "top1_rate": 1.0
+              },
+              "3.2.1.41": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "4.2.1.1": {
+                "support": 2,
+                "top1_correct": 2,
+                "top1_rate": 1.0
+              },
+              "4.2.1.69": {
+                "support": 2,
+                "top1_correct": 2,
+                "top1_rate": 1.0
+              },
+              "4.4.1.20": {
+                "support": 2,
+                "top1_correct": 2,
+                "top1_rate": 1.0
+              },
+              "4.5.1.1": {
+                "support": 1,
+                "top1_correct": 1,
+                "top1_rate": 1.0
+              },
+              "5.2.1.2": {
+                "support": 2,
+                "top1_correct": 2,
+                "top1_rate": 1.0
+              },
+              "5.3.1.8": {
+                "support": 4,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "5.3.99.2": {
+                "support": 2,
+                "top1_correct": 1,
+                "top1_rate": 0.5
+              },
+              "5.3.99.3": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              }
+            },
+            "ranking": {
+              "any_ec_hit_at_25": 0.3404255319148936,
+              "any_ec_hit_at_5": 0.32978723404255317,
+              "any_ec_hits_at_25": 32,
+              "any_ec_hits_at_5": 31,
+              "mean_reciprocal_rank_first_ec_overlap": 0.3183430045132173
+            },
+            "top1": {
+              "all_true_ecs_predicted": 23,
+              "all_true_ecs_predicted_rate": 0.24468085106382978,
+              "any_ec_overlap": 29,
+              "any_ec_overlap_rate": 0.30851063829787234,
+              "ec_token_micro_f1": 0.3788546255506608,
+              "ec_token_micro_precision": 0.4725274725274725,
+              "ec_token_micro_recall": 0.3161764705882353,
+              "exact_ec_set": 8,
+              "exact_ec_set_rate": 0.0851063829787234,
+              "missing_hit_metadata": 0,
+              "no_extra_ecs_predicted": 12,
+              "no_extra_ecs_predicted_rate": 0.1276595744680851,
+              "no_hits": 44,
+              "predictions": 50,
+              "queries": 94,
+              "unannotated_top_hits": 0
+            }
+          },
+          "reference_covered": {
+            "per_ec_macro_top1_rate": 0.397108843537415,
+            "per_ec_top1": {
+              "1.1.1.1": {
+                "support": 22,
+                "top1_correct": 22,
+                "top1_rate": 1.0
+              },
+              "1.1.1.103": {
+                "support": 13,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.105": {
+                "support": 4,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.184": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.189": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.19": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.196": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.197": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.2": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.20": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.209": {
+                "support": 2,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.21": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.284": {
+                "support": 4,
+                "top1_correct": 3,
+                "top1_rate": 0.75
+              },
+              "1.1.1.300": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.315": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.37": {
+                "support": 48,
+                "top1_correct": 48,
+                "top1_rate": 1.0
+              },
+              "1.1.1.372": {
+                "support": 2,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.399": {
+                "support": 2,
+                "top1_correct": 2,
+                "top1_rate": 1.0
+              },
+              "1.1.1.53": {
+                "support": 2,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.54": {
+                "support": 2,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.71": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.95": {
+                "support": 3,
+                "top1_correct": 3,
+                "top1_rate": 1.0
+              },
+              "1.1.1.96": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.11.1.12": {
+                "support": 2,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.11.1.6": {
+                "support": 14,
+                "top1_correct": 14,
+                "top1_rate": 1.0
+              },
+              "1.11.1.9": {
+                "support": 8,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.15.1.1": {
+                "support": 38,
+                "top1_correct": 38,
+                "top1_rate": 1.0
+              },
+              "1.2.1.10": {
+                "support": 14,
+                "top1_correct": 1,
+                "top1_rate": 0.07142857142857142
+              },
+              "1.2.1.19": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.2.1.28": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.2.1.3": {
+                "support": 12,
+                "top1_correct": 5,
+                "top1_rate": 0.4166666666666667
+              },
+              "1.2.1.31": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.2.1.36": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.2.1.8": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.20.4.2": {
+                "support": 1,
+                "top1_correct": 1,
+                "top1_rate": 1.0
+              },
+              "1.6.5.4": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.8.5.1": {
+                "support": 2,
+                "top1_correct": 1,
+                "top1_rate": 0.5
+              },
+              "2.5.1.18": {
+                "support": 32,
+                "top1_correct": 32,
+                "top1_rate": 1.0
+              },
+              "2.7.1.1": {
+                "support": 6,
+                "top1_correct": 6,
+                "top1_rate": 1.0
+              },
+              "2.7.1.2": {
+                "support": 10,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "2.7.1.59": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "3.1.1.7": {
+                "support": 2,
+                "top1_correct": 2,
+                "top1_rate": 1.0
+              },
+              "3.2.1.1": {
+                "support": 12,
+                "top1_correct": 12,
+                "top1_rate": 1.0
+              },
+              "3.2.1.2": {
+                "support": 3,
+                "top1_correct": 3,
+                "top1_rate": 1.0
+              },
+              "3.2.1.41": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "3.4.21.4": {
+                "support": 7,
+                "top1_correct": 7,
+                "top1_rate": 1.0
+              },
+              "4.2.1.1": {
+                "support": 14,
+                "top1_correct": 14,
+                "top1_rate": 1.0
+              },
+              "4.2.1.69": {
+                "support": 2,
+                "top1_correct": 2,
+                "top1_rate": 1.0
+              },
+              "4.4.1.20": {
+                "support": 2,
+                "top1_correct": 2,
+                "top1_rate": 1.0
+              },
+              "4.5.1.1": {
+                "support": 1,
+                "top1_correct": 1,
+                "top1_rate": 1.0
+              },
+              "5.2.1.2": {
+                "support": 2,
+                "top1_correct": 2,
+                "top1_rate": 1.0
+              },
+              "5.3.1.8": {
+                "support": 4,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "5.3.1.9": {
+                "support": 55,
+                "top1_correct": 55,
+                "top1_rate": 1.0
+              },
+              "5.3.99.2": {
+                "support": 2,
+                "top1_correct": 1,
+                "top1_rate": 0.5
+              },
+              "5.3.99.3": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "6.1.1.1": {
+                "support": 45,
+                "top1_correct": 45,
+                "top1_rate": 1.0
+              }
+            },
+            "ranking": {
+              "any_ec_hit_at_25": 0.8337801608579088,
+              "any_ec_hit_at_5": 0.8310991957104558,
+              "any_ec_hits_at_25": 311,
+              "any_ec_hits_at_5": 310,
+              "mean_reciprocal_rank_first_ec_overlap": 0.8282151271427411
+            },
+            "top1": {
+              "all_true_ecs_predicted": 302,
+              "all_true_ecs_predicted_rate": 0.8096514745308311,
+              "any_ec_overlap": 308,
+              "any_ec_overlap_rate": 0.8257372654155496,
+              "ec_token_micro_f1": 0.8110831234256927,
+              "ec_token_micro_precision": 0.8496042216358839,
+              "ec_token_micro_recall": 0.7759036144578313,
+              "exact_ec_set": 280,
+              "exact_ec_set_rate": 0.7506702412868632,
+              "missing_hit_metadata": 0,
+              "no_extra_ecs_predicted": 284,
+              "no_extra_ecs_predicted_rate": 0.7613941018766756,
+              "no_hits": 44,
+              "predictions": 329,
+              "queries": 373,
+              "unannotated_top_hits": 0
+            }
+          }
+        },
+        "tool_version": "blastp: 2.16.0+"
+      },
+      "hmmscan": {
+        "runtime_seconds": 51.34,
+        "scopes": {
+          "exact_set_eligible": {
+            "per_ec_macro_top1_rate": 0.38424422799422797,
+            "per_ec_top1": {
+              "1.1.1.1": {
+                "support": 22,
+                "top1_correct": 22,
+                "top1_rate": 1.0
+              },
+              "1.1.1.103": {
+                "support": 13,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.105": {
+                "support": 2,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.284": {
+                "support": 4,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.37": {
+                "support": 47,
+                "top1_correct": 47,
+                "top1_rate": 1.0
+              },
+              "1.1.1.399": {
+                "support": 2,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.95": {
+                "support": 3,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.11.1.6": {
+                "support": 14,
+                "top1_correct": 14,
+                "top1_rate": 1.0
+              },
+              "1.11.1.9": {
+                "support": 6,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.15.1.1": {
+                "support": 38,
+                "top1_correct": 38,
+                "top1_rate": 1.0
+              },
+              "1.2.1.10": {
+                "support": 14,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.2.1.3": {
+                "support": 10,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.20.4.2": {
+                "support": 1,
+                "top1_correct": 1,
+                "top1_rate": 1.0
+              },
+              "1.6.5.4": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.8.5.1": {
+                "support": 2,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "2.5.1.18": {
+                "support": 32,
+                "top1_correct": 29,
+                "top1_rate": 0.90625
+              },
+              "2.7.1.1": {
+                "support": 5,
+                "top1_correct": 5,
+                "top1_rate": 1.0
+              },
+              "2.7.1.2": {
+                "support": 10,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "3.1.1.7": {
+                "support": 2,
+                "top1_correct": 2,
+                "top1_rate": 1.0
+              },
+              "3.2.1.1": {
+                "support": 12,
+                "top1_correct": 11,
+                "top1_rate": 0.9166666666666666
+              },
+              "3.2.1.2": {
+                "support": 3,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "3.2.1.41": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "3.4.21.4": {
+                "support": 7,
+                "top1_correct": 7,
+                "top1_rate": 1.0
+              },
+              "4.2.1.1": {
+                "support": 14,
+                "top1_correct": 12,
+                "top1_rate": 0.8571428571428571
+              },
+              "4.2.1.69": {
+                "support": 2,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "4.4.1.20": {
+                "support": 2,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "4.5.1.1": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "5.2.1.2": {
+                "support": 2,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "5.3.1.8": {
+                "support": 4,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "5.3.1.9": {
+                "support": 55,
+                "top1_correct": 55,
+                "top1_rate": 1.0
+              },
+              "5.3.99.2": {
+                "support": 2,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "5.3.99.3": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "6.1.1.1": {
+                "support": 45,
+                "top1_correct": 45,
+                "top1_rate": 1.0
+              }
+            },
+            "ranking": {
+              "any_ec_hit_at_25": 0.7955801104972375,
+              "any_ec_hit_at_5": 0.7955801104972375,
+              "any_ec_hits_at_25": 288,
+              "any_ec_hits_at_5": 288,
+              "mean_reciprocal_rank_first_ec_overlap": 0.7955801104972375
+            },
+            "top1": {
+              "all_true_ecs_predicted": 275,
+              "all_true_ecs_predicted_rate": 0.7596685082872928,
+              "any_ec_overlap": 288,
+              "any_ec_overlap_rate": 0.7955801104972375,
+              "ec_token_micro_f1": 0.8384279475982532,
+              "ec_token_micro_precision": 0.935064935064935,
+              "ec_token_micro_recall": 0.7598944591029023,
+              "exact_ec_set": 275,
+              "exact_ec_set_rate": 0.7596685082872928,
+              "missing_hit_metadata": 0,
+              "no_extra_ecs_predicted": 288,
+              "no_extra_ecs_predicted_rate": 0.7955801104972375,
+              "no_hits": 54,
+              "predictions": 308,
+              "queries": 362,
+              "unannotated_top_hits": 0
+            }
+          },
+          "profile_common_single_label": {
+            "per_ec_macro_top1_rate": 0.9759615384615384,
+            "per_ec_top1": {
+              "1.1.1.1": {
+                "support": 17,
+                "top1_correct": 17,
+                "top1_rate": 1.0
+              },
+              "1.1.1.37": {
+                "support": 46,
+                "top1_correct": 46,
+                "top1_rate": 1.0
+              },
+              "1.11.1.6": {
+                "support": 14,
+                "top1_correct": 14,
+                "top1_rate": 1.0
+              },
+              "1.15.1.1": {
+                "support": 38,
+                "top1_correct": 38,
+                "top1_rate": 1.0
+              },
+              "2.5.1.18": {
+                "support": 26,
+                "top1_correct": 25,
+                "top1_rate": 0.9615384615384616
+              },
+              "2.7.1.1": {
+                "support": 5,
+                "top1_correct": 5,
+                "top1_rate": 1.0
+              },
+              "3.1.1.7": {
+                "support": 2,
+                "top1_correct": 2,
+                "top1_rate": 1.0
+              },
+              "3.2.1.1": {
+                "support": 12,
+                "top1_correct": 11,
+                "top1_rate": 0.9166666666666666
+              },
+              "3.4.21.4": {
+                "support": 7,
+                "top1_correct": 7,
+                "top1_rate": 1.0
+              },
+              "4.2.1.1": {
+                "support": 12,
+                "top1_correct": 10,
+                "top1_rate": 0.8333333333333334
+              },
+              "5.3.1.9": {
+                "support": 55,
+                "top1_correct": 55,
+                "top1_rate": 1.0
+              },
+              "6.1.1.1": {
+                "support": 45,
+                "top1_correct": 45,
+                "top1_rate": 1.0
+              }
+            },
+            "ranking": {
+              "any_ec_hit_at_25": 0.985663082437276,
+              "any_ec_hit_at_5": 0.985663082437276,
+              "any_ec_hits_at_25": 275,
+              "any_ec_hits_at_5": 275,
+              "mean_reciprocal_rank_first_ec_overlap": 0.985663082437276
+            },
+            "top1": {
+              "all_true_ecs_predicted": 275,
+              "all_true_ecs_predicted_rate": 0.985663082437276,
+              "any_ec_overlap": 275,
+              "any_ec_overlap_rate": 0.985663082437276,
+              "ec_token_micro_f1": 0.9927797833935018,
+              "ec_token_micro_precision": 1.0,
+              "ec_token_micro_recall": 0.985663082437276,
+              "exact_ec_set": 275,
+              "exact_ec_set_rate": 0.985663082437276,
+              "missing_hit_metadata": 0,
+              "no_extra_ecs_predicted": 275,
+              "no_extra_ecs_predicted_rate": 0.985663082437276,
+              "no_hits": 4,
+              "predictions": 275,
+              "queries": 279,
+              "unannotated_top_hits": 0
+            }
+          },
+          "profile_outside": {
+            "per_ec_macro_top1_rate": 0.11564625850340136,
+            "per_ec_top1": {
+              "1.1.1.1": {
+                "support": 5,
+                "top1_correct": 5,
+                "top1_rate": 1.0
+              },
+              "1.1.1.103": {
+                "support": 13,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.105": {
+                "support": 4,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.184": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.189": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.19": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.196": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.197": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.2": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.20": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.209": {
+                "support": 2,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.21": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.284": {
+                "support": 4,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.300": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.315": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.37": {
+                "support": 2,
+                "top1_correct": 2,
+                "top1_rate": 1.0
+              },
+              "1.1.1.372": {
+                "support": 2,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.399": {
+                "support": 2,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.53": {
+                "support": 2,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.54": {
+                "support": 2,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.71": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.95": {
+                "support": 3,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.96": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.11.1.12": {
+                "support": 2,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.11.1.9": {
+                "support": 8,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.2.1.10": {
+                "support": 14,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.2.1.19": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.2.1.28": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.2.1.3": {
+                "support": 12,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.2.1.31": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.2.1.36": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.2.1.8": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.20.4.2": {
+                "support": 1,
+                "top1_correct": 1,
+                "top1_rate": 1.0
+              },
+              "1.6.5.4": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.8.5.1": {
+                "support": 2,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "2.5.1.18": {
+                "support": 6,
+                "top1_correct": 4,
+                "top1_rate": 0.6666666666666666
+              },
+              "2.7.1.1": {
+                "support": 1,
+                "top1_correct": 1,
+                "top1_rate": 1.0
+              },
+              "2.7.1.2": {
+                "support": 10,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "2.7.1.59": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "3.2.1.2": {
+                "support": 3,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "3.2.1.41": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "4.2.1.1": {
+                "support": 2,
+                "top1_correct": 2,
+                "top1_rate": 1.0
+              },
+              "4.2.1.69": {
+                "support": 2,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "4.4.1.20": {
+                "support": 2,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "4.5.1.1": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "5.2.1.2": {
+                "support": 2,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "5.3.1.8": {
+                "support": 4,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "5.3.99.2": {
+                "support": 2,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "5.3.99.3": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              }
+            },
+            "ranking": {
+              "any_ec_hit_at_25": 0.1595744680851064,
+              "any_ec_hit_at_5": 0.1595744680851064,
+              "any_ec_hits_at_25": 15,
+              "any_ec_hits_at_5": 15,
+              "mean_reciprocal_rank_first_ec_overlap": 0.1595744680851064
+            },
+            "top1": {
+              "all_true_ecs_predicted": 0,
+              "all_true_ecs_predicted_rate": 0.0,
+              "any_ec_overlap": 15,
+              "any_ec_overlap_rate": 0.1595744680851064,
+              "ec_token_micro_f1": 0.1724137931034483,
+              "ec_token_micro_precision": 0.39473684210526316,
+              "ec_token_micro_recall": 0.11029411764705882,
+              "exact_ec_set": 0,
+              "exact_ec_set_rate": 0.0,
+              "missing_hit_metadata": 0,
+              "no_extra_ecs_predicted": 15,
+              "no_extra_ecs_predicted_rate": 0.1595744680851064,
+              "no_hits": 56,
+              "predictions": 38,
+              "queries": 94,
+              "unannotated_top_hits": 0
+            }
+          },
+          "reference_covered": {
+            "per_ec_macro_top1_rate": 0.2264296343537415,
+            "per_ec_top1": {
+              "1.1.1.1": {
+                "support": 22,
+                "top1_correct": 22,
+                "top1_rate": 1.0
+              },
+              "1.1.1.103": {
+                "support": 13,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.105": {
+                "support": 4,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.184": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.189": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.19": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.196": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.197": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.2": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.20": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.209": {
+                "support": 2,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.21": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.284": {
+                "support": 4,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.300": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.315": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.37": {
+                "support": 48,
+                "top1_correct": 48,
+                "top1_rate": 1.0
+              },
+              "1.1.1.372": {
+                "support": 2,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.399": {
+                "support": 2,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.53": {
+                "support": 2,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.54": {
+                "support": 2,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.71": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.95": {
+                "support": 3,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.96": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.11.1.12": {
+                "support": 2,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.11.1.6": {
+                "support": 14,
+                "top1_correct": 14,
+                "top1_rate": 1.0
+              },
+              "1.11.1.9": {
+                "support": 8,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.15.1.1": {
+                "support": 38,
+                "top1_correct": 38,
+                "top1_rate": 1.0
+              },
+              "1.2.1.10": {
+                "support": 14,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.2.1.19": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.2.1.28": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.2.1.3": {
+                "support": 12,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.2.1.31": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.2.1.36": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.2.1.8": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.20.4.2": {
+                "support": 1,
+                "top1_correct": 1,
+                "top1_rate": 1.0
+              },
+              "1.6.5.4": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.8.5.1": {
+                "support": 2,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "2.5.1.18": {
+                "support": 32,
+                "top1_correct": 29,
+                "top1_rate": 0.90625
+              },
+              "2.7.1.1": {
+                "support": 6,
+                "top1_correct": 6,
+                "top1_rate": 1.0
+              },
+              "2.7.1.2": {
+                "support": 10,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "2.7.1.59": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "3.1.1.7": {
+                "support": 2,
+                "top1_correct": 2,
+                "top1_rate": 1.0
+              },
+              "3.2.1.1": {
+                "support": 12,
+                "top1_correct": 11,
+                "top1_rate": 0.9166666666666666
+              },
+              "3.2.1.2": {
+                "support": 3,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "3.2.1.41": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "3.4.21.4": {
+                "support": 7,
+                "top1_correct": 7,
+                "top1_rate": 1.0
+              },
+              "4.2.1.1": {
+                "support": 14,
+                "top1_correct": 12,
+                "top1_rate": 0.8571428571428571
+              },
+              "4.2.1.69": {
+                "support": 2,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "4.4.1.20": {
+                "support": 2,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "4.5.1.1": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "5.2.1.2": {
+                "support": 2,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "5.3.1.8": {
+                "support": 4,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "5.3.1.9": {
+                "support": 55,
+                "top1_correct": 55,
+                "top1_rate": 1.0
+              },
+              "5.3.99.2": {
+                "support": 2,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "5.3.99.3": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "6.1.1.1": {
+                "support": 45,
+                "top1_correct": 45,
+                "top1_rate": 1.0
+              }
+            },
+            "ranking": {
+              "any_ec_hit_at_25": 0.7774798927613941,
+              "any_ec_hit_at_5": 0.7774798927613941,
+              "any_ec_hits_at_25": 290,
+              "any_ec_hits_at_5": 290,
+              "mean_reciprocal_rank_first_ec_overlap": 0.7774798927613941
+            },
+            "top1": {
+              "all_true_ecs_predicted": 275,
+              "all_true_ecs_predicted_rate": 0.7372654155495979,
+              "any_ec_overlap": 290,
+              "any_ec_overlap_rate": 0.7774798927613941,
+              "ec_token_micro_f1": 0.7967032967032968,
+              "ec_token_micro_precision": 0.9265175718849841,
+              "ec_token_micro_recall": 0.6987951807228916,
+              "exact_ec_set": 275,
+              "exact_ec_set_rate": 0.7372654155495979,
+              "missing_hit_metadata": 0,
+              "no_extra_ecs_predicted": 290,
+              "no_extra_ecs_predicted_rate": 0.7774798927613941,
+              "no_hits": 60,
+              "predictions": 313,
+              "queries": 373,
+              "unannotated_top_hits": 0
+            }
+          }
+        },
+        "tool_version": "HMMER 3.4 (Aug 2023); http://hmmer.org/"
+      },
+      "phmmer": {
+        "runtime_seconds": 133.27,
+        "scopes": {
+          "exact_set_eligible": {
+            "per_ec_macro_top1_rate": 0.6703463203463204,
+            "per_ec_top1": {
+              "1.1.1.1": {
+                "support": 22,
+                "top1_correct": 22,
+                "top1_rate": 1.0
+              },
+              "1.1.1.103": {
+                "support": 13,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.105": {
+                "support": 2,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.284": {
+                "support": 4,
+                "top1_correct": 3,
+                "top1_rate": 0.75
+              },
+              "1.1.1.37": {
+                "support": 47,
+                "top1_correct": 47,
+                "top1_rate": 1.0
+              },
+              "1.1.1.399": {
+                "support": 2,
+                "top1_correct": 2,
+                "top1_rate": 1.0
+              },
+              "1.1.1.95": {
+                "support": 3,
+                "top1_correct": 3,
+                "top1_rate": 1.0
+              },
+              "1.11.1.6": {
+                "support": 14,
+                "top1_correct": 14,
+                "top1_rate": 1.0
+              },
+              "1.11.1.9": {
+                "support": 6,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.15.1.1": {
+                "support": 38,
+                "top1_correct": 38,
+                "top1_rate": 1.0
+              },
+              "1.2.1.10": {
+                "support": 14,
+                "top1_correct": 1,
+                "top1_rate": 0.07142857142857142
+              },
+              "1.2.1.3": {
+                "support": 10,
+                "top1_correct": 3,
+                "top1_rate": 0.3
+              },
+              "1.20.4.2": {
+                "support": 1,
+                "top1_correct": 1,
+                "top1_rate": 1.0
+              },
+              "1.6.5.4": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.8.5.1": {
+                "support": 2,
+                "top1_correct": 1,
+                "top1_rate": 0.5
+              },
+              "2.5.1.18": {
+                "support": 32,
+                "top1_correct": 32,
+                "top1_rate": 1.0
+              },
+              "2.7.1.1": {
+                "support": 5,
+                "top1_correct": 5,
+                "top1_rate": 1.0
+              },
+              "2.7.1.2": {
+                "support": 10,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "3.1.1.7": {
+                "support": 2,
+                "top1_correct": 2,
+                "top1_rate": 1.0
+              },
+              "3.2.1.1": {
+                "support": 12,
+                "top1_correct": 12,
+                "top1_rate": 1.0
+              },
+              "3.2.1.2": {
+                "support": 3,
+                "top1_correct": 3,
+                "top1_rate": 1.0
+              },
+              "3.2.1.41": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "3.4.21.4": {
+                "support": 7,
+                "top1_correct": 7,
+                "top1_rate": 1.0
+              },
+              "4.2.1.1": {
+                "support": 14,
+                "top1_correct": 14,
+                "top1_rate": 1.0
+              },
+              "4.2.1.69": {
+                "support": 2,
+                "top1_correct": 2,
+                "top1_rate": 1.0
+              },
+              "4.4.1.20": {
+                "support": 2,
+                "top1_correct": 2,
+                "top1_rate": 1.0
+              },
+              "4.5.1.1": {
+                "support": 1,
+                "top1_correct": 1,
+                "top1_rate": 1.0
+              },
+              "5.2.1.2": {
+                "support": 2,
+                "top1_correct": 2,
+                "top1_rate": 1.0
+              },
+              "5.3.1.8": {
+                "support": 4,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "5.3.1.9": {
+                "support": 55,
+                "top1_correct": 55,
+                "top1_rate": 1.0
+              },
+              "5.3.99.2": {
+                "support": 2,
+                "top1_correct": 1,
+                "top1_rate": 0.5
+              },
+              "5.3.99.3": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "6.1.1.1": {
+                "support": 45,
+                "top1_correct": 45,
+                "top1_rate": 1.0
+              }
+            },
+            "ranking": {
+              "any_ec_hit_at_25": 0.8480662983425414,
+              "any_ec_hit_at_5": 0.8480662983425414,
+              "any_ec_hits_at_25": 307,
+              "any_ec_hits_at_5": 307,
+              "mean_reciprocal_rank_first_ec_overlap": 0.8439226519337016
+            },
+            "top1": {
+              "all_true_ecs_predicted": 301,
+              "all_true_ecs_predicted_rate": 0.8314917127071824,
+              "any_ec_overlap": 304,
+              "any_ec_overlap_rate": 0.8397790055248618,
+              "ec_token_micro_f1": 0.8423841059602648,
+              "ec_token_micro_precision": 0.8457446808510638,
+              "ec_token_micro_recall": 0.8390501319261213,
+              "exact_ec_set": 281,
+              "exact_ec_set_rate": 0.7762430939226519,
+              "missing_hit_metadata": 0,
+              "no_extra_ecs_predicted": 283,
+              "no_extra_ecs_predicted_rate": 0.7817679558011049,
+              "no_hits": 37,
+              "predictions": 325,
+              "queries": 362,
+              "unannotated_top_hits": 0
+            }
+          },
+          "profile_common_single_label": {
+            "per_ec_macro_top1_rate": 1.0,
+            "per_ec_top1": {
+              "1.1.1.1": {
+                "support": 17,
+                "top1_correct": 17,
+                "top1_rate": 1.0
+              },
+              "1.1.1.37": {
+                "support": 46,
+                "top1_correct": 46,
+                "top1_rate": 1.0
+              },
+              "1.11.1.6": {
+                "support": 14,
+                "top1_correct": 14,
+                "top1_rate": 1.0
+              },
+              "1.15.1.1": {
+                "support": 38,
+                "top1_correct": 38,
+                "top1_rate": 1.0
+              },
+              "2.5.1.18": {
+                "support": 26,
+                "top1_correct": 26,
+                "top1_rate": 1.0
+              },
+              "2.7.1.1": {
+                "support": 5,
+                "top1_correct": 5,
+                "top1_rate": 1.0
+              },
+              "3.1.1.7": {
+                "support": 2,
+                "top1_correct": 2,
+                "top1_rate": 1.0
+              },
+              "3.2.1.1": {
+                "support": 12,
+                "top1_correct": 12,
+                "top1_rate": 1.0
+              },
+              "3.4.21.4": {
+                "support": 7,
+                "top1_correct": 7,
+                "top1_rate": 1.0
+              },
+              "4.2.1.1": {
+                "support": 12,
+                "top1_correct": 12,
+                "top1_rate": 1.0
+              },
+              "5.3.1.9": {
+                "support": 55,
+                "top1_correct": 55,
+                "top1_rate": 1.0
+              },
+              "6.1.1.1": {
+                "support": 45,
+                "top1_correct": 45,
+                "top1_rate": 1.0
+              }
+            },
+            "ranking": {
+              "any_ec_hit_at_25": 1.0,
+              "any_ec_hit_at_5": 1.0,
+              "any_ec_hits_at_25": 279,
+              "any_ec_hits_at_5": 279,
+              "mean_reciprocal_rank_first_ec_overlap": 1.0
+            },
+            "top1": {
+              "all_true_ecs_predicted": 279,
+              "all_true_ecs_predicted_rate": 1.0,
+              "any_ec_overlap": 279,
+              "any_ec_overlap_rate": 1.0,
+              "ec_token_micro_f1": 0.9858657243816255,
+              "ec_token_micro_precision": 0.9721254355400697,
+              "ec_token_micro_recall": 1.0,
+              "exact_ec_set": 273,
+              "exact_ec_set_rate": 0.978494623655914,
+              "missing_hit_metadata": 0,
+              "no_extra_ecs_predicted": 273,
+              "no_extra_ecs_predicted_rate": 0.978494623655914,
+              "no_hits": 0,
+              "predictions": 279,
+              "queries": 279,
+              "unannotated_top_hits": 0
+            }
+          },
+          "profile_outside": {
+            "per_ec_macro_top1_rate": 0.3075801749271137,
+            "per_ec_top1": {
+              "1.1.1.1": {
+                "support": 5,
+                "top1_correct": 5,
+                "top1_rate": 1.0
+              },
+              "1.1.1.103": {
+                "support": 13,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.105": {
+                "support": 4,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.184": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.189": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.19": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.196": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.197": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.2": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.20": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.209": {
+                "support": 2,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.21": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.284": {
+                "support": 4,
+                "top1_correct": 3,
+                "top1_rate": 0.75
+              },
+              "1.1.1.300": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.315": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.37": {
+                "support": 2,
+                "top1_correct": 2,
+                "top1_rate": 1.0
+              },
+              "1.1.1.372": {
+                "support": 2,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.399": {
+                "support": 2,
+                "top1_correct": 2,
+                "top1_rate": 1.0
+              },
+              "1.1.1.53": {
+                "support": 2,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.54": {
+                "support": 2,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.71": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.95": {
+                "support": 3,
+                "top1_correct": 3,
+                "top1_rate": 1.0
+              },
+              "1.1.1.96": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.11.1.12": {
+                "support": 2,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.11.1.9": {
+                "support": 8,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.2.1.10": {
+                "support": 14,
+                "top1_correct": 1,
+                "top1_rate": 0.07142857142857142
+              },
+              "1.2.1.19": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.2.1.28": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.2.1.3": {
+                "support": 12,
+                "top1_correct": 3,
+                "top1_rate": 0.25
+              },
+              "1.2.1.31": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.2.1.36": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.2.1.8": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.20.4.2": {
+                "support": 1,
+                "top1_correct": 1,
+                "top1_rate": 1.0
+              },
+              "1.6.5.4": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.8.5.1": {
+                "support": 2,
+                "top1_correct": 1,
+                "top1_rate": 0.5
+              },
+              "2.5.1.18": {
+                "support": 6,
+                "top1_correct": 6,
+                "top1_rate": 1.0
+              },
+              "2.7.1.1": {
+                "support": 1,
+                "top1_correct": 1,
+                "top1_rate": 1.0
+              },
+              "2.7.1.2": {
+                "support": 10,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "2.7.1.59": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "3.2.1.2": {
+                "support": 3,
+                "top1_correct": 3,
+                "top1_rate": 1.0
+              },
+              "3.2.1.41": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "4.2.1.1": {
+                "support": 2,
+                "top1_correct": 2,
+                "top1_rate": 1.0
+              },
+              "4.2.1.69": {
+                "support": 2,
+                "top1_correct": 2,
+                "top1_rate": 1.0
+              },
+              "4.4.1.20": {
+                "support": 2,
+                "top1_correct": 2,
+                "top1_rate": 1.0
+              },
+              "4.5.1.1": {
+                "support": 1,
+                "top1_correct": 1,
+                "top1_rate": 1.0
+              },
+              "5.2.1.2": {
+                "support": 2,
+                "top1_correct": 2,
+                "top1_rate": 1.0
+              },
+              "5.3.1.8": {
+                "support": 4,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "5.3.99.2": {
+                "support": 2,
+                "top1_correct": 1,
+                "top1_rate": 0.5
+              },
+              "5.3.99.3": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              }
+            },
+            "ranking": {
+              "any_ec_hit_at_25": 0.32978723404255317,
+              "any_ec_hit_at_5": 0.32978723404255317,
+              "any_ec_hits_at_25": 31,
+              "any_ec_hits_at_5": 31,
+              "mean_reciprocal_rank_first_ec_overlap": 0.30851063829787234
+            },
+            "top1": {
+              "all_true_ecs_predicted": 22,
+              "all_true_ecs_predicted_rate": 0.23404255319148937,
+              "any_ec_overlap": 27,
+              "any_ec_overlap_rate": 0.2872340425531915,
+              "ec_token_micro_f1": 0.353448275862069,
+              "ec_token_micro_precision": 0.4270833333333333,
+              "ec_token_micro_recall": 0.3014705882352941,
+              "exact_ec_set": 8,
+              "exact_ec_set_rate": 0.0851063829787234,
+              "missing_hit_metadata": 0,
+              "no_extra_ecs_predicted": 12,
+              "no_extra_ecs_predicted_rate": 0.1276595744680851,
+              "no_hits": 42,
+              "predictions": 52,
+              "queries": 94,
+              "unannotated_top_hits": 0
+            }
+          },
+          "reference_covered": {
+            "per_ec_macro_top1_rate": 0.39413265306122447,
+            "per_ec_top1": {
+              "1.1.1.1": {
+                "support": 22,
+                "top1_correct": 22,
+                "top1_rate": 1.0
+              },
+              "1.1.1.103": {
+                "support": 13,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.105": {
+                "support": 4,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.184": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.189": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.19": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.196": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.197": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.2": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.20": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.209": {
+                "support": 2,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.21": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.284": {
+                "support": 4,
+                "top1_correct": 3,
+                "top1_rate": 0.75
+              },
+              "1.1.1.300": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.315": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.37": {
+                "support": 48,
+                "top1_correct": 48,
+                "top1_rate": 1.0
+              },
+              "1.1.1.372": {
+                "support": 2,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.399": {
+                "support": 2,
+                "top1_correct": 2,
+                "top1_rate": 1.0
+              },
+              "1.1.1.53": {
+                "support": 2,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.54": {
+                "support": 2,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.71": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.1.1.95": {
+                "support": 3,
+                "top1_correct": 3,
+                "top1_rate": 1.0
+              },
+              "1.1.1.96": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.11.1.12": {
+                "support": 2,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.11.1.6": {
+                "support": 14,
+                "top1_correct": 14,
+                "top1_rate": 1.0
+              },
+              "1.11.1.9": {
+                "support": 8,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.15.1.1": {
+                "support": 38,
+                "top1_correct": 38,
+                "top1_rate": 1.0
+              },
+              "1.2.1.10": {
+                "support": 14,
+                "top1_correct": 1,
+                "top1_rate": 0.07142857142857142
+              },
+              "1.2.1.19": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.2.1.28": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.2.1.3": {
+                "support": 12,
+                "top1_correct": 3,
+                "top1_rate": 0.25
+              },
+              "1.2.1.31": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.2.1.36": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.2.1.8": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.20.4.2": {
+                "support": 1,
+                "top1_correct": 1,
+                "top1_rate": 1.0
+              },
+              "1.6.5.4": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "1.8.5.1": {
+                "support": 2,
+                "top1_correct": 1,
+                "top1_rate": 0.5
+              },
+              "2.5.1.18": {
+                "support": 32,
+                "top1_correct": 32,
+                "top1_rate": 1.0
+              },
+              "2.7.1.1": {
+                "support": 6,
+                "top1_correct": 6,
+                "top1_rate": 1.0
+              },
+              "2.7.1.2": {
+                "support": 10,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "2.7.1.59": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "3.1.1.7": {
+                "support": 2,
+                "top1_correct": 2,
+                "top1_rate": 1.0
+              },
+              "3.2.1.1": {
+                "support": 12,
+                "top1_correct": 12,
+                "top1_rate": 1.0
+              },
+              "3.2.1.2": {
+                "support": 3,
+                "top1_correct": 3,
+                "top1_rate": 1.0
+              },
+              "3.2.1.41": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "3.4.21.4": {
+                "support": 7,
+                "top1_correct": 7,
+                "top1_rate": 1.0
+              },
+              "4.2.1.1": {
+                "support": 14,
+                "top1_correct": 14,
+                "top1_rate": 1.0
+              },
+              "4.2.1.69": {
+                "support": 2,
+                "top1_correct": 2,
+                "top1_rate": 1.0
+              },
+              "4.4.1.20": {
+                "support": 2,
+                "top1_correct": 2,
+                "top1_rate": 1.0
+              },
+              "4.5.1.1": {
+                "support": 1,
+                "top1_correct": 1,
+                "top1_rate": 1.0
+              },
+              "5.2.1.2": {
+                "support": 2,
+                "top1_correct": 2,
+                "top1_rate": 1.0
+              },
+              "5.3.1.8": {
+                "support": 4,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "5.3.1.9": {
+                "support": 55,
+                "top1_correct": 55,
+                "top1_rate": 1.0
+              },
+              "5.3.99.2": {
+                "support": 2,
+                "top1_correct": 1,
+                "top1_rate": 0.5
+              },
+              "5.3.99.3": {
+                "support": 1,
+                "top1_correct": 0,
+                "top1_rate": 0.0
+              },
+              "6.1.1.1": {
+                "support": 45,
+                "top1_correct": 45,
+                "top1_rate": 1.0
+              }
+            },
+            "ranking": {
+              "any_ec_hit_at_25": 0.8310991957104558,
+              "any_ec_hit_at_5": 0.8310991957104558,
+              "any_ec_hits_at_25": 310,
+              "any_ec_hits_at_5": 310,
+              "mean_reciprocal_rank_first_ec_overlap": 0.8257372654155496
+            },
+            "top1": {
+              "all_true_ecs_predicted": 301,
+              "all_true_ecs_predicted_rate": 0.806970509383378,
+              "any_ec_overlap": 306,
+              "any_ec_overlap_rate": 0.8203753351206434,
+              "ec_token_micro_f1": 0.8020050125313284,
+              "ec_token_micro_precision": 0.835509138381201,
+              "ec_token_micro_recall": 0.7710843373493976,
+              "exact_ec_set": 281,
+              "exact_ec_set_rate": 0.7533512064343163,
+              "missing_hit_metadata": 0,
+              "no_extra_ecs_predicted": 285,
+              "no_extra_ecs_predicted_rate": 0.7640750670241286,
+              "no_hits": 42,
+              "predictions": 331,
+              "queries": 373,
+              "unannotated_top_hits": 0
+            }
+          }
+        },
+        "tool_version": "HMMER 3.4 (Aug 2023); http://hmmer.org/"
+      }
+    },
+    "profile_consensus_ec_tokens": 14,
+    "reference_annotation_concordance": {
+      "any_ec_overlap": 2106,
+      "any_ec_overlap_rate": 1.0,
+      "exact_ec_set_match_rate": 0.9501424501424501,
+      "exact_ec_set_matches": 2001,
+      "exact_sequence_matches": 2106
+    },
+    "reference_ec_tokens": 41,
+    "reference_filter": {
+      "kept_references": 2139,
+      "kept_residues": 767712,
+      "removed_reference_records_matching_test_hashes": 241,
+      "sequence_hash_overlap_after_filter": 0,
+      "source_references": 2380
+    },
+    "sequence_hash_overlap_with_reference": 0,
+    "source_reference": {
+      "manifest_sha256": "2affe0d503ae8b901fc1781b5009dda43d507f9a6263b4abfc67cecbeced62f0",
+      "metadata_sqlite_sha256": "7b5b8045b6c8ea8e49ebe479eba942e9fb66ce3a9e24b0581820f2ab7542792b",
+      "reference_build_id": "261967e8d173",
+      "references_fasta_sha256": "a8bb7a88f8009d804cf679c98838087824de2c2b272e4596b8938989e1bf02a5"
+    },
+    "tool_versions": {
+      "blastp": "blastp: 2.16.0+",
+      "hmmbuild": "HMMER 3.4 (Aug 2023); http://hmmer.org/",
+      "hmmpress": "HMMER 3.4 (Aug 2023); http://hmmer.org/",
+      "hmmscan": "HMMER 3.4 (Aug 2023); http://hmmer.org/",
+      "mafft": "v7.526 (2024/Apr/26)",
+      "makeblastdb": "makeblastdb: 2.16.0+",
+      "mmseqs": "18.8cc5c",
+      "phmmer": "HMMER 3.4 (Aug 2023); http://hmmer.org/"
+    }
+  },
+  "fold": 0,
+  "inputs": {
+    "annotations": {
+      "name": "ec_df_2026_0723.csv",
+      "sha256": "d5f247c6a20f89070c28b054313e3081cc546fd4db57d3f699337f615418c41d"
+    },
+    "baseline_tsv": {
+      "name": "test_fold_0.tsv",
+      "sha256": "24d149d65cc051252a472bd9e20569141bf79685489a3e643545c31fb9ebe89f"
+    },
+    "folds": {
+      "name": "fold_setting_2026_0723.pkl",
+      "sha256": "8a4facb33316b5468880233719bb54f1f19d185aa99816324edf57664d8738ba"
+    }
+  },
+  "reproduction": {
+    "parity": {
+      "baseline_only_hits": 0,
+      "mean_top25_jaccard": 0.9993557327628123,
+      "no_hits_in_both": 48,
+      "ordered_top25_identical": 446,
+      "ordered_top25_identical_rate": 0.9867256637168141,
+      "queries_with_hits_in_both": 452,
+      "raw_top1_same": 452,
+      "raw_top1_same_rate": 1.0,
+      "raw_top1_score_same": 447,
+      "raw_top1_score_same_rate": 0.9889380530973452,
+      "raw_top1_tied_score_id_changes": 0,
+      "reproduction_only_hits": 0,
+      "top25_set_identical": 450,
+      "top25_set_identical_rate": 0.995575221238938
+    },
+    "reported_baseline": {
+      "parameters": {
+        "comp_based_stats": 2,
+        "evalue": 1e-05,
+        "max_target_seqs": 100,
+        "outfmt": "6",
+        "threads": 16
+      },
+      "tool_version": "BLAST+ 2.5.0"
+    },
+    "run": {
+      "artifacts": {
+        "blast_tsv": "a6c5081448bf40f83438edfe06e2ad9d03714317232d0f38e7a217edfa1fa7b8",
+        "query_fasta": "f8df027d4d199371d71f54f6f8f1c290571f280f12f19d10e91ee5921b17281d",
+        "train_fasta": "33eb6eb460963f2ecd8d19428466c989fd1ee61ae0c3787b94265a90eaf04e83"
+      },
+      "build": {
+        "build_seconds": 7.25,
+        "bytes": 80978485,
+        "db_path": "blastdb/references",
+        "files": [
+          "references.pdb",
+          "references.phr",
+          "references.pin",
+          "references.pjs",
+          "references.pot",
+          "references.psq",
+          "references.ptf",
+          "references.pto"
+        ],
+        "makeblastdb_version": "makeblastdb: 2.16.0+"
+      },
+      "parameters": {
+        "comp_based_stats": 2,
+        "evalue": 1e-05,
+        "max_target_seqs": 100,
+        "outfmt": "6 qseqid sseqid pident length qstart qend sstart send qlen slen evalue bitscore qcovs",
+        "threads": 16
+      },
+      "query_cohort": {
+        "definition": "deterministic fold spread including every shared no-hit",
+        "queries": 500,
+        "shared_no_hits": 48
+      },
+      "search_seconds": 105.69,
+      "tool_version": "blastp: 2.16.0+"
+    },
+    "tsv": {
+      "additional_hsp_rows": 1164,
+      "no_hit_queries": 48,
+      "queries_with_hits": 452,
+      "rows": 39361,
+      "self_match_rows": 0,
+      "subjects_outside_train": 0,
+      "unexpected_queries": 0,
+      "unique_subjects": 32160
+    }
+  },
+  "schema_version": 3,
+  "shared_baseline": {
+    "application_ranking": {
+      "all_true_ecs_predicted": 19288,
+      "all_true_ecs_predicted_rate": 0.9857412991260797,
+      "any_ec_overlap": 19347,
+      "any_ec_overlap_rate": 0.9887565799560485,
+      "ec_token_micro_f1": 0.9855155190866928,
+      "ec_token_micro_precision": 0.9851640513552068,
+      "ec_token_micro_recall": 0.9858672376873662,
+      "exact_ec_set": 19208,
+      "exact_ec_set_rate": 0.9816527827464608,
+      "missing_hit_metadata": 0,
+      "no_extra_ecs_predicted": 19261,
+      "no_extra_ecs_predicted_rate": 0.9843614248479583,
+      "no_hits": 48,
+      "predictions": 19519,
+      "queries": 19567,
+      "unannotated_top_hits": 0
+    },
+    "notebook_max_identity": {
+      "all_true_ecs_predicted": 19252,
+      "all_true_ecs_predicted_rate": 0.9839014667552511,
+      "any_ec_overlap": 19316,
+      "any_ec_overlap_rate": 0.9871722798589462,
+      "ec_token_micro_f1": 0.983684535984398,
+      "ec_token_micro_precision": 0.9833103513860492,
+      "ec_token_micro_recall": 0.9840590054722818,
+      "exact_ec_set": 19166,
+      "exact_ec_set_rate": 0.9795063116471611,
+      "missing_hit_metadata": 0,
+      "no_extra_ecs_predicted": 19224,
+      "no_extra_ecs_predicted_rate": 0.9824704860223846,
+      "no_hits": 48,
+      "predictions": 19519,
+      "queries": 19567,
+      "unannotated_top_hits": 0
+    },
+    "raw_first_subject": {
+      "all_true_ecs_predicted": 19290,
+      "all_true_ecs_predicted_rate": 0.9858435120355701,
+      "any_ec_overlap": 19348,
+      "any_ec_overlap_rate": 0.9888076864107936,
+      "ec_token_micro_f1": 0.9855872140037102,
+      "ec_token_micro_precision": 0.9852123056440493,
+      "ec_token_micro_recall": 0.9859624078039496,
+      "exact_ec_set": 19210,
+      "exact_ec_set_rate": 0.9817549956559514,
+      "missing_hit_metadata": 0,
+      "no_extra_ecs_predicted": 19262,
+      "no_extra_ecs_predicted_rate": 0.9844125313027036,
+      "no_hits": 48,
+      "predictions": 19519,
+      "queries": 19567,
+      "unannotated_top_hits": 0
+    },
+    "raw_first_subject_identity": {
+      "at_least_90_percent": 8612,
+      "at_least_90_percent_rate": 0.4412111276192428,
+      "at_least_99_percent": 3279,
+      "at_least_99_percent_rate": 0.1679901634305036,
+      "median_percent_identity": 86.744,
+      "top_hits_with_identity": 19519
+    },
+    "tsv": {
+      "additional_hsp_rows": 24743,
+      "no_hit_queries": 48,
+      "queries_with_hits": 19519,
+      "rows": 1682219,
+      "self_match_rows": 0,
+      "subjects_outside_train": 0,
+      "unexpected_queries": 0,
+      "unique_subjects": 151440
+    }
+  },
+  "split": {
+    "accession_overlap": {
+      "train_test": 0,
+      "train_val": 0,
+      "val_test": 0
+    },
+    "sequence_overlap": {
+      "train_test": 0,
+      "train_val": 0,
+      "val_test": 0
+    },
+    "test_acc": {
+      "residues": 7969688,
+      "sequences": 19567,
+      "unique_sequence_hashes": 19567
+    },
+    "train_acc": {
+      "residues": 65548858,
+      "sequences": 160637,
+      "unique_sequence_hashes": 160637
+    },
+    "val_acc": {
+      "residues": 7968801,
+      "sequences": 19523,
+      "unique_sequence_hashes": 19523
+    }
+  },
+  "total_runtime_seconds": 471.29
+}
