@@ -9,7 +9,8 @@ This benchmark answers two separate questions:
 
 Combining those into one accuracy number would confuse implementation parity
 with database coverage. The supplied fold uses 160,637 training sequences;
-the development EnzymeX copy has 2,380 references and covers far fewer ECs.
+the source-policy development build has 1,574 Swiss-Prot/PDB-labelled
+references and covers far fewer ECs.
 
 ## Inputs
 
@@ -84,3 +85,8 @@ references and mostly contains close homologs. It can validate the runner,
 leakage handling and conditional retrieval behavior. It cannot establish
 remote-homology performance, broad functional coverage, or production
 EnzymeX integration.
+
+The development fixture's `pdb` values are synthetic source labels on reviewed
+Swiss-Prot sequences. This benchmark therefore exercises the combined-source
+selection, deduplication and search paths, but it does not validate genuine
+PDB-derived sequences or PDB provenance.

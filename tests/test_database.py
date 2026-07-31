@@ -73,6 +73,7 @@ def test_schema_discovery_finds_the_documented_columns(live):
     assert schema.primary_key, "enzymesdata needs a primary key for a stable export"
     assert schema.has("sequence"), f"no sequence column found in {schema.columns}"
     assert schema.row_count > 0
+    assert schema.engine is None or schema.engine.lower() == "innodb"
 
 
 def test_the_session_cannot_write(live):

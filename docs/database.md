@@ -101,6 +101,7 @@ Sample output from the development fixture:
   "table": "enzymesdata",
   "rows": 2677,
   "primary_key": "id",
+  "engine": "InnoDB",
   "columns_present": {
     "sequence": "sequence", "description": "description", "ec": "ec",
     "source": "source", "motif": "motif", "active": "active",
@@ -130,17 +131,19 @@ logical field case-insensitively against a list of plausible aliases:
 | description | `description`, `desc`, `name`, `protein_name`, `title` |
 | ec | `ec`, `ec_number`, `ecnumber`, `ec_num` |
 | source | `source`, `db_source`, `database`, `origin` |
-| accession | `accession`, `acc`, `uniprot`, `uniprot_id`, `entry`, `identifier` |
+| accession | `accession`, `acc`, `uniprot`, `uniprot_id`, `uniprotid`, `entry`, `identifier` |
 | motif / active / binding / interpretation | the obvious variants |
 
-Only `sequence` is required. Anything absent is reported by `inspect` and
-exported as null; the build does not fail over a missing optional column.
+`sequence` and `source` are required. The source column is needed to enforce
+the Swiss-Prot + PDB reference policy; a missing source fails closed instead
+of silently admitting unrelated records. Other absent fields are reported by
+`inspect` and exported as null.
 
-**A primary key is required.** Internal reference identifiers are `EXR<pk>`,
-and the export is ordered by that key. Without one there is no stable order
-and no stable identifier, so `iter_rows` refuses rather than producing a
-build that silently changes between runs. If the copy has no key, export from
-a view that supplies one.
+**A stable export key is required.** For a table, use its primary key. If the
+copy has no key, export through a view with a deterministic unique column
+named `id`, which the schema detector accepts as the export key. Internal
+identifiers are `EXR<key>` and rows are ordered by that value. Without it,
+`iter_rows` refuses rather than producing a build that changes between runs.
 
 Table and column names are validated against `[A-Za-z0-9_$]` before being
 interpolated into any statement. Identifiers cannot be passed as bound
@@ -161,11 +164,21 @@ Every row that does not become a reference is counted by reason in
 | `internal_stop` | `*` inside the sequence (a trailing `*` is stripped, not rejected) |
 | `excessive_ambiguity` | more than `ENZYMEX_MAX_AMBIGUOUS_FRACTION` of X/B/Z/J/U/O |
 | `looks_like_nucleotide` | ≥90% A/C/G/T/U/N over ≥50 residues |
-| `duplicate_sequence` | identical to a sequence already exported |
+| `source_not_selected` | valid sequence, but its normalized source is outside `ENZYMEX_REFERENCE_SOURCES` |
+| `duplicate_sequence` | identical to a selected sequence already exported |
+
+Sequence validation runs before source selection, and deduplication runs after
+it. This preserves useful QC reasons for malformed rows while preventing an
+earlier TrEMBL or KEGG copy from hiding a valid Swiss-Prot or PDB reference.
 
 Duplicates are merged rather than dropped: the extra rows go into
 `reference_duplicate` in the metadata database, so a hit can still be traced
-back to every `enzymesdata` row it represents.
+back to every selected `enzymesdata` row it represents. When an exact sequence
+occurs in both selected sources, the Swiss-Prot row is preferred as canonical
+metadata and the PDB row remains duplicate provenance; fields are not merged.
+The exporter makes two passes over one repeatable-read, read-only snapshot so
+priority is independent of export-key order. A physical table must use InnoDB;
+for a view, the operator must confirm that its source tables are transactional.
 
 Sequences are normalised before validation (case folded, whitespace and
 residue numbering removed, gap characters stripped), so a row stored as

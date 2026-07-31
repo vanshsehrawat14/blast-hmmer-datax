@@ -21,6 +21,26 @@ from pydantic import SecretStr, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
+REFERENCE_SOURCE_CHOICES = frozenset({"swissprot", "pdb"})
+
+
+def _parse_reference_sources(value: str) -> tuple[str, ...]:
+    requested = {
+        source.strip().lower()
+        for source in value.split(",")
+        if source.strip()
+    }
+    if not requested:
+        raise ValueError("must select at least one source")
+    unsupported = sorted(requested - REFERENCE_SOURCE_CHOICES)
+    if unsupported:
+        raise ValueError(
+            "only swissprot and pdb are supported; "
+            f"got {', '.join(unsupported)}"
+        )
+    return tuple(
+        source for source in ("swissprot", "pdb") if source in requested
+    )
 
 
 class Settings(BaseSettings):
@@ -60,6 +80,10 @@ class Settings(BaseSettings):
     mmseqs_bin: str = "mmseqs"
 
     # ---------------------------------------------------------------- export filters
+    # BLAST, phmmer and profile-HMM construction all consume the same export.
+    # Keep this as a comma-separated canonical source list so the selected
+    # EnzymeX datasets are explicit and recorded in the build id.
+    reference_sources: str = "swissprot,pdb"
     # 30 residues is below any real single-domain protein but above the
     # peptide fragments that pollute TrEMBL; sequences shorter than this
     # produce alignments too short for a meaningful E-value.
@@ -117,10 +141,19 @@ class Settings(BaseSettings):
     keep_raw_outputs: bool = True
     log_level: str = "INFO"
 
+    @field_validator("reference_sources")
+    @classmethod
+    def _reference_sources(cls, value: str) -> str:
+        return ",".join(_parse_reference_sources(value))
+
     @field_validator("reference_dir", "job_dir")
     @classmethod
     def _absolute(cls, v: Path) -> Path:
         return v if v.is_absolute() else (REPO_ROOT / v).resolve()
+
+    @property
+    def selected_reference_sources(self) -> tuple[str, ...]:
+        return _parse_reference_sources(self.reference_sources)
 
     # -- derived reference artifact paths ------------------------------------
     @property

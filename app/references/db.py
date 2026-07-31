@@ -42,7 +42,10 @@ COLUMN_ALIASES: dict[str, tuple[str, ...]] = {
     "interpretation": ("interpretation", "interpret"),
     "created": ("created", "created_at", "create_time"),
     "modified": ("modified", "modified_at", "updated", "updated_at"),
-    "accession": ("accession", "acc", "uniprot", "uniprot_id", "entry", "identifier"),
+    "accession": (
+        "accession", "acc", "uniprot", "uniprot_id", "uniprotid", "entry",
+        "identifier",
+    ),
 }
 
 # Anything not in this set is refused before it reaches an f-string. Table and
@@ -68,6 +71,7 @@ class TableSchema:
     mapping: dict[str, str]            # logical field -> actual column name
     primary_key: str | None
     row_count: int
+    engine: str | None = None
 
     def has(self, field: str) -> bool:
         return field in self.mapping
@@ -103,6 +107,13 @@ def connect(settings: Settings) -> pymysql.connections.Connection:
     with conn.cursor(pymysql.cursors.DictCursor) as cur:
         cur.execute("SET SESSION TRANSACTION READ ONLY")
     return conn
+
+
+def begin_consistent_snapshot(conn) -> None:
+    """Pin both export scans to one read-only view of the copied table."""
+    with conn.cursor(pymysql.cursors.DictCursor) as cur:
+        cur.execute("SET TRANSACTION ISOLATION LEVEL REPEATABLE READ")
+        cur.execute("START TRANSACTION WITH CONSISTENT SNAPSHOT, READ ONLY")
 
 
 def ping(settings: Settings) -> tuple[bool, str]:
@@ -149,11 +160,19 @@ def inspect_schema(conn, table: str) -> TableSchema:
             # every rebuild. Fall back to an `id` column if one exists.
             pk = lowered.get("id")
 
+        cur.execute(
+            "SELECT ENGINE FROM information_schema.TABLES "
+            "WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = %s",
+            (table,),
+        )
+        table_info = cur.fetchone() or {}
+        engine = table_info.get("ENGINE")
+
         cur.execute(f"SELECT COUNT(*) AS n FROM `{table}`")
         n = cur.fetchone()["n"]
 
     return TableSchema(table=table, columns=names, mapping=mapping,
-                       primary_key=pk, row_count=n)
+                       primary_key=pk, row_count=n, engine=engine)
 
 
 def iter_rows(conn, schema: TableSchema, *, limit: int = 0,
@@ -196,6 +215,7 @@ def profile_table(conn, schema: TableSchema, sample: int = 0) -> dict[str, Any]:
         "table": schema.table,
         "rows": schema.row_count,
         "primary_key": schema.primary_key,
+        "engine": schema.engine,
         "columns_present": schema.mapping,
         "columns_missing": schema.missing(),
         "all_columns": schema.columns,

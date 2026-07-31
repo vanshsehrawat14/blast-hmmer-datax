@@ -42,6 +42,7 @@ service account's `PATH` does not include the conda environment.
 
 | variable | default | notes |
 |---|---|---|
+| `ENZYMEX_REFERENCE_SOURCES` | `swissprot,pdb` | only these normalized `enzymesdata.source` values enter BLAST, phmmer and profile construction; accepts either source alone for comparison builds |
 | `ENZYMEX_MIN_SEQUENCE_LENGTH` | `30` | below any real single-domain protein; shorter references give alignments too short for a meaningful E-value |
 | `ENZYMEX_MAX_REFERENCE_LENGTH` | `10000` | |
 | `ENZYMEX_MAX_AMBIGUOUS_FRACTION` | `0.10` | X/B/Z/J/U/O carry no residue identity |

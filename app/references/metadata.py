@@ -1,7 +1,7 @@
 """SQLite metadata store: the only thing the web app reads at request time.
 
-The copied MySQL database is touched exactly once, during the offline
-reference build. Everything a search needs afterwards — description, EC,
+The copied MySQL database is touched only during the offline reference build.
+Everything a search needs afterwards — description, EC,
 source, provenance back to the original `enzymesdata` row — is written into
 this file alongside the BLAST and HMMER artifacts.
 

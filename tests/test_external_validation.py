@@ -231,5 +231,5 @@ def test_committed_report_matches_renderer():
     report_path = root / "results" / "validation" / "fold_0_report.json"
     markdown_path = report_path.with_suffix(".md")
     report = json.loads(report_path.read_text(encoding="utf-8"))
-    assert report["schema_version"] == 3
+    assert report["schema_version"] == 4
     assert render_markdown(report) == markdown_path.read_text(encoding="utf-8")

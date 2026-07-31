@@ -25,9 +25,10 @@ copied enzymesdata (MySQL, read-only)      FASTA submission
    build_manifest.json ──► reference_build_id ──► results page + CSV/JSON
 ```
 
-The copied MySQL database is read exactly once per build, by
-`enzymex-refbuild`. A user request never opens a database connection: hit
-metadata comes from the SQLite file written alongside the search indexes.
+The copied MySQL database is read only during an offline `enzymex-refbuild`.
+The exporter makes two scans through one connection and repeatable snapshot.
+A user request never opens a database connection: hit metadata comes from the
+SQLite file written alongside the search indexes.
 That makes a misconfigured credential impossible to reach from the request
 path, and it guarantees that a hit and its annotation always come from the
 same build.
@@ -102,8 +103,8 @@ Searches run synchronously inside the request, bounded by:
   child is killed by process group on expiry;
 * `ENZYMEX_MAX_QUERY_SEQUENCES` and `ENZYMEX_MAX_QUERY_LENGTH`.
 
-Measured on the reference build described in the README (2,380 references, 64
-profiles, 2 search threads), ten sequences through all three methods take
-about 9 s wall clock and under 150 MB resident. Synchronous is the right
-answer at that size; the service layer is structured so that swapping
-`run_search` onto a worker queue touches one function.
+Measured on the source-policy fixture build described in the README (1,574
+references, 47 profiles, 2 search threads), one sequence through all three
+methods took 0.85 to 0.93 s in the post-build checks. Synchronous execution is
+adequate for this test server; production should run `run_search` inside
+EnzymeX's existing scheduled job rather than its web request.

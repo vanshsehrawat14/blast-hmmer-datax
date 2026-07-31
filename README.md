@@ -54,10 +54,16 @@ Docker Compose and systemd paths are in [`docs/deployment.md`](docs/deployment.m
 
 ## The two halves
 
-**Offline** (`enzymex-refbuild`, minutes) reads the copied MySQL database once,
-validates and deduplicates the sequences, and writes a FASTA, a SQLite
+**Offline** (`enzymex-refbuild`, minutes) is the only phase that reads the
+copied MySQL database. It validates and deduplicates the sequences, then writes
+a FASTA, a SQLite
 metadata store, a BLAST database, a pressed profile-HMM database and a build
 manifest into `var/reference/`.
+
+The default export accepts only normalized `swissprot` and `pdb` rows. All
+three search paths use that same export. Exact cross-source duplicates are
+collapsed with the Swiss-Prot row preferred as canonical metadata and the PDB
+row retained as provenance; fields are not merged across rows.
 
 **Online** (the web app, seconds) never opens a database connection. Hit
 metadata comes from the SQLite file written by the build, so a hit and its
@@ -75,8 +81,8 @@ so rather than letting an absent profile hit read as evidence of absence.
 Profiles are **not** built per EC number. An EC number names a reaction, not a
 family, and enzymes catalysing the same reaction are frequently unrelated in
 sequence. Clustering the development reference set by similarity and then
-reading off the EC gives 14 distinct profiles for glutathione transferase
-(2.5.1.18), 10 for carbonic anhydrase (4.2.1.1, the α/β/γ classes) and 6 for
+reading off the EC gives 13 distinct profiles for glutathione transferase
+(2.5.1.18), 4 for carbonic anhydrase (4.2.1.1, the α/β/γ classes) and 5 for
 superoxide dismutase (1.15.1.1, the Cu/Zn, Mn/Fe and Ni enzymes). A single
 per-EC profile would have merged unrelated folds into a model of nothing.
 
@@ -109,21 +115,23 @@ quantity:
 
 ## Measured behaviour
 
-Development build: 2,677 rows → 2,380 references, 242 clusters → 64 profiles
-covering 89% of references. WSL2 / Ubuntu 24.04, 2 search threads.
+Source-policy development build `32abd580b689`: 2,677 fixture rows → 1,574
+Swiss-Prot/PDB-labelled references (1,387 Swiss-Prot, 187 PDB), 201 clusters
+→ 47 profiles covering 85.9% of references. WSL2 / Ubuntu 24.04, 2 search
+threads.
 
-| queries | methods | wall clock |
-|---|---|---|
-| 1 | blastp | 0.30 s |
-| 1 | phmmer | 1.16 s |
-| 1 | hmmscan | 0.27 s |
-| 10 | all three | 9.01 s |
+| one-query check | blastp | phmmer | hmmscan | all three |
+|---|---:|---:|---:|---:|
+| human SOD2 positive | 0.222 s | 0.278 s | 0.174 s | 0.925 s |
+| unrelated GFP | 0.224 s | 0.228 s | 0.172 s | 0.850 s |
 
-Peak resident memory 55 MB (web process) / 83 MB (children). Full build: 117 s,
-of which ~115 s is MAFFT + `hmmbuild` across 64 families. Scaling notes:
-[`docs/reference-build.md`](docs/reference-build.md).
+The full build took 137.1 s, including 133.9 s for clustering and the profile
+layer. Scaling notes: [`docs/reference-build.md`](docs/reference-build.md).
 
 These are measurements of this build, not performance claims about the tools.
+The fixture's `pdb` values are test labels on reviewed Swiss-Prot sequences,
+not genuine PDB-derived records; real combined-source validation still needs
+the copied EnzymeX table.
 
 ## Documentation
 

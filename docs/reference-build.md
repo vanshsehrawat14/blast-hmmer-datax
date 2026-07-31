@@ -38,14 +38,34 @@ var/reference/
 
 None of it is committed. `var/` is gitignored in full.
 
+## Source policy
+
+The default build accepts only rows whose normalized `enzymesdata.source` is
+`swissprot` or `pdb`. The resulting deduplicated `references.fasta` is shared
+by BLAST and phmmer and is also the input to profile-HMM construction, so the
+three search paths cannot silently use different source sets.
+
+Sequence QC runs first, source selection second, and exact-sequence
+deduplication third. If both selected sources carry the same sequence, the
+Swiss-Prot row is preferred as canonical metadata; fields are not merged.
+Every valid selected PDB row remains available either as a canonical
+`reference` or as duplicate provenance in `reference_duplicate`.
+`export_stats.json` reports selected, excluded, duplicate and canonical counts
+by source. `ENZYMEX_REFERENCE_SOURCES` is part of the build id.
+
+The development fixture exercises this policy but does not contain
+PDB-derived sequences. Its `pdb` labels are deterministic test labels on
+reviewed Swiss-Prot sequences. A fixture build validates the filtering and
+provenance code, not real PDB ingestion or coverage.
+
 ## Identifiers
 
-References are `EXR<primary key>`: stable across rebuilds, unique, and a
+References are `EXR<stable export key>`: stable across rebuilds, unique, and a
 single whitespace-free token so BLAST and HMMER cannot split or reinterpret
 it. Deflines carry only sanitised fields:
 
 ```
->EXR417 EC=5.3.1.9 src=trembl
+>EXR417 EC=5.3.1.9 src=swissprot
 ```
 
 Free text stays in SQLite. `makeblastdb -parse_seqids` is deliberately *not*
@@ -87,16 +107,15 @@ result is never silently re-attributed.
 
 ## Scaling
 
-Measured on the development build (2,677 rows → 2,380 references, WSL2 /
-Ubuntu 24.04, 4 build threads):
+Measured on the source-policy development build (2,677 rows → 1,574
+Swiss-Prot/PDB-labelled references, WSL2 / Ubuntu 24.04, 4 build threads):
 
 | step | time |
 |---|---|
-| export (2,677 rows) | 0.5 s |
-| makeblastdb | 0.4 s |
-| mmseqs clustering | ~3 s |
-| MAFFT + hmmbuild, 64 families | ~115 s |
-| **total** | **117 s** |
+| export (two snapshot scans of 2,677 rows) | 1.0 s |
+| makeblastdb | 0.5 s |
+| profile layer, including clustering and 47 families | 133.9 s |
+| **total** | **137.1 s** |
 
 Where the time goes as the copy grows:
 
@@ -106,16 +125,15 @@ Where the time goes as the copy grows:
 * **mmseqs clustering** is the step designed for this scale and is the least
   of the worries.
 * **MAFFT + hmmbuild is the bottleneck**: one subprocess pair per accepted
-  cluster, ~1.8 s each here. A copy producing 10,000 accepted clusters would
-  take roughly 5 hours single-threaded. `ENZYMEX_PROFILE_MAX_MEMBERS` bounds
+  cluster, roughly 3 s each here. A copy producing 10,000 accepted clusters
+  would take several hours single-threaded. `ENZYMEX_PROFILE_MAX_MEMBERS` bounds
   the per-cluster cost but not the cluster count. If that becomes a problem,
   raise `ENZYMEX_PROFILE_MIN_MEMBERS` (fewer, larger families) or parallelise
-  the per-family loop, which is embarrassingly parallel and currently serial for
+  the per-family loop, which is parallelisable and currently serial for
   simplicity.
 * **phmmer at search time** scales with the number of references, not with the
-  build. 1.2 s per query against 2,380 references; expect roughly linear
-  growth. It is the first thing that will need `ENZYMEX_HMMER_TIMEOUT_SECONDS`
-  raised on a large copy.
+  build. Expect roughly linear growth; it is the first method that will need
+  `ENZYMEX_HMMER_TIMEOUT_SECONDS` raised on a large copy.
 
 `ENZYMEX_EXPORT_LIMIT` caps the export for a first trial build on a large
 copy. It is part of the build id, so a capped build cannot be mistaken for a

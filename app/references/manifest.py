@@ -25,20 +25,20 @@ from app.config import Settings
 from app.references.export import sha256_file
 from app.search.subprocess_utils import tool_version
 
-MANIFEST_VERSION = 2
+MANIFEST_VERSION = 3
 
 # Settings that change which sequences end up searchable. A change to any of
 # them must produce a new build id; changing a request-time timeout must not.
 BUILD_INPUT_KEYS = (
-    "db_name", "db_table", "min_sequence_length", "max_reference_length",
-    "max_ambiguous_fraction", "export_limit", "cluster_min_seq_id",
-    "cluster_coverage", "profile_min_members", "profile_max_members",
-    "profile_min_match_states",
+    "db_name", "db_table", "reference_sources", "min_sequence_length",
+    "max_reference_length", "max_ambiguous_fraction", "export_limit",
+    "cluster_min_seq_id", "cluster_coverage", "profile_min_members",
+    "profile_max_members", "profile_min_match_states",
 )
 
 
 def compute_build_id(settings: Settings, fasta_sha256: str) -> str:
-    payload = {k: getattr(settings, k) for k in BUILD_INPUT_KEYS}
+    payload = _build_inputs(settings)
     payload["fasta_sha256"] = fasta_sha256
     blob = json.dumps(payload, sort_keys=True, default=str).encode("utf-8")
     return hashlib.sha256(blob).hexdigest()[:12]
@@ -92,7 +92,7 @@ def write_manifest(settings: Settings, sections: dict) -> dict:
             "table": settings.db_table,
             "read_only": True,
         },
-        "configuration": {k: _plain(getattr(settings, k)) for k in BUILD_INPUT_KEYS},
+        "configuration": _build_inputs(settings),
         "tool_versions": tool_versions(settings),
         "artifact_sha256": artifact_checksums(settings),
         **sections,
@@ -117,3 +117,9 @@ def read_manifest(settings: Settings) -> dict | None:
 
 def _plain(value):
     return str(value) if isinstance(value, Path) else value
+
+
+def _build_inputs(settings: Settings) -> dict:
+    values = {k: _plain(getattr(settings, k)) for k in BUILD_INPUT_KEYS}
+    values["reference_sources"] = list(settings.selected_reference_sources)
+    return values

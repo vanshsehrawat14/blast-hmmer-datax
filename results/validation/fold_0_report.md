@@ -25,7 +25,7 @@
 - Reproduction version: `blastp: 2.16.0+`
 - Reproduction cohort: 500 queries
 - The cohort includes all 48 shared no-hits; hit-order parity uses the 452 queries with hits in both outputs.
-- Search time: 105.69 s
+- Search time: 131.44 s
 - Raw top-1 agreement with the reported BLAST+ 2.5.0 output: 452/452 (100.00%)
 - Raw top-score agreement (E-value and bit score): 447/452 (98.89%); 0 tied-score cases selected a different subject ID
 - Identical ordered top 25: 98.67%
@@ -34,44 +34,48 @@
 
 ## Leakage-safe copied-development EnzymeX benchmark
 
-- Source reference build: `261967e8d173`
-- References: 2,380 source, 241 records matching test hashes removed, 2,139 searched
-- Rebuilt profiles: 60
-- Of 2,106 filtered references exactly matching a supplied CSV sequence, 2,001 (95.01%) have the same normalized EC set
-- Reference-covered selected slice: 373/19,567 queries (1.91%)
-- Exact-set eligible selected slice: 362/19,567 queries (1.85%)
+- Source reference build: `32abd580b689`
+- Selected source labels: swissprot, pdb
+- Canonical references by source: swissprot=1,387, pdb=187
+- References: 1,574 source, 143 records matching test hashes removed, 1,431 searched
+- Rebuilt profiles: 44
+- Of 1,407 filtered references exactly matching a supplied CSV sequence, 1,338 (95.10%) have the same normalized EC set
+- Reference-covered selected slice: 349/19,567 queries (1.78%)
+- Exact-set eligible selected slice: 340/19,567 queries (1.74%)
 - Profile-common single-label selected slice: 279/19,567 queries (1.43%)
 - Exact query/reference sequence overlap: 0
+
+Source labels in this section come from the copied table and are not independent upstream-provenance verification. In the committed development fixture, `pdb` is a synthetic label on reviewed Swiss-Prot sequences, so this report does not validate genuine PDB-derived data.
 
 ### Sequence-reference scope
 
 Runtime is for the whole reference-covered batch. Exact-set concordance uses only queries whose full truth set exists in the reference. These are single local invocations, not stable performance estimates.
 
-| Method | Runtime | Any EC overlap (n=373) | Exact EC set (n=362) | Any-EC hit@5 (n=373) | Any-EC hit@25 (n=373) |
+| Method | Runtime | Any EC overlap (n=349) | Exact EC set (n=340) | Any-EC hit@5 (n=349) | Any-EC hit@25 (n=349) |
 |---|---:|---:|---:|---:|---:|
-| blastp | 10.13 s | 308/373 (82.57%) | 280/362 (77.35%) | 310/373 (83.11%) | 311/373 (83.38%) |
-| phmmer | 133.27 s | 306/373 (82.04%) | 281/362 (77.62%) | 310/373 (83.11%) | 310/373 (83.11%) |
+| blastp | 7.81 s | 306/349 (87.68%) | 279/340 (82.06%) | 307/349 (87.97%) | 308/349 (88.25%) |
+| phmmer | 130.36 s | 303/349 (86.82%) | 280/340 (82.35%) | 307/349 (87.97%) | 307/349 (87.97%) |
 
-BLAST and phmmer differ by only 2 queries on top-1 overlap and 1 on exact sets. One fold does not establish a winner.
+BLAST and phmmer differ by only 3 queries on top-1 overlap and 1 on exact sets. One fold does not establish a winner.
 
-The exact-set slice spans 33 complete EC labels. Its unweighted per-EC top-1 token concordance is 67.34% for BLAST and 67.03% for phmmer; the lower macro rates expose weaker rare-label behavior.
+The exact-set slice spans 30 complete EC labels. Its unweighted per-EC top-1 token concordance is 66.07% for BLAST and 65.40% for phmmer; the lower macro rates expose weaker rare-label behavior.
 
 ### Common profile scope
 
-The BLAST top-hit median identity in this selected slice is 88.9%.
+The BLAST top-hit median identity in this selected slice is 85.1%.
 
 | Method | Queries with hits | Top-1 EC overlap (n=279) | Any-EC hit@5 (n=279) | Any-EC hit@25 (n=279) | First-overlap MRR |
 |---|---:|---:|---:|---:|---:|
 | blastp | 279/279 | 279/279 (100.00%) | 279/279 (100.00%) | 279/279 (100.00%) | 1.0000 |
 | phmmer | 279/279 | 279/279 (100.00%) | 279/279 (100.00%) | 279/279 (100.00%) | 1.0000 |
-| hmmscan | 275/279 | 275/279 (98.57%) | 275/279 (98.57%) | 275/279 (98.57%) | 0.9857 |
+| hmmscan | 272/279 | 272/279 (97.49%) | 272/279 (97.49%) | 272/279 (97.49%) | 0.9749 |
 
-The common-profile slice is the easiest part of the selected cohort. Outside it, BLAST produced hits for 50/94 queries and its top hit shared an EC for 29/94.
+The common-profile slice is the easiest part of the selected cohort. Outside it, BLAST produced hits for 35/70 queries and its top hit shared an EC for 27/70.
 
 The Swiss-Prot reproduction tests cross-version hit-order concordance under the reported search parameters. The EnzymeX table measures top-hit EC concordance within the copied development reference's covered labels. They answer different questions and should not be combined into one accuracy.
 
-2,106/2,139 filtered development-reference sequences occur verbatim in the supplied Swiss-Prot dataset, which also supplies every query. Even after exact-sequence removal this is a close-homolog benchmark. The accession split removes exact sequences but does not impose a homology or identity cutoff.
+1,407/1,431 filtered development-reference sequences occur verbatim in the supplied Swiss-Prot dataset, which also supplies every query. Even after exact-sequence removal this is a close-homolog benchmark. The accession split removes exact sequences but does not impose a homology or identity cutoff.
 
-The methods were run only on the 373 queries selected using known truth labels; the other 19,194 fold queries were not searched against EnzymeX. These results therefore do not measure out-of-scope false assignments, specificity, broad EC prediction, or remote-homology performance.
+The methods were run only on the 349 queries selected using known truth labels; the other 19,218 fold queries were not searched against EnzymeX. These results therefore do not measure out-of-scope false assignments, specificity, broad EC prediction, or remote-homology performance.
 
 All methods use the current E-value threshold of 1e-3, but their E-values come from different models and database sizes. The table describes current default behavior, not a calibrated method contest.

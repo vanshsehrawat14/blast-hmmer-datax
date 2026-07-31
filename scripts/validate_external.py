@@ -993,6 +993,10 @@ def source_reference_summary(reference_dir: Path) -> dict:
     )
     return {
         "reference_build_id": manifest.get("reference_build_id"),
+        "reference_sources": (manifest.get("configuration") or {}).get(
+            "reference_sources"
+        ),
+        "source_counts": (manifest.get("export") or {}).get("sources"),
         "references_fasta_sha256": file_sha256(reference_dir / "references.fasta"),
         "metadata_sqlite_sha256": file_sha256(reference_dir / "metadata.sqlite3"),
         "manifest_sha256": file_sha256(manifest_path) if manifest_path.exists() else None,
@@ -1041,6 +1045,14 @@ def render_markdown(report: dict) -> str:
     covered_n = enzymex["cohorts"]["reference_covered"]["queries"]
     exact_n = enzymex["cohorts"]["exact_set_eligible"]["queries"]
     profile_n = enzymex["cohorts"]["profile_common_single_label"]["queries"]
+    source_reference = enzymex["source_reference"]
+    source_counts = source_reference.get("source_counts") or {}
+    source_order = [
+        source for source in ("swissprot", "pdb") if source in source_counts
+    ] + sorted(set(source_counts) - {"swissprot", "pdb"})
+    source_count_text = ", ".join(
+        f"{source}={source_counts[source]:,}" for source in source_order
+    ) or "not recorded"
     profile_median_identity = enzymex["blast_top_hit_identity"][
         "profile_common_single_label"
     ]["median_percent_identity"]
@@ -1140,7 +1152,10 @@ def render_markdown(report: dict) -> str:
         "## Leakage-safe copied-development EnzymeX benchmark",
         "",
         f"- Source reference build: "
-        f"`{enzymex['source_reference']['reference_build_id'] or 'unversioned'}`",
+        f"`{source_reference['reference_build_id'] or 'unversioned'}`",
+        f"- Selected source labels: "
+        f"{', '.join(source_reference.get('reference_sources') or ['not recorded'])}",
+        f"- Canonical references by source: {source_count_text}",
         f"- References: {enzymex['reference_filter']['source_references']:,} source, "
         f"{enzymex['reference_filter']['removed_reference_records_matching_test_hashes']:,} "
         "records matching test hashes removed, "
@@ -1165,6 +1180,11 @@ def render_markdown(report: dict) -> str:
         f"({_percent(enzymex['cohorts']['profile_common_single_label']['queries'] / report['split']['test_acc']['sequences'])})",
         f"- Exact query/reference sequence overlap: "
         f"{enzymex['sequence_hash_overlap_with_reference']}",
+        "",
+        "Source labels in this section come from the copied table and are not "
+        "independent upstream-provenance verification. In the committed "
+        "development fixture, `pdb` is a synthetic label on reviewed Swiss-Prot "
+        "sequences, so this report does not validate genuine PDB-derived data.",
         "",
         "### Sequence-reference scope",
         "",
@@ -1363,7 +1383,7 @@ def main(argv: list[str] | None = None) -> int:
     )
 
     report = {
-        "schema_version": 3,
+        "schema_version": 4,
         "fold": args.fold,
         "inputs": {
             "annotations": {

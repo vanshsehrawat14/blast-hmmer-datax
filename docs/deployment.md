@@ -40,9 +40,16 @@ request.
 Rebuild references after the copy changes:
 
 ```bash
+docker compose stop web
 docker compose run --rm refbuild
-docker compose restart web
+docker compose up -d web
 ```
+
+The standalone builder replaces export, BLAST and HMMER artifacts in stages,
+not as one atomic generation. Keep the web process stopped during a rebuild.
+Before production integration, build into a versioned staging directory and
+switch one active pointer only after every artifact and manifest passes health
+checks.
 
 Compose caps the web container at 4 CPU / 4 GB. Raise both if the copied
 `enzymesdata` is large. BLAST and HMMER memory scales with the reference
@@ -117,10 +124,10 @@ authentication in front of it. There is none built in.
 ```json
 {
   "status": "ok",
-  "reference_build_id": "261967e8d173",
-  "built_at": "2026-07-26T05:09:47+00:00",
-  "reference_sequences": 2380,
-  "profiles": 64,
+  "reference_build_id": "32abd580b689",
+  "built_at": "2026-07-31T04:48:17+00:00",
+  "reference_sequences": 1574,
+  "profiles": 47,
   "artifacts": {"references_fasta": true, "metadata_db": true,
                 "blast_db": true, "profile_db": true},
   "methods": {"blastp": {"enabled": true, "ok": true},

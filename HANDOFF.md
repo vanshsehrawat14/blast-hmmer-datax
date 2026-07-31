@@ -1,7 +1,8 @@
 # Handoff
 
-Final state of the standalone BLAST/HMMER test server, verified end to end on
-2026-07-29. Everything below was re-run from a clean `var/` on this commit.
+Final state of the standalone BLAST/HMMER test server, verified end to end
+after the Swiss-Prot/PDB source-policy rebuild on 2026-07-31 UTC. Everything
+below was re-run from a clean `var/` on this commit.
 
 > Independent test environment. Not the official EnzymeX codebase, nothing was
 > pushed at the EnzymeX repository, and no EnzymeX service was touched.
@@ -92,46 +93,46 @@ unreachable) or `unavailable` (503). It never contains the password.
 
 ## 4. Build statistics
 
-Build `261967e8d173`, 2026-07-28T16:21:51Z, 201.2 s total on WSL2 / Ubuntu
+Build `32abd580b689`, 2026-07-31T04:48:17Z, 137.1 s total on WSL2 / Ubuntu
 24.04, 4 build threads.
 
 | | |
 |---|---|
 | rows read from `enzymesdata` | 2,677 |
-| exported references | 2,380 |
-| skipped | 297 |
-| duplicate sequences merged (kept as provenance) | 244 |
+| exported references | 1,574 |
+| skipped | 1,103 |
+| unselected source rows | 930 (770 TrEMBL, 160 KEGG) |
+| duplicate sequences merged (kept as provenance) | 120 |
 | other skips | 47 too_short, 2 excessive_ambiguity, 1 each null / empty / internal_stop / looks_like_nucleotide |
-| sequence length | 30 to 1,861, mean 359.7 |
-| with EC annotation | 2,380 |
-| multi-EC records | 205 |
-| sources | swissprot 1,340, trembl 710, pdb 188, kegg 142 |
+| sequence length | 30 to 1,861, mean 361.1 |
+| with EC annotation | 1,574 |
+| multi-EC records | 132 |
+| canonical sources | swissprot 1,387, pdb 187 |
 
-Sources other than Swiss-Prot are the fixture's simulated provenance labels;
-every sequence in it is genuinely Swiss-Prot. On a real copy this column is the
-copy's own.
+The fixture's PDB values are simulated provenance labels; every sequence in it
+is genuinely Swiss-Prot. This build validates the Swiss-Prot/PDB selection and
+deduplication code, not PDB ingestion or upstream provenance.
 
 Profile layer:
 
 | | |
 |---|---|
-| clusters (MMseqs2, 35% id / 80% bidirectional coverage) | 242 |
-| accepted | 64 |
-| rejected | 178, all `too_few_members` |
-| profiles built | 64 (0 failed alignment or profile QC) |
-| references covered by a profile | 2,113 of 2,380 (88.8%) |
-| distinct consensus EC | 15 |
-| mean EC purity | 1.00 |
+| clusters (MMseqs2, 35% id / 80% bidirectional coverage) | 201 |
+| accepted | 47 |
+| rejected | 154, all `too_few_members` |
+| profiles built | 47 (0 failed alignment or profile QC) |
+| references covered by a profile | 1,352 of 1,574 (85.9%) |
+| distinct consensus EC | 12 |
+| mean EC purity | 0.9994 |
 | match states | 143 to 917 |
-| mean pairwise identity | median 0.558, min 0.375 |
+| mean pairwise identity | median 0.5275, min 0.4082 |
 
-Stage timings: export 1.0 s, `makeblastdb` 0.9 s, cluster + MAFFT + hmmbuild +
-hmmpress 195.6 s. The profile layer is ~97% of the build.
+Stage timings: export 1.0 s, `makeblastdb` 0.5 s, cluster + MAFFT + hmmbuild +
+hmmpress 133.9 s. The profile layer is ~98% of the build.
 
-**One EC gives several profiles, as intended.** Glutathione transferase
-(2.5.1.18) produces 14, carbonic anhydrase (4.2.1.1) 10, superoxide dismutase
-(1.15.1.1) 6. The six SOD profiles split by fold, not by EC: EXF00003 (Mn/Fe),
-EXF00033 (Mn), EXF00057 (Fe) against EXF00005, EXF00030, EXF00035 (all Cu/Zn).
+**One EC can still give several profiles, as intended.** The 47 profiles carry
+12 distinct consensus EC labels because clustering follows sequence family
+rather than forcing every protein for one reaction into one alignment.
 
 ## 5. Test results
 
@@ -143,8 +144,8 @@ make test-db     # needs ENZYMEX_DB_* pointing at a copy
 
 | run | result |
 |---|---|
-| `make test`, no DB credentials exported | **157 passed, 13 skipped** (20.7 s) |
-| `make test`, credentials exported | **170 passed, 0 skipped** (20.9 s) |
+| `make test`, no DB credentials exported | **170 passed, 13 skipped** (30.9 s) |
+| `make test`, credentials exported | **183 passed, 0 skipped** (22.8 s) |
 
 The 13 skips are the `mysql`-marked tests in `tests/test_database.py`; they run
 only when `ENZYMEX_DB_PASSWORD` is in the environment. `tests/test_e2e.py`
@@ -171,28 +172,28 @@ set it is a strong positive, which is why the demo does not use it.
 
 ## 7. Expected demo output
 
-**Positive**, ~1.5 s, all three methods:
+**Positive**, 0.93 s, all three methods:
 
 * `blastp` 25 hits. Top: `EXR2306`, Q8HXP6 Superoxide dismutase [Mn]
   mitochondrial, EC 1.15.1.1, swissprot, 99.1% identity, 222 aa alignment,
-  100% query and subject coverage, E 1.2e-168, bit score 459. Every one of the
+  100% query and subject coverage, E 7.8e-169. Every one of the
   25 is EC 1.15.1.1.
 * `phmmer` 25 hits, same top four references in the same order, no identity
   column, query region 1–222.
-* `hmmscan` **exactly 3 profiles**: EXF00003 (135 members, E 1.4e-92),
-  EXF00033 (13 members, E 1.1e-75), EXF00057 (5 members, E 2.4e-50). All
-  consensus EC 1.15.1.1, all 100% EC purity. **No Cu/Zn profile appears**,
-  which is the correct result for a Mn-SOD query.
+* `hmmscan` **exactly 2 profiles**: EXF00003 (90 members, E 1.3e-93) and
+  EXF00027 (11 members, E 1.4e-72). Both have consensus EC 1.15.1.1 and 100%
+  EC purity. **No Cu/Zn profile appears**, which is the correct result for a
+  Mn-SOD query.
 
-**Negative**, ~1.4 s: "No hits" from all three methods, each quoting its own
+**Negative**, 0.85 s: "No hits" from all three methods, each quoting its own
 threshold (E ≤ 1e-03), with the page stating that this means no detectable
 relative in the reference set rather than "not an enzyme".
 
-A useful detail visible in the positive run: `EXR2307` shows 100.0% identity but
-only 89% query coverage, because that reference is a 198-aa fragment. It is the
-reason the page pairs identity with coverage and greys out coverage below 50%.
-
 ## 8. Screenshots
+
+These screenshots predate the Swiss-Prot/PDB source-policy rebuild. The layout
+and method states remain representative, but their build id and hit identifiers
+are historical.
 
 | | |
 |---|---|
@@ -208,28 +209,27 @@ Beyond the automated suite, this handoff checked that the displayed values
 belong to the record they are printed against. A clean pipeline with a wrong
 mapping would pass every unit test.
 
-1. **Every reference row against its source row.** All 2,380 `reference` rows
+1. **Every reference row against its source row.** All 1,574 `reference` rows
    in `metadata.sqlite3` re-checked against `enzymesdata` via `source_pk`:
    identifier derivation, normalised EC, normalised source, sequence SHA-256
    and length. **0 mismatches.**
-2. **FASTA against metadata.** All 2,380 deflines and sequences in
+2. **FASTA against metadata.** All 1,574 deflines and sequences in
    `references.fasta` checked against SQLite. **0 mismatches.** This is what
    makes `sseqid` a safe lookup key: `makeblastdb` runs without `-parse_seqids`,
    so BLAST returns the identifier byte-for-byte.
-3. **Displayed numbers against raw tool output.** `blastp` re-run standalone
-   for the positive query. Identity, alignment length, E-value, bit score and
-   coverage on the page match the raw table exactly for all four top hits
-   (e.g. `EXR2306` 99.099 / 1.17e-168 / 459 / qcovs 100).
-4. **Top hits traced to MySQL.** `EXR2306`→id 2306 Q8HXP6, `EXR2304`→2304
-   Q8HXP3, `EXR1966`→1966 Q5FB30, `EXR2630`→2630 Q9XS41. EC and source on the
-   page match the row in every case.
-5. **Profile identity.** The Mn-SOD query hit the three Mn/Fe profiles and none
-   of the three Cu/Zn profiles. A per-EC profile would have merged all six.
-6. **HMMER coordinate normalisation.** `phmmer` reports query regions on the
-   *submitted* sequence: the 198-aa reference `EXR2307` shows region 25–222 and
-   89% query coverage, consistent with 198/222. The role flip between phmmer
-   (query becomes the profile) and hmmscan (profile is the target) is handled
-   in `app/search/parsers.py` and is correct in both directions.
+3. **Selected-source provenance.** All 120 `reference_duplicate` rows were
+   checked against their source row as well. Every canonical and duplicate row
+   is normalized to `swissprot` or `pdb`; eight exact-sequence groups promoted
+   a later Swiss-Prot row over an earlier PDB row.
+4. **Actual-tool positive and negative checks.** Human SOD2 returned 25 BLAST
+   hits, 25 phmmer hits and 2 profile hits in 0.93 s total. Unrelated GFP
+   returned no hits from all three methods in 0.85 s.
+5. **Profile identity.** The current SOD profile metadata remains separated
+   into two Mn/Fe-family profiles and three Cu/Zn-family profiles. A per-EC
+   profile would have merged unrelated folds.
+6. **HMMER coordinate normalisation.** The role flip between phmmer (query
+   becomes the profile) and hmmscan (profile is the target) is covered in
+   `app/search/parsers.py` and its parser tests.
 7. **Example sequence.** The placeholder FASTA on the submission page is
    genuinely UniProt P00330 (yeast ADH1), byte-identical to UniProt and to the
    test fixture.
@@ -237,16 +237,16 @@ mapping would pass every unit test.
    BLAST/DIAMOND index and no `.hmm`. `/health` reports
    `enzymex_ro@127.0.0.1:3307/enzymex_copy` and never the password.
 
-## External fold validation (2026-07-29)
+## External fold validation for the source-policy build
 
 The supplied Swiss-Prot fold was also validated independently. The split has
 no accession or exact-sequence overlap, and BLAST 2.16 selected the same raw
 top subject as the shared BLAST+ 2.5.0 output for all 452 sampled queries with
-hits in both runs. For the copied development EnzymeX build, removing all 241
-references matching a test sequence left 2,139 references. On the 373
+hits in both runs. For source-policy build `32abd580b689`, removing all 143
+references matching a test sequence left 1,431 references. On the 349
 truth-selected queries covered by those reference ECs, BLAST and phmmer had
-82.57% and 82.04% top-hit EC overlap, while taking 10.1 s and 133.3 s. hmmscan
-reached 98.57% only on the much narrower 279-query profile-covered slice.
+87.68% and 86.82% top-hit EC overlap, while taking 7.8 s and 130.4 s. hmmscan
+reached 97.49% only on the much narrower 279-query profile-covered slice.
 
 This supports BLAST as the default sequence-evidence search, with profile HMMs
 as optional family evidence. It does not support adding phmmer to every job
@@ -256,14 +256,14 @@ raw-artifact hashes and results are in
 
 ## 10. Known limitations
 
-* Profile HMMs cover a QC-passing subset (88.8% here), never the whole
+* Profile HMMs cover a QC-passing subset (85.9% here), never the whole
   reference set. The results page says so on every profile result.
-* 178 of 242 clusters were rejected for having fewer than 5 members. On a
+* 154 of 201 clusters were rejected for having fewer than 5 members. On a
   larger copy that ratio will change; check `skipped_clusters.tsv` and
   `profile_member_coverage` before trusting the layer.
 * `phmmer` is the slowest method and scales with reference count. First thing
   to need a raised timeout on a large copy.
-* The build is ~97% MAFFT + `hmmbuild`, run serially. Embarrassingly parallel
+* The profile layer is ~98% of the build and runs serially. It is parallelisable
   if it ever matters.
 * Searches run synchronously behind a 2-slot semaphore; excess submissions get
   503 rather than queueing.
@@ -327,7 +327,7 @@ result  = run_search(settings, records, ["blastp", "phmmer", "hmmscan"])
    `skipped.tsv`, `skipped_clusters.tsv` and `profile_member_coverage`. Expect
    `ENZYMEX_PROFILE_MIN_MEMBERS` to need raising if the accepted-cluster count
    makes the MAFFT loop too slow. Every runtime figure in these docs comes from
-   2,380 references; none of them transfer.
+   1,574 references; none of them transfer.
 3. **Wire `run_search` into a scratch view and re-run check 9.4 above** on real
    data: pick hits and trace them back to `enzymesdata` rows by `source_pk`.
    Do this before any UI work.
@@ -340,16 +340,18 @@ result  = run_search(settings, records, ["blastp", "phmmer", "hmmscan"])
    one. `results/comparison/comparison_report.md` quantifies it: DIAMOND's
    default mode missed the most distant positive that `--very-sensitive`,
    BLAST and HMMER all found.
-6. **Settle identifier policy.** References are `EXR<enzymesdata.id>`. To
-   surface UniProt accessions instead, the mapping is already in
-   `metadata.sqlite3` (`source_pk`, `description`). Change the display, not the
-   internal identifier: the internal one is what keeps deflines safe for the
-   tools.
+6. **Settle identifier policy.** References are
+   `EXR<stable copy/view key>`. A copy-side view must expose a stable unique
+   `id` if the real table has no primary key. `source_pk` stores that key;
+   `UniprotID`, including PDB-style values, is currently embedded only in
+   `description`. Add a structured source-identifier field during integration
+   if the production page needs it. Keep the safe internal ID for tool
+   deflines.
 7. **Port the markup last**, keeping the three tables separate.
 
 Longer form in [`docs/integration.md`](docs/integration.md).
 
-## 13. Changes made during this audit
+## 13. Changes made during the final audit
 
 * Documented the local fixture MySQL setup in `docs/database.md`. It was the
   one step with no written procedure, which made a rebuild unreproducible from
@@ -364,6 +366,8 @@ Longer form in [`docs/integration.md`](docs/integration.md).
 * Rewrote user-facing copy on all five templates and the submission error
   messages, and removed em dashes and padding from `README.md` and `docs/`.
 * Marked `*.jpg`/`*.png` binary in `.gitattributes` for the screenshots.
-
-No functional change to the search pipeline, the parsers, the reference build
-or the result model. Nothing in the audit found a wrong value on the page.
+* Restricted BLAST, phmmer and profile-HMM references to normalized Swiss-Prot
+  and PDB rows, made Swiss-Prot canonical for exact cross-source duplicates,
+  and kept duplicate-row provenance.
+* Added a transactional two-pass export, explicit source statistics, external
+  fold source reporting and failed-export artifact protection.

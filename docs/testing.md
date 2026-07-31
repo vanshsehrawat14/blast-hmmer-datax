@@ -13,19 +13,19 @@ deterministic BLAST subset and rebuilds a leakage-safe EnzymeX reference for
 the BLAST/HMMER comparison. See
 [`external-validation.md`](external-validation.md).
 
-170 tests, ~20 s on a laptop. Tests that need something absent skip rather
+183 tests, ~30 s on a laptop. Tests that need something absent skip rather
 than fail, so a fresh clone with no tools installed still runs the unit suite.
 
 | file | covers |
 |---|---|
 | `test_fasta.py` | parsing, normalization, every rejection reason, internal id assignment, nucleotide detection |
 | `test_parsers.py` | BLAST HSP folding and coverage, the phmmer/hmmscan coordinate role-flip, malformed output, ranking |
-| `test_export.py` | export against a stubbed MySQL: null/malformed rows, dedup with provenance, EC and source normalization, missing columns, determinism |
+| `test_export.py` | stubbed MySQL export: source policy, canonical provenance, transaction/staging failures, malformed rows, missing columns, determinism |
 | `test_cluster.py` | every QC gate, alignment core columns, pairwise identity sampling, consensus EC with multi-EC members |
 | `test_jobs.py` | id generation, path traversal, directory isolation and permissions, persistence, retention sweep |
 | `test_service.py` | method selection, disabled methods, partial failure, metadata resolution, concurrency bound, flat-row schema |
 | `test_web.py` | every validation path through HTTP, results rendering for ok/no-hit/failed/disabled, HTML escaping, CSV/JSON downloads, health |
-| `test_database.py` | the real driver: copy acknowledgement, identifier validation, read-only session, key-ordered streaming |
+| `test_database.py` | real driver: copy acknowledgement, storage engine, identifier validation, read-only session, key-ordered streaming |
 | `test_e2e.py` | real tools, real artifacts, real HTTP |
 | `test_pipeline.py` | the original proof-of-concept outputs |
 | `test_external_validation.py` | fold leakage checks, streaming BLAST analysis, EC metrics and filtered-reference construction |
@@ -77,19 +77,13 @@ Then:
 
 ## Runtime measured on the development build
 
-2,380 references, 64 profiles, `ENZYMEX_SEARCH_THREADS=2`, WSL2 / Ubuntu
-24.04. Medians of three runs.
+Build `32abd580b689`: 1,574 references, 47 profiles,
+`ENZYMEX_SEARCH_THREADS=2`, WSL2 / Ubuntu 24.04. Single post-build checks:
 
-| queries | method | wall clock |
-|---|---|---|
-| 1 | blastp | 0.30 s |
-| 1 | phmmer | 1.16 s |
-| 1 | hmmscan | 0.27 s |
-| 1 | all three | 1.96 s |
-| 3 | all three | 3.16 s |
-| 10 | all three | 9.01 s |
-
-Peak resident memory: 55 MB in the web process, 83 MB across children.
+| one-query check | blastp | phmmer | hmmscan | all three |
+|---|---:|---:|---:|---:|
+| human SOD2 positive | 0.222 s | 0.278 s | 0.174 s | 0.925 s |
+| unrelated GFP | 0.224 s | 0.228 s | 0.172 s | 0.850 s |
 
 phmmer dominates and scales with the number of references; the other two
 scale with query count more than database size at this scale. These are

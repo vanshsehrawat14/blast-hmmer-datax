@@ -86,9 +86,10 @@ each artifact. `metadata.sqlite3` keeps `source_pk` for every reference, plus a
 `reference_duplicate` row for every additional `enzymesdata` record that shared
 an identical sequence, so any hit traces back to the exact rows it represents.
 
-EnzymeX itself derives `enzymesdata` from Swiss-Prot, TrEMBL, PDB and KEGG.
-Anyone displaying those sequences or annotations downstream inherits the
-attribution requirements of whichever of those sources a record came from; the
+The handoff materials variously describe `enzymesdata` as drawing from
+Swiss-Prot, PDB, KEGG and, in some documents, TrEMBL. Anyone displaying those
+sequences or annotations downstream inherits the attribution requirements of
+whichever source a record came from; the
 `source` column is preserved through the export for exactly that reason.
 
 Development was done against a **synthetic fixture**, not real EnzymeX data —
@@ -164,8 +165,10 @@ assigned synthetically to simulate the provenance mix; every sequence is
 genuinely Swiss-Prot. Ten deliberately damaged rows are added to exercise the
 export's validation and skip reporting.
 
-The build reported in the README is 2,677 fixture rows → 2,380 references.
-Retrieval date 2026-07-26; the same CC BY 4.0 terms apply.
+The source-policy build reported in the README is 2,677 fixture rows → 1,574
+Swiss-Prot/PDB-labelled references after validation, source selection and
+exact-sequence deduplication. Retrieval date 2026-07-26; the same CC BY 4.0
+terms apply.
 
 ---
 
@@ -474,8 +477,8 @@ every tool completes effectively instantly. No DIAMOND timings were measured
 and none should be inferred from this repository.
 
 **Runtime figures for the test server are measurements, not benchmarks.** The
-numbers in the README and `docs/testing.md` describe one build (2,380
-references, 64 profiles) on one machine (WSL2 / Ubuntu 24.04). They are there
+numbers in the README and `docs/testing.md` describe one build (1,574
+references, 47 profiles) on one machine (WSL2 / Ubuntu 24.04). They are there
 so the deployment guidance is grounded in something, not to compare tools.
 
 **EnzymeX itself is not modified.** No code in this repository was taken from,

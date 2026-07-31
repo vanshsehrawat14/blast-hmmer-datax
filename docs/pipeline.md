@@ -1,14 +1,14 @@
 # What the pipeline does
 
 Nine questions about how a submitted sequence becomes a row on the results
-page, answered against build `261967e8d173` (2,380 references, 64 profiles).
+page, answered against build `32abd580b689` (1,574 references, 47 profiles).
 
 ```
 OFFLINE BUILD                 minutes, run by hand or on a schedule
 
   enzymesdata  ->  export  ->  references.fasta  ->  makeblastdb
-  (MySQL copy)     validate     2,380 refs          cluster -> MAFFT -> hmmbuild
-   2,677 rows      dedupe                           metadata.sqlite3
+  (MySQL copy)     validate     1,574 refs          cluster -> MAFFT -> hmmbuild
+   2,677 rows      source filter + dedupe           metadata.sqlite3
 
 ============ a user request never crosses this line ============
 
@@ -42,21 +42,30 @@ hop in it.
 
 ## How the reference FASTA is created
 
-Rows stream out of `enzymesdata` ordered by primary key, which is what makes
-the output byte-stable between runs and the build id meaningful. Each sequence
-is normalised (case folded, whitespace and residue numbering stripped, gap
-characters removed, a trailing `*` dropped) and then tested: internal stop
-codon, non-IUPAC letters, length outside 30 to 10,000, more than 10% ambiguous
+Rows stream out of `enzymesdata` ordered by a stable export key: a table
+primary key or a deterministic unique view column named `id`. That makes the
+output byte-stable between runs and the build id meaningful. Two scans run
+inside one repeatable-read, read-only snapshot so Swiss-Prot can win canonical
+metadata over an earlier PDB duplicate without observing two database states.
+That guarantee requires InnoDB, or a view whose operator has confirmed that
+its source tables are transactional.
+Each sequence is normalised (case folded, whitespace and residue numbering
+stripped, gap characters removed, a trailing `*` dropped) and then tested:
+internal stop codon, non-IUPAC letters, length outside 30 to 10,000, more than
+10% ambiguous
 residues, or a composition that looks like nucleotides pasted into a protein
-column.
+column. Valid rows are then restricted to normalized `swissprot` and `pdb`
+sources before exact-sequence deduplication.
 
-Survivors get the identifier `EXR<primary key>`, restricted to alphanumerics
+Survivors get the identifier `EXR<stable export key>`, restricted to alphanumerics
 because BLAST and HMMER split a defline at whitespace and BLAST reinterprets
 `|`. Identical sequences are merged by SHA-256: keeping them would make BLAST
 return the same alignment several times and inflate the database size the
 E-value is computed against. The merged rows are not discarded, they go to a
 `reference_duplicate` table so a hit still traces back to every database row it
-represents.
+represents. For an exact Swiss-Prot/PDB match, the Swiss-Prot row is preferred
+as canonical metadata and the PDB row is retained as provenance; fields are
+not merged across rows.
 
 ```
 >EXR2306 EC=1.15.1.1 src=swissprot
@@ -65,9 +74,9 @@ LNVTEEKYQEALAKGDVTAQIALQPALKFNGGGHINHSIFWTNLSPNGGGEPKGELLEAIK
 ```
 
 Every rejection is counted by reason and listed in `skipped.tsv`. On this
-build: 2,677 rows in, 2,380 references out, 297 skipped (244 duplicate
-sequences, 47 too short, one each of null, empty, internal stop and nucleotide
-text).
+build: 2,677 rows in, 1,574 references out, 1,103 skipped (930 unselected
+TrEMBL/KEGG rows, 120 selected-source duplicates, 47 too short, two excessively
+ambiguous, and one each of null, empty, internal stop and nucleotide text).
 
 ## Why BLAST databases are built offline
 
@@ -75,8 +84,8 @@ Partly because they have to be. `blastp` cannot search a flat FASTA file, it
 needs the index files `makeblastdb` writes. But the real reason is cost.
 Rebuilding inside a request would mean re-reading the whole table, forking
 MAFFT once per family, and letting one submission stall every other. Here the
-BLAST index takes 0.9 s while the full build takes 201 s, roughly 97% of it
-MAFFT plus `hmmbuild` across 64 families. On a real copy that grows with the
+BLAST index takes 0.5 s while the full build takes 137 s, roughly 98% of it
+in clustering and the 47-family profile layer. On a real copy that grows with the
 table.
 
 The versioning argument matters as much. Because the FASTA, the BLAST index,
@@ -149,8 +158,8 @@ however many sequences a user happened to paste, so the same protein would
 score differently depending on what was submitted alongside it. `hmmscan`
 scores against a fixed profile database, so a result is reproducible.
 
-The layer is deliberately partial. On this build 64 profiles cover 2,113 of
-2,380 references (88.8%); the other 178 clusters were rejected for having fewer
+The layer is deliberately partial. On this build 47 profiles cover 1,352 of
+1,574 references (85.9%); the other 154 clusters were rejected for having fewer
 than five members. The page states that coverage on every profile result, so an
 absent profile hit is never read as evidence of absence.
 
@@ -167,29 +176,26 @@ then meaningless rather than merely weak, which is worse: a number that looks
 like evidence and is not.
 
 The build makes the point concretely. Superoxide dismutase (EC 1.15.1.1)
-produced six profiles, and they split by fold, not by EC:
+produced five profiles, and they split by fold, not by EC:
 
 | profile | members | representative | fold |
 |---|---|---|---|
-| `EXF00003` | 135 | P0C0Q6 Superoxide dismutase [Mn/Fe] | Mn/Fe |
-| `EXF00033` | 13 | P28767 Superoxide dismutase [Mn] | Mn/Fe |
-| `EXF00057` | 5 | Q5VSB7 Superoxide dismutase [Fe] 2 | Mn/Fe |
-| `EXF00005` | 108 | Q9FK60 Superoxide dismutase [Cu-Zn] 3 | Cu/Zn |
-| `EXF00030` | 16 | P20379 Superoxide dismutase [Cu-Zn] | Cu/Zn |
-| `EXF00035` | 11 | P36214 Superoxide dismutase [Cu-Zn], chloroplastic | Cu/Zn |
+| `EXF00003` | 90 | Q81LW0 Superoxide dismutase [Mn] 1 | Mn/Fe |
+| `EXF00027` | 11 | P28767 Superoxide dismutase [Mn], mitochondrial | Mn/Fe |
+| `EXF00005` | 74 | Q54TU5 Superoxide dismutase [Cu-Zn] 4 | Cu/Zn |
+| `EXF00029` | 11 | P0AGD1 Superoxide dismutase [Cu-Zn] | Cu/Zn |
+| `EXF00035` | 9 | A0A1D1VU85 Superoxide dismutase [Cu-Zn] | Cu/Zn |
 
 Cu/Zn superoxide dismutase is a Greek-key beta-barrel; Mn/Fe superoxide
 dismutase is an unrelated fold entirely. One per-EC profile would have aligned
-all six groups into a single model of nothing. The same pattern holds elsewhere
-in the build: glutathione transferase (2.5.1.18) gives 14 profiles, carbonic
-anhydrase (4.2.1.1) gives 10, matching its alpha, beta and gamma classes.
+all five groups into a single model of nothing.
 
 So the ordering is deliberate: cluster on sequence similarity first, attach EC
 annotation to the resulting families afterwards, and *report* how homogeneous
 each family's annotation is (`ec_purity`) instead of assuming it. References
 with no EC at all still contribute to a family.
 
-The human Mn-SOD demo query hit exactly the three Mn/Fe profiles and none of
+The human Mn-SOD demo query hit exactly two Mn/Fe profiles and none of
 the three Cu/Zn profiles. That is the outcome the cluster-first design exists
 to produce, and it is the check worth repeating against the real EnzymeX data.
 
@@ -212,14 +218,14 @@ labelled sequence-comparison evidence, not EC predictions, and the page says
 ECPICK, HIT-EC and CLEAN are not run here. Query coverage below 50% is greyed
 out, because identity without coverage is meaningless. E-values are stated to
 be incomparable across the three tables, since BLAST and phmmer score against
-2,380 sequences under different models and hmmscan scores against 64 profiles.
+1,574 sequences under different models and hmmscan scores against 47 profiles.
 A no-hit result says the reference set holds no detectable relative, not that
 the protein is not an enzyme. Low EC purity is flagged as a reason not to read
 the consensus EC as a prediction. CSV and JSON exports carry a row for a method
 that found nothing, so "searched, found nothing" stays distinguishable from
 "never ran".
 
-All 2,380 reference records were re-checked against the MySQL rows they came
+All 1,574 reference records were re-checked against the MySQL rows they came
 from (identifier, EC, source, sequence hash, length) and against the FASTA
 deflines: zero mismatches in both directions. Identity, E-value, bit score and
 coverage on the page were compared against a standalone `blastp` run and
@@ -227,18 +233,19 @@ matched exactly. See [`HANDOFF.md`](../HANDOFF.md).
 
 ## What changes once EnzymeX access is granted
 
-Less than it looks. Everything under `app/search/` and `app/references/`, plus
-`fasta.py`, `schemas.py` and `jobs.py`, imports no web framework, so the port
-is a function call and a template. What genuinely changes:
+The search core is framework-independent, but the host integration is more
+than a template change. EnzymeX needs adapters for its settings, scheduler,
+job/result persistence, temporary directories and result-page composition:
 
 1. **Confirm the schema first, before anything else.** The column alias table
    in `db.py` was written against the documented column list and verified only
    against a synthetic fixture. Run `enzymex-refbuild inspect` against the real
    copy; if a column resolves to the wrong name that table is the only edit. If
-   the real table has no primary key, export from a view that supplies one,
-   because identifiers and ordering both depend on it.
+   the real table has no primary key, export from a view that supplies a stable
+   unique `id`, because identifiers and ordering both depend on it. Confirm the
+   physical table uses InnoDB, or that a view reads only transactional tables.
 2. **Every number in these docs is void.** They all come from a
-   2,380-reference build. Cluster thresholds and QC gates were chosen at that
+   1,574-reference fixture build. Cluster thresholds and QC gates were chosen at that
    scale. Expect `ENZYMEX_PROFILE_MIN_MEMBERS` to need raising, and read
    `profile_member_coverage` in the manifest before trusting the profile layer.
 3. **Re-run the provenance check on real data** before any UI work: pick hits,
@@ -253,10 +260,11 @@ is a function call and a template. What genuinely changes:
    so present both with the difference labelled or drop one. The
    proof-of-concept comparison quantifies it: DIAMOND's default mode missed the
    most distant positive that `--very-sensitive`, BLAST and HMMER all found.
-6. **Settle identifier policy.** References are `EXR<id>` internally. To show
-   UniProt accessions instead, the mapping is already stored. Change the
-   display, not the internal identifier: the internal one is what keeps
-   deflines safe for the tools.
+6. **Settle identifier policy.** References are `EXR<stable copy/view key>`
+   internally. `source_pk` stores that key, while `UniprotID` is currently
+   embedded only in the description. Add a structured source-identifier field
+   during integration if the page needs it, while keeping the safe internal ID
+   for BLAST/HMMER deflines.
 7. **Drop `app/web/`.** The results page is a reference for what to show, not
    markup to lift. The one thing worth preserving is that the three tables stay
    separate.

@@ -44,11 +44,11 @@ gives:
 
 | EC | reaction | distinct profiles |
 |---|---|---|
-| 2.5.1.18 | glutathione transferase | 14 |
-| 4.2.1.1 | carbonic anhydrase | 10 |
-| 1.15.1.1 | superoxide dismutase | 6 |
-| 1.1.1.1 | alcohol dehydrogenase | 5 |
-| 5.3.1.9 | glucose-6-phosphate isomerase | 5 |
+| 2.5.1.18 | glutathione transferase | 13 |
+| 4.2.1.1 | carbonic anhydrase | 4 |
+| 1.15.1.1 | superoxide dismutase | 5 |
+| 1.1.1.1 | alcohol dehydrogenase | 3 |
+| 5.3.1.9 | glucose-6-phosphate isomerase | 4 |
 
 Superoxide dismutase and carbonic anhydrase are the textbook cases. Cu/Zn,
 Mn/Fe and Ni SODs, and the α/β/γ carbonic anhydrase classes, are unrelated
@@ -126,8 +126,8 @@ size of whatever is playing the role of the database:
   database, which is fixed by the build.
 
 Reproducibility of the reported statistic is worth more than the speed
-difference at this scale, measured at 0.27 s for one sequence against 64
-profiles.
+difference at this scale. On the current 47-profile build, the post-build
+single-query checks took 0.174 s for human SOD2 and 0.172 s for unrelated GFP.
 
 ## Reading the numbers
 

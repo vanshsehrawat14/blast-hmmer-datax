@@ -4,11 +4,13 @@
 > EnzymeX production codebase and does not modify the live EnzymeX service.
 > Nothing here has been deployed to, or pushed at, the EnzymeX repository.
 
-## What is portable as-is
+## Portable core and required adapters
 
-Everything under `app/references/` and `app/search/`, plus `app/fasta.py`,
-`app/schemas.py`, `app/jobs.py` and `app/config.py`. None of it imports
-FastAPI, Jinja2 or Starlette. The dependency edge runs one way:
+The search logic under `app/search/`, plus `app/fasta.py` and `app/schemas.py`,
+is framework-independent. The reference builder is also reusable against a
+compatible copied schema. EnzymeX still needs adapters for its settings,
+scheduler, job/result persistence, artifact directories and result page. The
+dependency edge runs one way:
 
 ```
 app/web/  ──►  app/search/  ──►  app/references/  ──►  app/config.py
@@ -26,22 +28,37 @@ result  = run_search(settings, records, ["blastp", "phmmer", "hmmscan"])
 # result is a JobResult; result.flat_rows() is the tabular form
 ```
 
-`run_search` is synchronous, does its own job-directory management and
-cleanup, and returns a Pydantic model. In a Pyramid view that is a single
-call; the only thing to replace is the template.
+`run_search` is synchronous, manages standalone job directories and returns a
+Pydantic model. This call is the integration boundary, but the Pyramid
+application must adapt it to EnzymeX's existing scheduled job, `job`,
+`job_result`, `ref_data`, temporary-directory and result-page behavior.
 
 ## What must change once EnzymeX repository access is granted
 
 1. **Confirm the real `enzymesdata` schema.** The alias table in
    `app/references/db.py` was written against the documented column list and
-   verified against a synthetic fixture. Run `enzymex-refbuild inspect`
-   against the actual copy first; if a column resolves to the wrong name or a
-   needed one is missing, that table is the only thing to edit. If the real
-   table has no primary key, the export needs a view that supplies one.
+   verified against a synthetic fixture. The July 2026 handoff presentation
+   shows `Source` and `UniprotID` but no marked primary key; `UniprotID` is now
+   recognized as an accession alias, but the screenshot is not a substitute
+   for inspecting the actual copy. Run `enzymex-refbuild inspect` first. If the
+   real table has no primary key, the export needs a read-only copy-side view
+   that supplies a deterministic key.
+
+   Also inspect the real source vocabulary and counts. The exporter now fails
+   closed without a source column and selects only normalized `swissprot` and
+   `pdb` rows. The handoff documents say `enzymesdata` contains only subsets of
+   the upstream databases, so a successful build must not be described as the
+   complete Swiss-Prot or PDB corpus.
+
+   The two-pass export requires InnoDB or a view whose source tables are
+   transactional. The builder rejects a physical table with another reported
+   engine; inspect the underlying tables separately when exporting through a
+   view.
 
 2. **Re-measure the build.** Every runtime figure in these docs comes from a
-   2,380-reference build. The clustering thresholds and QC gates are defaults
-   chosen on that scale; on the real table, check `skipped_clusters.tsv` and
+   1,574-reference synthetic fixture build. The clustering thresholds and QC
+   gates are defaults chosen on that scale; on the real table, check
+   `skipped_clusters.tsv` and
    `profile_member_coverage` in the manifest before trusting the profile layer,
    and expect `ENZYMEX_PROFILE_MIN_MEMBERS` to need raising if the number of
    accepted clusters makes the MAFFT loop too slow (see
@@ -51,6 +68,10 @@ call; the only thing to replace is the template.
    copied database and write access to an artifact directory. It must not run
    inside a request. A cron job or a manual step after each database refresh
    is enough; the build id makes it obvious when the artifacts are stale.
+   The standalone `all` command replaces export, BLAST and HMMER artifacts in
+   stages, so keep its web process stopped during rebuilds. For EnzymeX, build
+   a complete versioned generation and switch an active pointer only after all
+   artifacts pass validation.
 
 4. **Replace `app/web/` with EnzymeX views and templates.** The results page
    here is a reference implementation of *what to show*, not markup to lift.
@@ -64,7 +85,9 @@ call; the only thing to replace is the template.
    in the request. `run_search` is a plain function and will work either way.
 
 6. **Reconcile with DIAMOND.** EnzymeX already uses DIAMOND internally to
-   retrieve similar proteins. DIAMOND and blastp answer the same question at
+   retrieve up to 20 similar proteins for interpretation, with a documented
+   30% similarity cutoff and a same-predicted-EC random fallback when no hit is
+   found. DIAMOND and blastp answer the same question at
    different sensitivity, so on the real page they should either be presented
    together with the difference labelled, or one of them should be dropped.
    Showing both without explanation invites the reader to treat two E-values
@@ -73,16 +96,21 @@ call; the only thing to replace is the template.
    small set: DIAMOND's default mode missed the most distant positive query
    that `--very-sensitive`, BLAST and HMMER all found.
 
-7. **Settle identifier policy.** References here are `EXR<enzymesdata.id>`.
-   If EnzymeX would rather surface UniProt accessions on the page, the
-   mapping is already in `metadata.sqlite3` (`source_pk`, `description`).
-   Change the display, not the internal identifier, because the internal one
-   is what keeps deflines safe for the tools.
+7. **Settle identifier policy.** References here are
+   `EXR<stable copy/view key>`. If the real table lacks a primary key, the
+   copy-side view must expose its deterministic unique key as `id`, which the
+   schema detector accepts as the export key. `source_pk` stores that key.
+   `UniprotID` values, including PDB-style identifiers in the handoff example,
+   are currently embedded only in `description`; they are not a structured
+   accession mapping. Preserve them in a dedicated metadata field during the
+   EnzymeX integration if the result page needs them. Keep the safe internal
+   ID for BLAST/HMMER deflines.
 
 ## Suggested order of work
 
-1. Point `enzymex-refbuild inspect` at the real copy; fix the alias table if
-   needed.
+1. Point `enzymex-refbuild inspect` at the real copy; verify its primary key,
+   storage engine, source vocabulary, `UniprotID` mapping and representative
+   PDB identifiers.
 2. Run a full build with `ENZYMEX_EXPORT_LIMIT` set, then unset. Compare the
    manifests.
 3. Wire `run_search` into a scratch EnzymeX view and check hits resolve to the
