@@ -28,3 +28,4 @@ Dockerfile text eol=lf
 # Screenshots in docs/. Never touch these.
 *.jpg binary
 *.png binary
+*.pptx binary

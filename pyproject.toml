@@ -23,6 +23,7 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = ["pytest>=8.0", "httpx>=0.27"]
+slides = ["python-pptx>=1.0"]
 
 [project.scripts]
 enzymex-refbuild = "app.references.cli:main"
