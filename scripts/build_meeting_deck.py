@@ -775,7 +775,7 @@ def build_deck(output: Path, logo_deck: Path | None) -> None:
             "On the fixture, GFP returned no hits from all three methods.",
             "On 272,112 real references: 25 blastp hits, top E 8.4e-175 at 97.5% identity.",
             "Every hit is a PDB GFP-fusion construct, GFP joined to an unrelated protein.",
-            "Those 25 hits carry eight different EC annotations. None of them belong to GFP.",
+            "15 of the 25 carry an EC, spanning eight distinct values. None belong to GFP.",
         ],
         0.98,
         4.36,

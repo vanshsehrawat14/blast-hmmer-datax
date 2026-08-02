@@ -130,8 +130,45 @@ layer. Scaling notes: [`docs/reference-build.md`](docs/reference-build.md).
 
 These are measurements of this build, not performance claims about the tools.
 The fixture's `pdb` values are test labels on reviewed Swiss-Prot sequences,
-not genuine PDB-derived records; real combined-source validation still needs
-the copied EnzymeX table.
+not genuine PDB-derived records.
+
+## The public Swiss-Prot/PDB build
+
+The same pipeline was then run against real data. `scripts/load_swissprot_pdb.py`
+loads the public `SwissProt_PDB_2022` set from the `datax-lab/HIT-EC` repository
+into a separate `enzymex_real` database, joined against `datax-lab/IDF-EC` for EC
+annotation. It is a proxy for the copied EnzymeX table, not the table itself, but
+its PDB rows are genuine provenance rather than synthetic labels.
+
+Build `56b491bee73d`: 273,500 rows → 272,112 references (231,577 Swiss-Prot,
+40,535 PDB), 235,821 carrying an EC, 1,388 skipped (1,256 too short, 124
+excessively ambiguous, 8 too long). Sequence length 30 to 8,903, mean 414.0.
+Built in 268.7 s total, 252.2 s of it the export and 13.4 s `makeblastdb`.
+Profiles were skipped on this generation, so every `hmmscan` figure in this
+repository still comes from build `32abd580b689`.
+
+| one-query check | blastp | phmmer |
+|---|---:|---:|
+| human SOD2 | 1.797 s | 7.132 s |
+| unrelated GFP | 1.579 s | 8.307 s |
+
+No search code changed. The only new file is the loader.
+
+**GFP is not a clean negative at this scale.** Against 1,574 fixture references
+it returned no hits from any method; against 272,112 it returns 25 blastp hits,
+the top at 97.5% identity and E 8.4e-175. All 25 are PDB fusion constructs where
+GFP is joined to an unrelated protein, and the 15 of them that carry an EC carry
+eight different ones, none belonging to GFP.
+
+The results page already exposes this without leaving the page: the top hit
+covers 100% of the query but only 54.6% of the subject, and across all 25 hits
+query coverage is 0.97 to 1.00 while subject coverage is 0.27 to 0.84. That
+asymmetry is the fusion signature, and it is why subject coverage is computed
+here by merging HSP intervals rather than omitted because BLAST+ has no `scovs`
+field.
+
+Note also that human SOD2 is present in this set, so the held-out positive demo
+in `data/demo/` only behaves as a holdout against the fixture build.
 
 ## Documentation
 
@@ -155,6 +192,8 @@ the copied EnzymeX table.
 ## Limitations
 
 * Profile HMMs cover a QC-passing subset, never the whole reference set.
+* The 272,112-reference public build has no profile layer, so `hmmscan` figures
+  come only from the 1,574-reference fixture build.
 * `phmmer` is the slowest method and scales with reference count; it is the
   first thing that will need its timeout raised on a large copy.
 * Searches run synchronously. Fine at the scale measured above; the service

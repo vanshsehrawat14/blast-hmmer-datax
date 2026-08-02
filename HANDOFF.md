@@ -134,6 +134,69 @@ hmmpress 133.9 s. The profile layer is ~98% of the build.
 12 distinct consensus EC labels because clustering follows sequence family
 rather than forcing every protein for one reaction into one alignment.
 
+### Public Swiss-Prot/PDB build
+
+The fixture proves the source-selection and deduplication code but contains no
+PDB-derived record. `scripts/load_swissprot_pdb.py` loads the public
+`SwissProt_PDB_2022` set from `datax-lab/HIT-EC` (273,500 rows) into a separate
+`enzymex_real` database, joined on exact sequence against `datax-lab/IDF-EC` for
+EC annotation. Both are Git LFS files, so they must be fetched from
+`media.githubusercontent.com` or you get a 134-byte pointer. It is a proxy for
+the copied EnzymeX table, not the table itself.
+
+```bash
+python scripts/load_swissprot_pdb.py --sequences SwissProt_PDB_2022.csv --ec dataset.csv
+ENZYMEX_DB_NAME=enzymex_real enzymex-refbuild all --skip-profiles
+```
+
+Build `56b491bee73d`, 2026-08-01T00:28:34Z, `var/reference-real/`:
+
+| | |
+|---|---|
+| rows read | 273,500 |
+| exported references | 272,112 |
+| skipped | 1,388 (1,256 too_short, 124 excessive_ambiguity, 8 too_long) |
+| sources | swissprot 231,577, pdb 40,535 |
+| with EC annotation | 235,821 |
+| multi-EC records | 20,455 |
+| sequence length | 30 to 8,903, mean 414.0 |
+| duplicate sequences merged | 0 |
+| export / `makeblastdb` / total | 252.2 s / 13.4 s / 268.7 s |
+| BLAST database | 146.3 MB across 8 files |
+| profiles | none, built with `--skip-profiles` |
+
+Rows carrying both a Swiss-Prot accession and a PDB id (5,198 of them) are one
+record with two identifiers, so the loader inserts them once as `swissprot` with
+the PDB id kept in the description. Inventing a second row would manufacture
+duplicate-merge statistics the source data does not support, which is why
+`duplicate_sequences_merged` is 0 here and 120 on the fixture.
+
+No code under `app/` changed for this build. The only new file is the loader.
+
+Single-query timings on this generation, 2 search threads:
+
+| | blastp | phmmer |
+|---|---:|---:|
+| human SOD2 | 1.797 s | 7.132 s |
+| unrelated GFP | 1.579 s | 8.307 s |
+
+**What real data exposed.** GFP is a clean negative on the fixture and not on
+this build. It returns 25 blastp hits, top `EXR252478` (`6HR1`), 97.5% identity,
+E 8.4e-175. All 25 are PDB entries, every one a fusion construct joining GFP to
+an unrelated protein, and the 15 that carry an EC carry eight distinct ones,
+none of which belong to GFP.
+
+The output already flags it. The top hit has query coverage 1.00 against subject
+coverage 0.546; across all 25, query coverage runs 0.97 to 1.00 while subject
+coverage runs 0.27 to 0.84. That asymmetry is the fusion signature and it is
+readable without opening PDB. It is also the payoff for merging HSP intervals to
+compute subject coverage, since BLAST+ supplies no `scovs` field. This failure
+mode cannot appear on the fixture, which holds no real PDB entry.
+
+**The positive demo is a self-match here.** P04179 is present in this set, so
+`data/demo/positive_sod2_human.fasta` returns itself at 100% identity and full
+coverage. The held-out positive demo still requires the fixture build.
+
 ## 5. Test results
 
 ```bash
@@ -154,8 +217,9 @@ builds a real BLAST database and a real profile HMM from the committed
 
 ## 6. Demo inputs
 
-Committed under `data/demo/`. Both are absent from the reference set, so
-neither can match itself.
+Committed under `data/demo/`. Both are absent from the fixture reference set, so
+against build `32abd580b689` neither can match itself. Neither property holds on
+the public `56b491bee73d` build, so demo on the fixture.
 
 **Positive** `data/demo/positive_sod2_human.fasta`: UniProt P04179, human
 Superoxide dismutase [Mn], mitochondrial, 222 aa, EC 1.15.1.1. Chosen because
@@ -271,8 +335,16 @@ raw-artifact hashes and results are in
 * Job results are files with 24-hour retention.
 * E-values are not comparable across the three tables. The page repeats this;
   any port must keep doing so.
-* The fixture's `source` labels are simulated. Real provenance comes from the
-  real copy.
+* The fixture's `source` labels are simulated. The public `56b491bee73d` build
+  supplies genuine PDB provenance, but it is still a proxy; real provenance comes
+  from the real copy.
+* The 272,112-reference public build has no profile layer, so every `hmmscan`
+  figure in these documents comes from the 1,574-reference fixture build.
+  Building profiles on that generation is the next step, and
+  `ENZYMEX_PROFILE_MIN_MEMBERS` should be reviewed before it runs.
+* PDB fusion constructs let a query inherit an EC that belongs to the fusion
+  partner. Coverage asymmetry exposes it on the page, but nothing rejects those
+  hits automatically.
 * `datax-lab/enzymex` was unreachable while this was built, so all UI and
   schema compatibility work is based on the documented column list and the live
   site and must be re-verified against the real codebase.
