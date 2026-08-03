@@ -196,6 +196,21 @@ def add_panel(slide, title: str, items: list[str], x: float, y: float, w: float,
     add_bullets(slide, items, x + 0.3, y + 0.85, w - 0.6, h - 1.1, size=size, spacing=11)
 
 
+def add_stack_panel(slide, title: str, rows: list[tuple[str, str]], x: float, y: float,
+                    w: float, *, accent: str, light: str):
+    h = 0.72 + len(rows) * 0.5
+    add_rect(slide, x, y, w, h, fill=WHITE, line=LINE)
+    add_rect(slide, x, y, w, 0.5, fill=accent, line=accent, radius=False, line_width=0)
+    add_text(slide, title, x + 0.28, y + 0.12, w - 0.56, 0.3, size=16, bold=True, color=WHITE)
+    for i, (label, value) in enumerate(rows):
+        row_y = y + 0.62 + i * 0.5
+        if i % 2 == 0:
+            add_rect(slide, x + 0.02, row_y - 0.06, w - 0.04, 0.46, fill=light, line=light,
+                     radius=False, line_width=0)
+        add_text(slide, label, x + 0.28, row_y, 1.55, 0.3, size=12.5, bold=True, color=CHARCOAL)
+        add_text(slide, value, x + 1.95, row_y, w - 2.25, 0.34, size=12.5, color=INK)
+
+
 def build_deck(output: Path, logo_deck: Path | None) -> None:
     prs = Presentation()
     prs.slide_width = Inches(SLIDE_W)
@@ -258,9 +273,40 @@ def build_deck(output: Path, logo_deck: Path | None) -> None:
     set_notes(slide, "Standalone test server. The search core is a library, so EnzymeX can call run_search "
                      "from its existing scheduled job without taking any of the web code.")
 
-    # 3 ------------------------------------------------------- two halves
+    # 3 -------------------------------------------------------- tech stack
     slide = prs.slides.add_slide(blank)
-    add_header(slide, "Build once, search many times", 3)
+    add_header(slide, "Tech stack", 3)
+    add_stack_panel(slide, "This project", [
+        ("Language", "Python 3.11"),
+        ("Web", "FastAPI + Jinja2, served by uvicorn"),
+        ("Validation", "Pydantic"),
+        ("Databases", "MySQL read-only for the build, SQLite for search metadata"),
+        ("Search", "BLAST+ 2.16.0, HMMER 3.4"),
+        ("Build tools", "MMseqs2, MAFFT"),
+        ("Tests", "pytest"),
+        ("Environment", "micromamba, Docker Compose or systemd"),
+    ], 0.72, 1.6, 5.78, accent=RED, light=RED_LIGHT)
+    add_stack_panel(slide, "EnzymeX, existing", [
+        ("Language", "Python"),
+        ("Web", "Pyramid, behind uWSGI and nginx"),
+        ("Templates", "Jinja2"),
+        ("Database", "MySQL"),
+        ("Models", "ECPICK, HIT-EC, CLEAN"),
+        ("Similarity", "DIAMOND, Clustal Omega"),
+        ("Jobs", "scheduler with a runner table"),
+        ("Data pulling", "cron, quarterly"),
+    ], 6.83, 1.6, 5.79, accent=BLUE, light=BLUE_LIGHT)
+    add_rect(slide, 0.72, 6.35, 11.9, 0.62, fill=PANEL, line=LINE)
+    add_text(slide, "Same language, same database engine. The integration point is one function call from the existing scheduler.",
+             0.72, 6.53, 11.9, 0.3, size=13.5, bold=True, color=CHARCOAL, align=PP_ALIGN.CENTER)
+    set_notes(slide, "Nothing here is exotic and nothing conflicts. The web layer I used is FastAPI only "
+                     "because it was a standalone test server; the search code itself imports no web "
+                     "framework, so the Pyramid side needs no rewrite. BLAST+, HMMER, MAFFT and MMseqs2 "
+                     "are binaries rather than pip packages, which is why the environment is micromamba.")
+
+    # 4 ------------------------------------------------------- two halves
+    slide = prs.slides.add_slide(blank)
+    add_header(slide, "Build once, search many times", 4)
     add_panel(slide, "Offline build", [
         "The only step that opens the database",
         "Filters, deduplicates, writes FASTA",
@@ -288,9 +334,9 @@ def build_deck(output: Path, logo_deck: Path | None) -> None:
     set_notes(slide, "The single structural decision. Everything expensive runs offline; a request only "
                      "reads files, so a misconfigured credential is unreachable from the website.")
 
-    # 4 ---------------------------------------------------- three searches
+    # 5 ---------------------------------------------------- three searches
     slide = prs.slides.add_slide(blank)
-    add_header(slide, "Three searches", 4)
+    add_header(slide, "Three searches", 5)
     methods = [
         ("blastp", "pairwise alignment", ["Every reference", "Identity and coverage", "Default method"], 0.72, BLUE, BLUE_LIGHT),
         ("phmmer", "query profile", ["Every reference", "Different statistics", "4-5x slower"], 4.74, GREEN, GREEN_LIGHT),
@@ -311,9 +357,9 @@ def build_deck(output: Path, logo_deck: Path | None) -> None:
                      "search all references, hmmscan searches the profile set. Recommendation: BLAST "
                      "always, profiles optional, phmmer off by default.")
 
-    # 5 ---------------------------------------------------------- profiles
+    # 6 ---------------------------------------------------------- profiles
     slide = prs.slides.add_slide(blank)
-    add_header(slide, "Profile HMMs are built by sequence, not by EC", 5)
+    add_header(slide, "Profile HMMs are built by sequence, not by EC", 6)
     add_panel(slide, "Not one profile per EC", [
         "An EC names a reaction, not a family",
         "Same reaction, unrelated folds",
@@ -339,9 +385,9 @@ def build_deck(output: Path, logo_deck: Path | None) -> None:
                      "per-EC profile would merge unrelated folds into a model that still produces "
                      "confident-looking scores.")
 
-    # 6 -------------------------------------------------------- validation
+    # 7 -------------------------------------------------------- validation
     slide = prs.slides.add_slide(blank)
-    add_header(slide, "Validation against the existing BLAST run", 6)
+    add_header(slide, "Validation against the existing BLAST run", 7)
     add_rect(slide, 0.72, 1.7, 11.9, 1.85, fill=BLUE_LIGHT, line=BLUE_LIGHT)
     add_text(slide, "452 / 452", 1.1, 2.0, 4.2, 0.9, size=54, bold=True, color=BLUE)
     add_text(slide, "identical top hit", 1.15, 2.92, 4.2, 0.4, size=17, bold=True, color=BLUE)
@@ -362,9 +408,9 @@ def build_deck(output: Path, logo_deck: Path | None) -> None:
                      "Full test suite passes. On the leakage-controlled slice blastp top-hit EC agreement "
                      "was 87.7%, but that cohort is truth-selected and narrow.")
 
-    # 7 --------------------------------------------------------- real data
+    # 8 --------------------------------------------------------- real data
     slide = prs.slides.add_slide(blank)
-    add_header(slide, "Rebuilt on real Swiss-Prot and PDB data", 7)
+    add_header(slide, "Rebuilt on real Swiss-Prot and PDB data", 8)
     add_metric(slide, "272,112", "references built", 0.72, 1.65, 3.85, accent=RED)
     add_metric(slide, "4.5 min", "offline build", 4.74, 1.65, 3.85, accent=CHARCOAL)
     add_metric(slide, "0", "search code changes", 8.76, 1.65, 3.85, accent=GREEN)
@@ -386,9 +432,9 @@ def build_deck(output: Path, logo_deck: Path | None) -> None:
                      "built on this generation, so hmmscan figures come from the smaller fixture build. "
                      "Without subject coverage the page would report a fusion partner's EC at near-perfect identity.")
 
-    # 8 -------------------------------------------------------- what's next
+    # 9 -------------------------------------------------------- what's next
     slide = prs.slides.add_slide(blank)
-    add_header(slide, "What I need, and what comes next", 8)
+    add_header(slide, "What I need, and what comes next", 9)
     steps = [
         ("1", "Access", "Read-only database copy and the EnzymeX repository", RED),
         ("2", "Verify the schema", "Primary key, storage engine, source labels, UniprotID", CHARCOAL),
