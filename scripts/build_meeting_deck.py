@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build the short BLAST/HMMER EnzymeX meeting deck."""
+"""Build the BLAST/HMMER EnzymeX meeting deck."""
 
 from __future__ import annotations
 
@@ -248,8 +248,9 @@ def add_method_card(
     accent: str,
     light: str,
     title_size: float = 21,
+    height: float = 4.86,
 ):
-    add_rect(slide, x, 1.55, 3.85, 4.86, fill=WHITE, line=LINE)
+    add_rect(slide, x, 1.55, 3.85, height, fill=WHITE, line=LINE)
     add_rect(slide, x, 1.55, 3.85, 0.12, fill=accent, line=accent, radius=False, line_width=0)
     add_text(slide, title, x + 0.25, 1.86, 3.35, 0.38, size=title_size, color=accent, bold=True)
     add_text(slide, subtitle, x + 0.25, 2.25, 3.35, 0.5, size=11.5, color=MUTED)
@@ -263,7 +264,8 @@ def add_method_card(
         if chip_x + chip_w > x + 3.62:
             chip_x = x + 0.25
             y += 0.43
-        add_chip(slide, chip, chip_x, 5.72 if y < 5.72 else y, chip_w, fill=light, color=accent)
+        chip_y = 1.55 + height - 0.69
+        add_chip(slide, chip, chip_x, chip_y if y < chip_y else y, chip_w, fill=light, color=accent)
         chip_x += chip_w + 0.1
 
 
@@ -316,561 +318,608 @@ def logo_blob(path: Path | None) -> bytes | None:
     return None
 
 
+def add_step_row(slide, number: str, title: str, body: str, y: float, accent: str, last: bool):
+    circle = slide.shapes.add_shape(MSO_SHAPE.OVAL, Inches(0.82), Inches(y + 0.1), Inches(0.5), Inches(0.5))
+    circle.fill.solid()
+    circle.fill.fore_color.rgb = rgb(accent)
+    circle.line.color.rgb = rgb(accent)
+    add_text(slide, number, 0.83, y + 0.18, 0.48, 0.22, size=12, color=WHITE, bold=True, align=PP_ALIGN.CENTER)
+    if not last:
+        add_line(slide, 1.07, y + 0.62, 1.07, y + 1.14, color=LINE, width=2)
+    add_text(slide, title, 1.55, y, 6.9, 0.3, size=15, bold=True, color=accent)
+    add_text(slide, body, 1.55, y + 0.36, 6.9, 0.45, size=11.5, color=CHARCOAL)
+
+
 def build_deck(output: Path, logo_deck: Path | None) -> None:
     prs = Presentation()
     prs.slide_width = Inches(SLIDE_W)
     prs.slide_height = Inches(SLIDE_H)
-    prs.core_properties.title = "BLAST and HMMER evidence for EnzymeX"
-    prs.core_properties.subject = "Swiss-Prot and PDB standalone validation"
+    prs.core_properties.title = "BLAST and HMMER for EnzymeX"
+    prs.core_properties.subject = "Sequence-similarity evidence on the result page"
     prs.core_properties.author = "Vansh Sehrawat"
     prs.core_properties.last_modified_by = "Vansh Sehrawat"
     prs.core_properties.keywords = "EnzymeX, BLAST, HMMER, Swiss-Prot, PDB"
     prs.core_properties.comments = ""
-    prs.core_properties.created = datetime(2026, 7, 31, 12, 0, 0)
-    prs.core_properties.modified = datetime(2026, 7, 31, 12, 0, 0)
+    prs.core_properties.created = datetime(2026, 8, 2, 12, 0, 0)
+    prs.core_properties.modified = datetime(2026, 8, 2, 12, 0, 0)
     blank = prs.slide_layouts[6]
     logo = logo_blob(logo_deck)
 
-    # Slide 1
+    # ---------------------------------------------------------------- 1 title
     slide = prs.slides.add_slide(blank)
     slide.background.fill.solid()
     slide.background.fill.fore_color.rgb = rgb(WHITE)
     add_rect(slide, 0, 0, 0.18, SLIDE_H, fill=RED, line=RED, radius=False, line_width=0)
     if logo:
-        slide.shapes.add_picture(io.BytesIO(logo), Inches(1.0), Inches(0.72), width=Inches(4.45))
+        slide.shapes.add_picture(io.BytesIO(logo), Inches(1.0), Inches(0.75), width=Inches(4.45))
     else:
-        add_text(slide, "EnzymeX", 1.0, 0.78, 4.3, 0.8, size=38, bold=True)
-    add_chip(slide, "STANDALONE VALIDATION", 9.92, 0.8, 2.35, fill=RED_LIGHT, color=RED)
-    add_text(slide, "BLAST + HMMER evidence\nfor EnzymeX", 1.0, 2.25, 10.9, 1.45, size=38, bold=True, valign=MSO_ANCHOR.MIDDLE)
+        add_text(slide, "EnzymeX", 1.0, 0.8, 4.3, 0.8, size=38, bold=True)
+    add_chip(slide, "TEST SERVER, NOT DEPLOYED", 9.42, 0.84, 2.85, fill=RED_LIGHT, color=RED)
     add_text(
         slide,
-        "Swiss-Prot + PDB source-policy fixture build, search output, and external fold validation",
+        "BLAST + HMMER for EnzymeX",
+        1.0,
+        2.4,
+        10.9,
+        1.0,
+        size=42,
+        bold=True,
+        valign=MSO_ANCHOR.MIDDLE,
+    )
+    add_text(
+        slide,
+        "Sequence-similarity evidence beside the model predictions",
         1.03,
-        3.92,
+        3.55,
         10.8,
-        0.62,
-        size=18,
+        0.5,
+        size=19,
         color=CHARCOAL,
     )
-    add_chip(slide, "blastp", 1.03, 4.9, 1.12, fill=BLUE_LIGHT, color=BLUE)
-    add_chip(slide, "phmmer", 2.3, 4.9, 1.22, fill=GREEN_LIGHT, color=GREEN)
-    add_chip(slide, "profile HMMs", 3.68, 4.9, 1.73, fill=PURPLE_LIGHT, color=PURPLE)
-    add_text(slide, "Vansh Sehrawat  |  EnzymeX meeting  |  August 2026", 1.03, 6.53, 8.5, 0.28, size=12, color=MUTED)
-    add_text(slide, "Build 32abd580b689", 9.8, 6.53, 2.47, 0.28, size=11, color=MUTED, align=PP_ALIGN.RIGHT, font=MONO)
+    add_chip(slide, "blastp", 1.03, 4.5, 1.12, fill=BLUE_LIGHT, color=BLUE)
+    add_chip(slide, "phmmer", 2.3, 4.5, 1.22, fill=GREEN_LIGHT, color=GREEN)
+    add_chip(slide, "profile HMMs", 3.68, 4.5, 1.73, fill=PURPLE_LIGHT, color=PURPLE)
+    add_text(slide, "Vansh Sehrawat", 1.03, 6.4, 8.5, 0.32, size=15, bold=True)
+    add_text(slide, "August 4th 2026", 1.03, 6.76, 8.5, 0.28, size=12, color=MUTED)
     set_notes(
         slide,
-        "This is an independent prototype. Nothing has been deployed to or changed in the official EnzymeX codebase. "
-        "The goal was to validate the reference-building, search, metadata, and output flow before production integration.",
+        "Two things to say before slide 2. One: this is a standalone test server, nothing has been "
+        "deployed to or changed in the live EnzymeX service. Two: this is not a fourth EC predictor. "
+        "It is supporting evidence that sits next to what ECPICK, HIT-EC and CLEAN already produce.",
     )
 
-    # Slide 2
+    # ------------------------------------------------------------- 2 the task
     slide = prs.slides.add_slide(blank)
-    add_header(slide, "The search layer is working end to end", "What was built", 2)
-    add_rect(slide, 0.72, 1.42, 11.9, 0.58, fill=RED_LIGHT, line=RED_LIGHT)
+    add_header(slide, "Why this exists", "The task", 2)
+    add_rect(slide, 0.72, 1.5, 5.78, 2.62, fill=PANEL, line=LINE)
+    add_text(slide, "EnzymeX today", 0.98, 1.75, 5.2, 0.34, size=18, bold=True)
+    add_bullets(
+        slide,
+        [
+            "Three models predict EC numbers: ECPICK, HIT-EC, CLEAN.",
+            "DIAMOND is the only sequence-similarity tool on the site.",
+            "The user sees a prediction, but little independent evidence for it.",
+        ],
+        0.98,
+        2.24,
+        5.2,
+        1.45,
+        size=13.5,
+        spacing=7,
+    )
+    add_rect(slide, 6.83, 1.5, 5.79, 2.62, fill=RED_LIGHT, line=RED_LIGHT)
+    add_text(slide, "What was asked", 7.09, 1.75, 5.2, 0.34, size=18, bold=True, color=RED)
+    add_bullets(
+        slide,
+        [
+            'Suhyeong\'s July 20 handoff, future work: "BLAST and HMMER should be implemented on it."',
+            "Dr. Kang: add them to the result page, build on a separate test server, use a copy of the database.",
+            "Later: use Swiss-Prot and PDB together.",
+        ],
+        7.09,
+        2.24,
+        5.2,
+        1.45,
+        size=13.5,
+        spacing=7,
+        color=INK,
+    )
+    add_rect(slide, 0.72, 4.38, 11.9, 1.05, fill=WHITE, line=RED, line_width=1.5)
     add_text(
         slide,
-        "Current boundary: a standalone test server. The official EnzymeX codebase and live service are untouched.",
-        0.95,
-        1.56,
+        "This is evidence, not prediction.",
+        0.98,
+        4.59,
         11.4,
-        0.24,
+        0.34,
+        size=19,
+        bold=True,
+        color=RED,
+        align=PP_ALIGN.CENTER,
+    )
+    add_text(
+        slide,
+        "BLAST and HMMER answer a different question than the models: which known proteins does this look like, and what do they do?",
+        0.98,
+        4.99,
+        11.4,
+        0.3,
+        size=13.5,
+        color=CHARCOAL,
+        align=PP_ALIGN.CENTER,
+    )
+    add_text(slide, "Scope of this talk", 0.72, 5.72, 5.0, 0.3, size=15, bold=True)
+    scope = [
+        ("What I built", RED),
+        ("How it works", BLUE),
+        ("Does it work", GREEN),
+        ("What's next", PURPLE),
+    ]
+    for i, (label, accent) in enumerate(scope):
+        x = 0.72 + i * 3.02
+        add_rect(slide, x, 6.12, 2.82, 0.62, fill=WHITE, line=LINE)
+        add_rect(slide, x, 6.12, 0.09, 0.62, fill=accent, line=accent, radius=False, line_width=0)
+        add_text(slide, label, x + 0.25, 6.25, 2.4, 0.3, size=14, bold=True, color=accent)
+    add_footer(slide)
+    set_notes(
+        slide,
+        "Frame it as picking up the last item on Suhyeong's future-work list. The site can tell a "
+        "biologist what EC number it thinks their protein has, but it cannot show them a known protein "
+        "that looks like theirs. That is what BLAST and HMMER add. Say clearly it is not a fourth model.",
+    )
+
+    # --------------------------------------------------------- 3 what I built
+    slide = prs.slides.add_slide(blank)
+    add_header(slide, "A working search layer, end to end", "What I built", 3)
+    flow = [
+        ("1", "Copied DB", "read-only"),
+        ("2", "Offline build", "FASTA + indexes"),
+        ("3", "Sequence in", "web submission"),
+        ("4", "Three searches", "BLAST + HMMER"),
+        ("5", "Result page", "HTML, CSV, JSON"),
+    ]
+    for i, (number, title, subtitle) in enumerate(flow):
+        x = 0.72 + i * 2.42
+        add_rect(slide, x, 1.7, 1.94, 1.28, fill=WHITE, line=LINE)
+        circle = slide.shapes.add_shape(MSO_SHAPE.OVAL, Inches(x + 0.16), Inches(1.97), Inches(0.5), Inches(0.5))
+        circle.fill.solid()
+        circle.fill.fore_color.rgb = rgb(RED if i in (0, 4) else CHARCOAL)
+        circle.line.color.rgb = rgb(RED if i in (0, 4) else CHARCOAL)
+        add_text(slide, number, x + 0.17, 2.05, 0.48, 0.22, size=12, color=WHITE, bold=True, align=PP_ALIGN.CENTER)
+        add_text(slide, title, x + 0.72, 1.88, 1.14, 0.3, size=12, bold=True)
+        add_text(slide, subtitle, x + 0.72, 2.24, 1.14, 0.4, size=9.5, color=MUTED)
+        if i < len(flow) - 1:
+            arrow = slide.shapes.add_shape(MSO_SHAPE.RIGHT_ARROW, Inches(x + 2.01), Inches(2.17), Inches(0.32), Inches(0.34))
+            arrow.fill.solid()
+            arrow.fill.fore_color.rgb = rgb(LINE)
+            arrow.line.color.rgb = rgb(LINE)
+    cards = [
+        (
+            "Reference builder",
+            "Reads the copied database once. Filters to Swiss-Prot and PDB, drops bad sequences, removes duplicates, and writes the files the searches use.",
+            RED,
+        ),
+        (
+            "Search service",
+            "Runs blastp, phmmer and hmmscan through one plain function. It knows nothing about the web framework, so EnzymeX can call it directly.",
+            BLUE,
+        ),
+        (
+            "Result interface",
+            "One table per method with the EC number, source and description attached. Exports to CSV and JSON. Says explicitly when a method found nothing.",
+            GREEN,
+        ),
+    ]
+    for i, (title, body, accent) in enumerate(cards):
+        x = 0.72 + i * 4.02
+        add_rect(slide, x, 3.35, 3.8, 2.6, fill=PANEL, line=LINE)
+        add_rect(slide, x, 3.35, 3.8, 0.11, fill=accent, line=accent, radius=False, line_width=0)
+        add_text(slide, title, x + 0.25, 3.65, 3.3, 0.36, size=17, bold=True, color=accent)
+        add_text(slide, body, x + 0.25, 4.2, 3.3, 1.5, size=12.5, color=CHARCOAL, line_spacing=1.1)
+    add_rect(slide, 0.72, 6.15, 11.9, 0.52, fill=RED_LIGHT, line=RED_LIGHT)
+    add_text(
+        slide,
+        "All of it runs today on a standalone server. The live EnzymeX service and repository are untouched.",
+        0.94,
+        6.29,
+        11.46,
+        0.26,
         size=12.5,
         color=RED,
         bold=True,
         align=PP_ALIGN.CENTER,
     )
-    flow = [
-        ("1", "Copied DB", "read-only"),
-        ("2", "Offline build", "FASTA + indexes"),
-        ("3", "FASTA input", "web submission"),
-        ("4", "3 searches", "BLAST + HMMER"),
-        ("5", "Results", "HTML + CSV + JSON"),
-    ]
-    for i, (number, title, subtitle) in enumerate(flow):
-        x = 0.72 + i * 2.42
-        add_rect(slide, x, 2.35, 1.94, 1.22, fill=WHITE, line=LINE)
-        circle = slide.shapes.add_shape(MSO_SHAPE.OVAL, Inches(x + 0.16), Inches(2.59), Inches(0.5), Inches(0.5))
-        circle.fill.solid()
-        circle.fill.fore_color.rgb = rgb(RED if i in (0, 4) else CHARCOAL)
-        circle.line.color.rgb = rgb(RED if i in (0, 4) else CHARCOAL)
-        add_text(slide, number, x + 0.17, 2.67, 0.48, 0.22, size=12, color=WHITE, bold=True, align=PP_ALIGN.CENTER)
-        add_text(slide, title, x + 0.72, 2.5, 1.12, 0.3, size=11.5, bold=True)
-        add_text(slide, subtitle, x + 0.72, 2.86, 1.12, 0.38, size=9.2, color=MUTED)
-        if i < len(flow) - 1:
-            arrow = slide.shapes.add_shape(MSO_SHAPE.RIGHT_ARROW, Inches(x + 2.01), Inches(2.78), Inches(0.32), Inches(0.34))
-            arrow.fill.solid()
-            arrow.fill.fore_color.rgb = rgb(LINE)
-            arrow.line.color.rgb = rgb(LINE)
-    cards = [
-        ("Reference builder", "QC, source filtering, exact-sequence deduplication, metadata, and a versioned manifest."),
-        ("Search service", "blastp, phmmer, and hmmscan run through one framework-independent service boundary."),
-        ("Result interface", "Separate evidence tables, explicit method status, and downloadable CSV and JSON output."),
-    ]
-    for i, (title, body) in enumerate(cards):
-        x = 0.72 + i * 4.02
-        add_rect(slide, x, 4.15, 3.8, 2.36, fill=PANEL, line=LINE)
-        add_text(slide, title, x + 0.25, 4.42, 3.25, 0.36, size=17, bold=True, color=RED if i == 0 else INK)
-        add_text(slide, body, x + 0.25, 4.96, 3.27, 1.08, size=13, color=CHARCOAL, line_spacing=1.05)
     add_footer(slide)
     set_notes(
         slide,
-        "The search core is independent of the FastAPI test interface. EnzymeX can call the same run_search service from its existing Pyramid scheduled-job pipeline. "
-        "A user search reads only the built artifacts, so there is no database connection at request time.",
+        "Walk the five boxes left to right, then say the middle card is the important one: the search "
+        "code is a library, not a website. EnzymeX can call run_search from its existing scheduled job "
+        "without taking any of my web code.",
     )
 
-    # Slide 3
+    # ------------------------------------------------------- 4 the two halves
     slide = prs.slides.add_slide(blank)
-    add_header(slide, "One selected-source fixture export feeds every method", "Reference build", 3)
-    stages = [
-        ("2,677", "copied rows", CHARCOAL),
-        ("1,694", "valid selected rows", BLUE),
-        ("120", "exact duplicates", AMBER),
-        ("1,574", "canonical refs", RED),
-    ]
-    for i, (value, label, accent) in enumerate(stages):
-        x = 0.72 + i * 2.1
-        add_rect(slide, x, 1.52, 1.72, 1.18, fill=WHITE, line=LINE)
-        add_text(slide, value, x + 0.12, 1.7, 1.48, 0.42, size=23, color=accent, bold=True, align=PP_ALIGN.CENTER)
-        add_text(slide, label, x + 0.12, 2.18, 1.48, 0.26, size=10.5, color=MUTED, bold=True, align=PP_ALIGN.CENTER)
-        if i < 3:
-            arrow = slide.shapes.add_shape(MSO_SHAPE.RIGHT_ARROW, Inches(x + 1.78), Inches(1.94), Inches(0.25), Inches(0.32))
-            arrow.fill.solid()
-            arrow.fill.fore_color.rgb = rgb(LINE)
-            arrow.line.color.rgb = rgb(LINE)
-    add_text(slide, "-930 unselected  •  -53 QC failures", 1.97, 2.82, 3.9, 0.28, size=10.5, color=MUTED, align=PP_ALIGN.CENTER)
-    add_text(slide, "merged, not discarded from provenance", 6.78, 2.82, 2.0, 0.36, size=9.5, color=AMBER, align=PP_ALIGN.CENTER)
-
-    add_text(slide, "Canonical fixture source labels", 0.72, 3.35, 4.0, 0.32, size=16, bold=True)
-    bar_x, bar_y, bar_w = 0.72, 3.85, 7.98
-    swiss_w = bar_w * 1387 / 1574
-    add_rect(slide, bar_x, bar_y, swiss_w, 0.54, fill=BLUE, line=BLUE, radius=False, line_width=0)
-    add_rect(slide, bar_x + swiss_w, bar_y, bar_w - swiss_w, 0.54, fill=RED, line=RED, radius=False, line_width=0)
-    add_text(slide, "Swiss-Prot  1,387  (88.1%)", bar_x + 0.15, bar_y + 0.1, swiss_w - 0.3, 0.24, size=11.5, color=WHITE, bold=True)
-    add_text(slide, "PDB 187", bar_x + swiss_w + 0.05, bar_y + 0.1, bar_w - swiss_w - 0.1, 0.24, size=10.5, color=WHITE, bold=True, align=PP_ALIGN.CENTER)
-
-    add_metric_card(slide, "47", "profile HMMs", 0.72, 4.85, 2.2, accent=PURPLE, note="201 clusters evaluated")
-    add_metric_card(slide, "1,352", "references in profiles", 3.12, 4.85, 2.45, accent=PURPLE, note="85.9% profile coverage")
-    add_metric_card(slide, "0.9994", "mean EC purity", 5.77, 4.85, 2.45, accent=PURPLE, note="12 consensus EC labels")
-
-    add_rect(slide, 9.02, 1.52, 3.6, 5.45, fill=PANEL, line=LINE)
-    add_text(slide, "Cross-source duplicates", 9.3, 1.82, 3.05, 0.56, size=16, bold=True, color=RED)
+    add_header(slide, "Build once, then search many times", "How it works", 4)
+    add_rect(slide, 0.72, 1.55, 5.78, 3.7, fill=BLUE_LIGHT, line=BLUE_LIGHT)
+    add_chip(slide, "OFFLINE  |  MINUTES  |  RUN RARELY", 0.98, 1.8, 3.4, fill=WHITE, color=BLUE, border=BLUE)
+    add_text(slide, "Reference build", 0.98, 2.3, 5.26, 0.4, size=22, bold=True, color=BLUE)
     add_bullets(
         slide,
         [
-            "All three methods use the same selected export.",
-            "Swiss-Prot is the canonical row for an exact cross-source duplicate.",
-            "The duplicate PDB row stays traceable as provenance.",
-            "Fields from separate rows are never merged.",
+            "The only step that opens the database.",
+            "Exports the sequences to a FASTA file.",
+            "Builds the BLAST index and the family profiles.",
+            "Writes EC number, source and description to a small local file.",
+            "Stamps everything with one build ID.",
         ],
-        9.3,
-        2.56,
-        3.0,
-        2.7,
-        size=13,
-        spacing=8,
+        0.98,
+        2.86,
+        5.26,
+        2.2,
+        size=13.5,
+        spacing=7,
     )
-    add_rect(slide, 9.3, 5.63, 3.05, 0.98, fill=AMBER_LIGHT, line=AMBER_LIGHT)
-    add_text(
+    add_rect(slide, 6.83, 1.55, 5.79, 3.7, fill=GREEN_LIGHT, line=GREEN_LIGHT)
+    add_chip(slide, "ONLINE  |  SECONDS  |  EVERY REQUEST", 7.09, 1.8, 3.55, fill=WHITE, color=GREEN, border=GREEN)
+    add_text(slide, "The search", 7.09, 2.3, 5.26, 0.4, size=22, bold=True, color=GREEN)
+    add_bullets(
         slide,
-        "Fixture only\nPDB labels are synthetic.\nReal PDB rows still need validation.",
-        9.49,
-        5.78,
-        2.67,
-        0.66,
-        size=10.5,
-        color=AMBER,
-        bold=True,
+        [
+            "Validates the submitted sequence.",
+            "Runs the three searches against the built files.",
+            "Reads the EC and source from that same local file.",
+            "Renders the tables.",
+            "Never opens a database connection.",
+        ],
+        7.09,
+        2.86,
+        5.26,
+        2.2,
+        size=13.5,
+        spacing=7,
     )
+    add_text(slide, "Why split it this way", 0.72, 5.5, 5.0, 0.32, size=16, bold=True)
+    reasons = [
+        ("No database at request time", "A user search cannot touch, slow down or leak the database.", RED),
+        ("One build ID on everything", "A hit and its EC label always come from the same snapshot.", BLUE),
+        ("The slow work is done once", "Indexing runs on a schedule, not while a user waits.", GREEN),
+    ]
+    for i, (title, body, accent) in enumerate(reasons):
+        x = 0.72 + i * 4.02
+        add_rect(slide, x, 5.9, 3.8, 0.95, fill=WHITE, line=LINE)
+        add_rect(slide, x, 5.9, 0.09, 0.95, fill=accent, line=accent, radius=False, line_width=0)
+        add_text(slide, title, x + 0.25, 6.04, 3.35, 0.28, size=13, bold=True, color=accent)
+        add_text(slide, body, x + 0.25, 6.35, 3.35, 0.4, size=10.5, color=CHARCOAL)
     add_footer(slide)
     set_notes(
         slide,
-        "The accounting closes exactly: 2,677 rows minus 930 unselected sources, 53 QC failures, and 120 selected-source exact duplicates leaves 1,574 canonical references. "
-        "Eight PDB-first duplicate groups were promoted to Swiss-Prot canonical metadata. The fixture's PDB labels are synthetic, so this proves the source-policy code but not genuine PDB ingestion.",
+        "This is the one structural decision in the whole project. Everything expensive happens once, "
+        "offline. A user request only reads files. That is why a misconfigured credential is literally "
+        "unreachable from the website, and why a hit can never be labelled with a different snapshot's "
+        "annotation.",
     )
 
-    # Slide 4
+    # ------------------------------------------------- 5 the three searches
     slide = prs.slides.add_slide(blank)
-    add_header(slide, "Three searches, with method-specific evidence", "Procedure and parameters", 4)
+    add_header(slide, "Three searches, three different questions", "How it works", 5)
     add_method_card(
         slide,
-        "BLAST (blastp)",
-        "Pairwise sequence similarity against the shared reference export.",
+        "blastp",
+        "Compares the sequence letter by letter against every known protein.",
         [
-            "BLAST+ 2.16.0",
-            "-evalue 1e-3",
-            "-comp_based_stats 2",
-            "-max_target_seqs 500",
-            "rerank locally -> top 25",
+            "The default. Fast.",
+            "Gives identity and coverage.",
+            "Best for close relatives.",
         ],
-        ["identity", "coverage", "bit score"],
+        ["always on"],
         0.72,
         BLUE,
         BLUE_LIGHT,
+        height=3.5,
     )
     add_method_card(
         slide,
-        "HMMER (phmmer)",
-        "Query-derived profile against every sequence in the same FASTA.",
+        "phmmer",
+        "Same coverage as BLAST, different statistics. An independent second opinion.",
         [
-            "HMMER 3.4",
-            "-E 1e-3",
-            "1,574 references",
-            "whole-sequence + domain score",
-            "rerank locally -> top 25",
+            "Agrees with BLAST in testing.",
+            "Much slower at scale.",
+            "Recommend keeping it optional.",
         ],
-        ["all references", "domains"],
+        ["optional"],
         4.74,
         GREEN,
         GREEN_LIGHT,
+        height=3.5,
     )
     add_method_card(
         slide,
-        "Profile HMMs (hmmscan)",
-        "Submitted sequence against family profiles built from the same export.",
+        "hmmscan",
+        "Compares against family profiles instead of individual proteins.",
         [
-            "HMMER 3.4",
-            "-E 1e-3",
-            "47 profile HMMs",
-            "build: 35% id / 80% bidir. cov.",
-            "build: minimum 5 members",
+            "Catches distant relatives.",
+            "Answers with a family, not a hit.",
+            "Only covers families I could build.",
         ],
-        ["family", "EC purity", "domains"],
+        ["partial coverage"],
         8.76,
         PURPLE,
         PURPLE_LIGHT,
-        19,
+        height=3.5,
     )
-    add_rect(slide, 0.72, 6.62, 11.9, 0.39, fill=PANEL, line=PANEL)
+    add_rect(slide, 0.72, 5.5, 11.9, 1.05, fill=AMBER_LIGHT, line=AMBER_LIGHT)
     add_text(
         slide,
-        "No MySQL connection during a search  |  E-values are ranked within each method and are not compared across methods",
-        0.93,
-        6.7,
-        11.45,
-        0.2,
-        size=10.5,
-        color=CHARCOAL,
-        bold=True,
-        align=PP_ALIGN.CENTER,
-    )
-    add_footer(slide)
-    set_notes(
-        slide,
-        "blastp and phmmer cover the whole exported reference set. hmmscan covers only families that pass profile quality control. "
-        "Profiles are built from sequence clusters rather than EC numbers because one EC can include unrelated folds. The application defaults shown here differ from the exact BLAST reproduction, which used Beomsu's E-value of 1e-5.",
-    )
-
-    # Slide 5
-    slide = prs.slides.add_slide(blank)
-    add_header(slide, "Output is explicit, separate, and exportable", "Output format", 5)
-    raw_cards = [
-        (
-            "BLAST raw output",
-            "outfmt 6 TSV, 13 fields\nqseqid sseqid pident length qstart qend sstart send qlen slen evalue bitscore qcovs",
-            BLUE,
-            BLUE_LIGHT,
-        ),
-        (
-            "HMMER raw output",
-            "phmmer + hmmscan\n--tblout for sequence hits\n--domtblout for domains",
-            GREEN,
-            GREEN_LIGHT,
-        ),
-        (
-            "Normalized application output",
-            "rank + metadata + method status\nseparate HTML tables  |  CSV  |  JSON",
-            RED,
-            RED_LIGHT,
-        ),
-    ]
-    for i, (title, body, accent, light) in enumerate(raw_cards):
-        x = 0.72 + i * 4.05
-        add_rect(slide, x, 1.43, 3.81, 1.2, fill=light, line=light)
-        add_text(slide, title, x + 0.2, 1.62, 3.4, 0.25, size=12.5, color=accent, bold=True)
-        add_text(slide, body, x + 0.2, 1.95, 3.4, 0.58, size=8.8 if i == 0 else 10.2, color=INK, font=MONO if i < 2 else FONT)
-    add_text(slide, "Example top row from each separate method table", 0.72, 2.77, 6.0, 0.26, size=12, color=CHARCOAL, bold=True)
-    add_text(slide, "Job 16564dd9e08fb902  |  Build 32abd580b689  |  0.925 s", 7.0, 2.77, 5.62, 0.26, size=9.8, color=MUTED, align=PP_ALIGN.RIGHT, font=MONO)
-    output_rows = [
-        ["Method", "Top hit", "Annotation", "Method-specific evidence", "Status"],
-        ["blastp", "EXR2306", "1.15.1.1\nSwiss-Prot", "99.1% identity | 100% query coverage\nE 7.8e-169 | 459.0 bits", "ok"],
-        ["phmmer", "EXR2306", "1.15.1.1\nSwiss-Prot", "100% query coverage\nE 5.2e-157 | 517.2 bits", "ok"],
-        ["hmmscan", "EXF00003\n90 members", "1.15.1.1\n100% EC purity", "89.6% query | 99.0% profile coverage\nE 1.3e-93 | 303.6 bits", "ok"],
-    ]
-    add_table(slide, output_rows, 0.72, 3.11, 11.9, 1.98, [1.35, 1.55, 1.65, 5.85, 1.5], font_size=11)
-    add_rect(slide, 0.72, 5.21, 5.72, 1.55, fill=BLUE_LIGHT, line=BLUE_LIGHT)
-    add_text(slide, "HTML tables", 0.98, 5.42, 2.1, 0.3, size=16, color=BLUE, bold=True)
-    add_bullets(
-        slide,
-        [
-            "One table per method, never side by side.",
-            "Explicit ok, no_hits, disabled, and failed states.",
-            "Percent identity appears only for BLAST.",
-        ],
-        0.98,
-        5.83,
-        5.18,
-        0.82,
-        size=11.5,
-        spacing=2,
-    )
-    add_rect(slide, 6.69, 5.21, 5.93, 1.55, fill=GREEN_LIGHT, line=GREEN_LIGHT)
-    add_text(slide, "CSV and JSON", 6.96, 5.42, 2.3, 0.3, size=16, color=GREEN, bold=True)
-    add_text(
-        slide,
-        "Context\njob, query, method/version, build, status",
-        6.97,
-        5.85,
-        2.44,
-        0.68,
-        size=10.5,
-        color=INK,
-        bold=True,
-    )
-    add_text(
-        slide,
-        "Evidence\nrank, reference/family, EC, source, scores, coverage, domains",
-        9.5,
-        5.85,
-        2.82,
-        0.75,
-        size=10.5,
-        color=INK,
-        bold=True,
-    )
-    add_footer(slide)
-    set_notes(
-        slide,
-        "BLAST writes a custom 13-column outfmt 6 TSV. phmmer and hmmscan each write tblout for sequence-level hits and domtblout for domain coordinates and scores. The parsers normalize those raw files and attach EC/source metadata from the matching reference build. "
-        "The web header records the job ID, reference build ID, query count, total runtime, and export links. CSV is one row per hit, while JSON keeps the nested job, query, method, and hit structure. "
-        "No-hit and failed methods still emit a status row. HMMER does not report the same percent identity quantity as BLAST, so that field is left empty rather than invented.",
-    )
-
-    # Slide 6
-    slide = prs.slides.add_slide(blank)
-    add_header(slide, "Validation reproduced the shared BLAST result", "Tests and comparison", 6)
-    add_metric_card(slide, "183", "tests passed", 0.72, 1.48, 2.45, accent=GREEN, note="with copied-DB access")
-    add_metric_card(slide, "0", "provenance mismatches", 3.38, 1.48, 2.72, accent=GREEN, note="references, FASTA, duplicates")
-    add_metric_card(slide, "452 / 452", "same raw BLAST top hit", 6.31, 1.48, 3.0, accent=BLUE, note="2.16 vs supplied 2.5 output")
-    add_metric_card(slide, "450 / 452", "same top-25 subject set", 9.52, 1.48, 3.1, accent=BLUE, note="99.56% of comparable hits")
-    add_rect(slide, 0.72, 2.94, 11.9, 0.54, fill=BLUE_LIGHT, line=BLUE_LIGHT)
-    add_text(
-        slide,
-        "Beomsu fold: 500 queries, 48 shared no-hits  |  BLAST 2.5: E 1e-5, comp stats 2, 100 targets, outfmt 6, 16 threads",
-        0.92,
-        3.08,
-        11.5,
-        0.22,
-        size=10.5,
-        color=BLUE,
-        bold=True,
-        align=PP_ALIGN.CENTER,
-    )
-    benchmark = [
-        ["Method", "Evaluated cohort", "Top-hit EC overlap", "Local WSL2 run"],
-        ["blastp", "349 reference-covered queries", "306 / 349  (87.68%)", "7.81 s"],
-        ["phmmer", "349 reference-covered queries", "303 / 349  (86.82%)", "130.36 s"],
-        ["blastp + phmmer", "279 profile-common queries", "279 / 279  (100.00%)", "same runs as above"],
-        ["hmmscan", "279 profile-common queries", "272 / 279  (97.49%)", "42.58 s"],
-    ]
-    add_table(slide, benchmark, 0.72, 3.62, 11.9, 2.05, [1.8, 4.0, 3.55, 2.55], header_fill=CHARCOAL, font_size=12)
-    add_rect(slide, 0.72, 5.8, 11.9, 1.12, fill=AMBER_LIGHT, line=AMBER_LIGHT)
-    add_text(slide, "How to read this", 0.96, 5.99, 1.46, 0.28, size=12, color=AMBER, bold=True)
-    add_text(
-        slide,
-        "Compare methods only inside one cohort. On the shared 279-query cohort blastp and phmmer both reach 100% and hmmscan 97.49%, so the wider 87.68% row is a harder cohort, not a weaker method. "
-        "Only 349 of 19,567 fold queries were evaluated and all were truth-selected, so this is a close-homolog slice rather than broad EC-prediction accuracy. Timings are local.",
-        2.42,
-        5.94,
-        9.88,
-        0.66,
-        size=10.5,
+        "The three results are shown as three separate tables, never merged.\nTheir scores are not the same quantity and must not be ranked against each other.",
+        0.94,
+        5.75,
+        11.46,
+        0.6,
+        size=14,
         color=AMBER,
         bold=True,
-    )
-    add_footer(slide)
-    set_notes(
-        slide,
-        "The strongest cross-version result is exact raw top-hit agreement for every comparable query in the 500-query reproduction cohort. Exact top score also matched for 447 of 452. "
-        "The smaller EC table is useful for checking behavior on labels that the development reference actually covers, but it must not be presented as overall EnzymeX accuracy. It supports BLAST as the default sequence evidence and profile HMMs as optional family evidence; it does not justify running slower phmmer for every production job. "
-        "Read the last two rows together. hmmscan is not the most accurate method: on the identical 279-query cohort the sequence methods are perfect and hmmscan misses seven. The profile-common slice is the easiest part of the selected cohort, so its higher percentage reflects the cohort, not the method. "
-        "Outside that slice BLAST produced hits for 35 of 70 queries and its top hit shared an EC for 27, which is where the 87.68% comes from.",
-    )
-
-    # Slide 7
-    slide = prs.slides.add_slide(blank)
-    add_header(slide, "Positive and unrelated sequences behave as expected", "Browser workflow", 7)
-    add_rect(slide, 0.72, 1.48, 5.78, 5.36, fill=GREEN_LIGHT, line=GREEN_LIGHT)
-    add_chip(slide, "POSITIVE CONTROL", 0.98, 1.75, 1.76, fill=WHITE, color=GREEN, border=GREEN)
-    add_text(slide, "Human mitochondrial Mn-SOD", 0.98, 2.25, 5.08, 0.38, size=20, color=GREEN, bold=True)
-    add_text(slide, "Held-out query  |  EC 1.15.1.1  |  222 aa", 0.98, 2.68, 5.08, 0.28, size=11.5, color=MUTED)
-    add_bullets(
-        slide,
-        [
-            "BLAST: 25 hits; top EXR2306, 99.1% identity, full coverage.",
-            "phmmer: 25 hits; same top reference and same top four ordering.",
-            "hmmscan: two Mn/Fe SOD family profiles, both 100% EC purity.",
-            "No unrelated Cu/Zn SOD profile was returned.",
-        ],
-        0.98,
-        3.2,
-        5.05,
-        1.9,
-        size=12.5,
-        spacing=6,
-    )
-    add_text(slide, "0.925 s total", 0.98, 5.45, 2.15, 0.4, size=21, color=GREEN, bold=True)
-    add_text(slide, "blastp 0.222  |  phmmer 0.278  |  hmmscan 0.174", 0.98, 5.93, 4.9, 0.25, size=10.5, color=MUTED, font=MONO)
-    add_rect(slide, 0.98, 6.28, 5.05, 0.36, fill=WHITE, line=WHITE)
-    add_text(slide, "Strong, mutually consistent sequence-family evidence", 1.12, 6.33, 4.76, 0.26, size=10.5, color=GREEN, bold=True, align=PP_ALIGN.CENTER)
-
-    add_rect(slide, 6.83, 1.48, 5.79, 5.36, fill=PANEL, line=LINE)
-    add_chip(slide, "UNRELATED CONTROL", 7.09, 1.75, 1.88, fill=WHITE, color=CHARCOAL, border=LINE)
-    add_text(slide, "Green fluorescent protein", 7.09, 2.25, 5.06, 0.38, size=20, color=CHARCOAL, bold=True)
-    add_text(slide, "Unrelated non-enzyme query  |  238 aa", 7.09, 2.68, 5.08, 0.28, size=11.5, color=MUTED)
-    no_hits = [("blastp", BLUE), ("phmmer", GREEN), ("hmmscan", PURPLE)]
-    for i, (method, accent) in enumerate(no_hits):
-        y = 3.26 + i * 0.74
-        add_rect(slide, 7.09, y, 5.05, 0.53, fill=WHITE, line=LINE)
-        add_text(slide, method, 7.32, y + 0.1, 1.2, 0.3, size=11.5, color=accent, bold=True, valign=MSO_ANCHOR.MIDDLE)
-        add_text(slide, "no hits", 10.55, y + 0.1, 1.25, 0.3, size=11.5, color=CHARCOAL, bold=True, align=PP_ALIGN.RIGHT, valign=MSO_ANCHOR.MIDDLE)
-    add_text(slide, "0.850 s total", 7.09, 5.72, 2.15, 0.4, size=21, color=CHARCOAL, bold=True)
-    add_rect(slide, 7.09, 6.28, 5.05, 0.36, fill=WHITE, line=WHITE)
-    add_text(slide, "No hit means no detectable relative in this reference set", 7.19, 6.33, 4.84, 0.26, size=10.3, color=CHARCOAL, bold=True, align=PP_ALIGN.CENTER)
-    add_footer(slide)
-    set_notes(
-        slide,
-        "The positive sequence is a human mitochondrial manganese superoxide dismutase. The methods agree on close relatives and the profile layer selects the correct Mn/Fe families without selecting unrelated Cu/Zn proteins that share the same EC. "
-        "GFP returns no hits from all three methods. That is not a claim that a no-hit protein is not an enzyme; it only says this reference set has no detectable relative under the current thresholds.",
-    )
-
-    # Slide 8
-    slide = prs.slides.add_slide(blank)
-    add_header(slide, "Rebuilt on real Swiss-Prot and PDB data", "Real-data build", 8)
-    real_cards = [
-        ("272,112", "references built", "from 273,500 public rows", RED),
-        ("4 m 29 s", "full offline build", "export 252 s + makeblastdb 13 s", CHARCOAL),
-        ("1.8 s", "blastp, one query", "phmmer 7.1 s in the same job", BLUE),
-        ("0", "changes to the search code", "a loader script only", GREEN),
-    ]
-    for i, (value, label, note, accent) in enumerate(real_cards):
-        add_metric_card(slide, value, label, 0.72 + i * 3.015, 1.48, 2.855, accent=accent, note=note)
-    add_text(
-        slide,
-        "Swiss-Prot 231,577  |  PDB 40,535  |  235,821 carry an EC  |  1,388 rows failed QC  |  build 56b491bee73d, profiles not built on this generation",
-        0.72,
-        2.78,
-        11.9,
-        0.26,
-        size=11,
-        color=MUTED,
         align=PP_ALIGN.CENTER,
     )
-
-    add_rect(slide, 0.72, 3.15, 5.78, 3.05, fill=AMBER_LIGHT, line=AMBER_LIGHT)
-    add_chip(slide, "WHAT REAL DATA EXPOSED", 0.98, 3.36, 2.32, fill=WHITE, color=AMBER, border=AMBER)
-    add_text(slide, "GFP is no longer a clean negative", 0.98, 3.86, 5.26, 0.36, size=18, color=AMBER, bold=True)
-    add_bullets(
+    add_footer(slide)
+    set_notes(
         slide,
-        [
-            "On the fixture, GFP returned no hits from all three methods.",
-            "On 272,112 real references: 25 blastp hits, top E 8.4e-175 at 97.5% identity.",
-            "Every hit is a PDB GFP-fusion construct, GFP joined to an unrelated protein.",
-            "15 of the 25 carry an EC, spanning eight distinct values. None belong to GFP.",
-        ],
-        0.98,
-        4.36,
-        5.26,
-        1.7,
-        size=11.5,
-        color=INK,
-        spacing=5,
+        "If asked why not merge them into one ranking: an E-value means how many matches this good you "
+        "would expect by chance, and that depends on how big the search space is and which statistical "
+        "model was used. BLAST and phmmer search all references; hmmscan searches the profile set. "
+        "Putting them in one sorted list invites people to compare numbers that are not comparable.",
     )
 
-    add_rect(slide, 6.83, 3.15, 5.79, 3.05, fill=BLUE_LIGHT, line=BLUE_LIGHT)
-    add_chip(slide, "THE OUTPUT ALREADY FLAGS IT", 7.09, 3.36, 2.72, fill=WHITE, color=BLUE, border=BLUE)
-    add_text(slide, "Full query, partial subject", 7.09, 3.86, 5.26, 0.36, size=18, color=BLUE, bold=True)
-    add_bullets(
-        slide,
-        [
-            "Top hit 6HR1: query coverage 1.00, subject coverage 0.55.",
-            "All 25 hits: query 0.97 to 1.00, subject 0.27 to 0.84.",
-            "That gap is the fusion signature, and it is visible without opening PDB.",
-            "Subject coverage is computed from merged HSP intervals; BLAST+ has no scovs field.",
-        ],
-        7.09,
-        4.36,
-        5.26,
-        1.7,
-        size=11.5,
-        color=INK,
-        spacing=5,
-    )
-    add_rect(slide, 0.72, 6.35, 11.9, 0.55, fill=PANEL, line=LINE)
+    # ------------------------------------------------ 6 the design decision
+    slide = prs.slides.add_slide(blank)
+    add_header(slide, "Family profiles are built by sequence, not by EC number", "The one design decision", 6)
+    add_rect(slide, 0.72, 1.55, 5.78, 2.5, fill=RED_LIGHT, line=RED_LIGHT)
+    add_chip(slide, "THE OBVIOUS APPROACH", 0.98, 1.8, 2.35, fill=WHITE, color=RED, border=RED)
+    add_text(slide, "One profile per EC number", 0.98, 2.3, 5.26, 0.38, size=20, bold=True, color=RED)
     add_text(
         slide,
-        "Only the fixture generation has profile HMMs, so every hmmscan number in this deck comes from build 32abd580b689. Building profiles on the real generation is the next step.",
-        0.94,
-        6.5,
-        11.46,
-        0.26,
-        size=11,
+        "Group every protein that shares an EC number and build one family model from the group.",
+        0.98,
+        2.8,
+        5.26,
+        0.6,
+        size=13.5,
+        color=INK,
+        line_spacing=1.1,
+    )
+    add_text(slide, "This is wrong.", 0.98, 3.52, 5.26, 0.32, size=16, bold=True, color=RED)
+    add_rect(slide, 6.83, 1.55, 5.79, 2.5, fill=PURPLE_LIGHT, line=PURPLE_LIGHT)
+    add_chip(slide, "WHAT I DID INSTEAD", 6.99 + 0.1, 1.8, 2.2, fill=WHITE, color=PURPLE, border=PURPLE)
+    add_text(slide, "Cluster first, label after", 7.09, 2.3, 5.26, 0.38, size=20, bold=True, color=PURPLE)
+    add_text(
+        slide,
+        "Group by actual sequence similarity, then read off which EC labels landed in each group and report how consistent they are.",
+        7.09,
+        2.8,
+        5.26,
+        0.7,
+        size=13.5,
+        color=INK,
+        line_spacing=1.1,
+    )
+    add_text(slide, "Consistency is measured, not assumed.", 7.09, 3.62, 5.26, 0.32, size=13, bold=True, color=PURPLE)
+
+    add_rect(slide, 0.72, 4.25, 11.9, 2.15, fill=PANEL, line=LINE)
+    add_text(slide, "Why:  an EC number names a chemical reaction, not a protein family", 0.98, 4.48, 11.4, 0.34, size=17, bold=True)
+    add_text(
+        slide,
+        "Nature solved the same reaction more than once with completely unrelated proteins. Superoxide dismutase, EC 1.15.1.1, exists as a copper/zinc "
+        "enzyme and as a manganese/iron enzyme. Same job, nothing alike. Averaging them into one profile produces a model of nothing, and the "
+        "dangerous part is that it still outputs confident-looking scores.",
+        0.98,
+        4.9,
+        11.4,
+        0.95,
+        size=13,
         color=CHARCOAL,
+        line_spacing=1.15,
+    )
+    add_rect(slide, 0.98, 5.8, 11.38, 0.62, fill=GREEN_LIGHT, line=GREEN_LIGHT)
+    add_text(
+        slide,
+        "Check that it works: submitting a human Mn-SOD matches only the manganese/iron\nfamilies and none of the copper/zinc ones, despite the identical EC number.",
+        1.16,
+        5.9,
+        11.02,
+        0.46,
+        size=12,
+        color=GREEN,
         bold=True,
         align=PP_ALIGN.CENTER,
     )
     add_footer(slide)
     set_notes(
         slide,
-        "The public SwissProt_PDB_2022 set from the datax-lab HIT-EC repository is 273,500 rows, loaded into a separate database so the fixture build stays intact. "
-        "It is a proxy for the real EnzymeX copy, not the copy itself, but it is genuine PDB provenance rather than synthetic labels. Nothing in the search code changed; the only new file is a loader script. "
-        "GFP is the useful result. PDB is full of fusion constructs where GFP is joined to another protein for imaging, so a GFP query matches the GFP half at near-perfect identity and inherits the partner's EC number. "
-        "The query covers the full alignment while the subject does not, and that asymmetry is the tell. This failure mode could not appear in the fixture, which contains no real PDB entries. "
-        "Also note the positive control is now a self-match: P04179 is present in this set at 100% identity, so the held-out positive demo still needs the fixture build.",
+        "This is the slide to be able to defend. The takeaway is that clustering by EC would have merged "
+        "unrelated folds. Concrete evidence from the development build: glutathione transferase split "
+        "into 13 separate families, carbonic anhydrase into 4, superoxide dismutase into 5. Each of "
+        "those is a single EC number.",
     )
 
-    # Slide 9
+    # ---------------------------------------------------------- 7 validation
     slide = prs.slides.add_slide(blank)
-    add_header(slide, "The remaining work starts with real EnzymeX access", "Production integration", 9)
-    steps = [
-        ("1", "Inspect the real copy", "Read-only DB and repository access; schema, stable key, engine, source counts, UniprotID, and PDB identifiers."),
-        ("2", "Rebuild on genuine data", "Start with a capped export, then build a full generation from all eligible Swiss-Prot/PDB rows in the real copy."),
-        ("3", "Connect the scheduled job", "Adapt run_search to Pyramid, job/job_result/ref_data, temporary directories, and the existing result page."),
-        ("4", "Reconcile DIAMOND", "Define whether BLAST supplements or replaces the current similarity path and whether phmmer is optional."),
-        ("5", "Deploy versioned artifacts", "Build into a new generation and atomically switch the active reference after validation."),
-    ]
-    for i, (number, title, body) in enumerate(steps):
-        y = 1.48 + i * 1.06
-        circle = slide.shapes.add_shape(MSO_SHAPE.OVAL, Inches(0.82), Inches(y + 0.12), Inches(0.52), Inches(0.52))
-        circle.fill.solid()
-        circle.fill.fore_color.rgb = rgb(RED if i == 0 else CHARCOAL)
-        circle.line.color.rgb = rgb(RED if i == 0 else CHARCOAL)
-        add_text(slide, number, 0.83, y + 0.2, 0.5, 0.22, size=12, color=WHITE, bold=True, align=PP_ALIGN.CENTER)
-        if i < len(steps) - 1:
-            add_line(slide, 1.08, y + 0.66, 1.08, y + 1.18, color=LINE, width=2)
-        add_text(slide, title, 1.55, y + 0.01, 7.12, 0.28, size=14.5, bold=True, color=RED if i == 0 else INK)
-        add_text(slide, body, 1.55, y + 0.38, 7.12, 0.43, size=10.5, color=CHARCOAL)
-
-    add_rect(slide, 9.28, 1.48, 3.34, 4.92, fill=RED_LIGHT, line=RED_LIGHT)
-    add_text(slide, "Meeting decisions", 9.58, 1.8, 2.78, 0.52, size=17, color=RED, bold=True)
-    decisions = [
-        "Read-only access to the DB copy and EnzymeX repo?",
-        "BLAST beside DIAMOND, or replace its evidence role?",
-        "Run phmmer by default, or keep it optional?",
-    ]
-    for i, decision in enumerate(decisions):
-        y = 2.58 + i * 1.02
-        add_rect(slide, 9.56, y, 2.78, 0.82, fill=WHITE, line=LINE)
-        add_text(slide, str(i + 1), 9.73, y + 0.23, 0.32, 0.22, size=11, color=RED, bold=True, align=PP_ALIGN.CENTER)
-        add_text(slide, decision, 10.16, y + 0.1, 1.96, 0.62, size=10.5, color=INK, bold=True, valign=MSO_ANCHOR.MIDDLE)
-    add_rect(slide, 9.56, 5.76, 2.78, 0.38, fill=WHITE, line=WHITE)
-    add_text(slide, "Blocked on access + schema", 9.7, 5.82, 2.5, 0.27, size=10.5, color=RED, bold=True, align=PP_ALIGN.CENTER)
-    add_chip(slide, "FIXTURE: VALIDATED", 0.82, 6.72, 1.94, fill=GREEN_LIGHT, color=GREEN)
-    add_chip(slide, "ENZYMEX: ACCESS NEEDED", 2.94, 6.72, 2.55, fill=AMBER_LIGHT, color=AMBER)
+    add_header(slide, "It reproduces the existing BLAST result exactly", "Does it work", 7)
+    add_rect(slide, 0.72, 1.5, 11.9, 1.62, fill=BLUE_LIGHT, line=BLUE_LIGHT)
+    add_text(slide, "452 / 452", 1.05, 1.72, 3.1, 0.74, size=46, bold=True, color=BLUE)
+    add_text(
+        slide,
+        "queries returned the identical top hit",
+        1.08,
+        2.5,
+        3.4,
+        0.4,
+        size=12.5,
+        color=BLUE,
+        bold=True,
+    )
+    add_text(
+        slide,
+        "I ran Beomsu's query set through my pipeline with his parameters.",
+        4.7,
+        1.76,
+        7.6,
+        0.34,
+        size=14.5,
+        bold=True,
+    )
+    add_bullets(
+        slide,
+        [
+            "Every comparable query agreed on the top hit, across two different BLAST versions.",
+            "This proves the pipeline is wired correctly. It is a correctness check, not an accuracy score.",
+            "Full test suite passes, including checks that references, FASTA and metadata stay in sync.",
+        ],
+        4.7,
+        2.2,
+        7.62,
+        0.9,
+        size=12.5,
+        spacing=3,
+    )
+    add_text(slide, "Two questions people confuse", 0.72, 3.4, 6.0, 0.32, size=16, bold=True)
+    add_rect(slide, 0.72, 3.85, 5.78, 1.5, fill=WHITE, line=LINE)
+    add_rect(slide, 0.72, 3.85, 0.09, 1.5, fill=GREEN, line=GREEN, radius=False, line_width=0)
+    add_text(slide, "Does my BLAST behave like his BLAST?", 1.02, 4.05, 5.3, 0.3, size=14, bold=True, color=GREEN)
+    add_text(
+        slide,
+        "Yes, exactly. Same queries, same parameters, same top hit every time. This is the number above.",
+        1.02,
+        4.42,
+        5.3,
+        0.7,
+        size=12,
+        color=CHARCOAL,
+        line_spacing=1.1,
+    )
+    add_rect(slide, 6.83, 3.85, 5.79, 1.5, fill=WHITE, line=LINE)
+    add_rect(slide, 6.83, 3.85, 0.09, 1.5, fill=AMBER, line=AMBER, radius=False, line_width=0)
+    add_text(slide, "Does the top hit have the right EC?", 7.13, 4.05, 5.3, 0.3, size=14, bold=True, color=AMBER)
+    add_text(
+        slide,
+        "Measured separately, after removing anything identical to a test sequence so it could not find itself. Narrow slice, so not an EnzymeX accuracy figure.",
+        7.13,
+        4.42,
+        5.3,
+        0.85,
+        size=12,
+        color=CHARCOAL,
+        line_spacing=1.1,
+    )
+    add_rect(slide, 0.72, 5.6, 11.9, 1.05, fill=PANEL, line=LINE)
+    add_text(slide, "Sanity checks on the browser workflow", 0.98, 5.78, 5.5, 0.3, size=14, bold=True)
+    add_text(
+        slide,
+        "A known enzyme returns strong, mutually consistent hits from all three methods. An unrelated non-enzyme returns nothing. "
+        "\"No hit\" means this reference set has no detectable relative. It does not mean the protein is not an enzyme, and the page says so.",
+        0.98,
+        6.12,
+        11.4,
+        0.45,
+        size=12,
+        color=CHARCOAL,
+        line_spacing=1.1,
+    )
     add_footer(slide)
     set_notes(
         slide,
-        "The remaining uncertainty is the actual EnzymeX schema and genuine PDB provenance, not the standalone search implementation. "
-        "The first meeting outcome should be read-only access. The other decisions are product choices: how BLAST relates to DIAMOND and whether slower phmmer should run by default. Production deployment also needs versioned reference generations with an atomic active-generation switch.",
+        "Lead the meeting with this slide if Dr. Kang asks about validation first. The 452/452 is the "
+        "strongest single result: two different BLAST versions, his parameters, identical top hit on "
+        "every comparable query. Be careful not to let the second box get quoted as EnzymeX accuracy. "
+        "It was measured on a small, close-homolog slice.",
+    )
+
+    # ----------------------------------------------------------- 8 real data
+    slide = prs.slides.add_slide(blank)
+    add_header(slide, "Rebuilt on real Swiss-Prot and PDB data", "Does it work", 8)
+    add_metric_card(slide, "272,112", "references built", 0.72, 1.5, 3.6, accent=RED, note="Swiss-Prot + PDB, public proxy dataset")
+    add_metric_card(slide, "~4.5 min", "full offline build", 4.5, 1.5, 3.6, accent=CHARCOAL, note="one-time, not per request")
+    add_metric_card(slide, "0", "changes to the search code", 8.28, 1.5, 4.34, accent=GREEN, note="only a new loader script")
+
+    add_rect(slide, 0.72, 2.95, 5.78, 3.4, fill=AMBER_LIGHT, line=AMBER_LIGHT)
+    add_chip(slide, "WHAT REAL DATA EXPOSED", 0.98, 3.18, 2.4, fill=WHITE, color=AMBER, border=AMBER)
+    add_text(slide, "A trap the small test set could not show", 0.98, 3.68, 5.26, 0.38, size=18, bold=True, color=AMBER)
+    add_bullets(
+        slide,
+        [
+            "GFP is the jellyfish protein that glows green. It is not an enzyme.",
+            "On real data it returns 25 near-perfect BLAST hits.",
+            "All of them are PDB structures where GFP was glued onto another protein for imaging.",
+            "15 carry an EC number, spanning eight different values. None belong to GFP.",
+        ],
+        0.98,
+        4.18,
+        5.26,
+        2.0,
+        size=12.5,
+        color=INK,
+        spacing=6,
+    )
+
+    add_rect(slide, 6.83, 2.95, 5.79, 3.4, fill=BLUE_LIGHT, line=BLUE_LIGHT)
+    add_chip(slide, "THE PAGE ALREADY CATCHES IT", 7.09, 3.18, 2.75, fill=WHITE, color=BLUE, border=BLUE)
+    add_text(slide, "Full query, partial subject", 7.09, 3.68, 5.26, 0.38, size=18, bold=True, color=BLUE)
+    add_bullets(
+        slide,
+        [
+            "The match covers all of the submitted sequence but only about half of the thing it matched.",
+            "That lopsidedness is the signature of matching one half of a fused protein.",
+            "BLAST does not report it, so the pipeline computes it and shows it on every row.",
+            "Without it, the page would hand the user the wrong protein's EC number with full confidence.",
+        ],
+        7.09,
+        4.18,
+        5.26,
+        2.0,
+        size=12.5,
+        color=INK,
+        spacing=6,
+    )
+    add_footer(slide)
+    set_notes(
+        slide,
+        "Tell this as a story, not a statistic. The point is that a clean test set could never have "
+        "produced this failure, real data did, and the coverage column I had already built is what "
+        "exposes it. Caveat to state out loud: the dataset is a public stand-in for the real EnzymeX "
+        "table, so the numbers here do not transfer to production.",
+    )
+
+    # --------------------------------------------------------- 9 what's next
+    slide = prs.slides.add_slide(blank)
+    add_header(slide, "Next steps, and what I need to start them", "What's next", 9)
+    steps = [
+        ("1", "Get access", "Read-only access to the copied database and to the EnzymeX repository. Everything below is blocked on this.", RED),
+        ("2", "Check the real schema", "Confirm column names, a stable key and the actual source labels. My code was written against documentation, not the real table.", CHARCOAL),
+        ("3", "Rebuild on the real copy", "Run the same pipeline against genuine EnzymeX data and re-measure. Current figures come from a stand-in dataset.", CHARCOAL),
+        ("4", "Wire into the existing job", "Run the searches as extra steps in the scheduler that already runs ECPICK, HIT-EC and CLEAN, and add the tables to the result page.", CHARCOAL),
+    ]
+    for i, (number, title, body, accent) in enumerate(steps):
+        add_step_row(slide, number, title, body, 1.55 + i * 1.22, accent, i == len(steps) - 1)
+
+    add_rect(slide, 9.28, 1.5, 3.34, 5.28, fill=RED_LIGHT, line=RED_LIGHT)
+    add_text(slide, "Decisions I need", 9.58, 1.78, 2.8, 0.5, size=18, color=RED, bold=True)
+    decisions = [
+        "Can I get repository and read-only database access?",
+        "DIAMOND and BLAST answer the same question. Show both, or pick one?",
+        "Run phmmer for every job, or keep it optional?",
+    ]
+    for i, decision in enumerate(decisions):
+        y = 2.5 + i * 1.24
+        add_rect(slide, 9.56, y, 2.78, 1.05, fill=WHITE, line=LINE)
+        add_text(slide, str(i + 1), 9.74, y + 0.36, 0.32, 0.24, size=12, color=RED, bold=True, align=PP_ALIGN.CENTER)
+        add_text(slide, decision, 10.14, y + 0.12, 2.0, 0.85, size=11, color=INK, bold=True, valign=MSO_ANCHOR.MIDDLE)
+    add_rect(slide, 9.56, 6.24, 2.78, 0.4, fill=WHITE, line=WHITE)
+    add_text(slide, "Access is the blocker", 9.7, 6.31, 2.5, 0.28, size=11.5, color=RED, bold=True, align=PP_ALIGN.CENTER)
+    add_footer(slide)
+    set_notes(
+        slide,
+        "Ask for access early in the meeting, not at the end. Suhyeong already said the repository "
+        "permission has to come from Dr. Kang directly. Steps two and three are about a day of work "
+        "each once access exists. The two questions below the access one are product decisions that "
+        "are not mine to make.",
     )
 
     output.parent.mkdir(parents=True, exist_ok=True)
