@@ -241,37 +241,49 @@ def build_deck(output: Path, logo_deck: Path | None) -> None:
 
     # 2 ---------------------------------------------------------- overview
     slide = prs.slides.add_slide(blank)
-    add_header(slide, "Overview", 2)
-    flow = [
-        ("Copied DB", "read-only"),
-        ("Offline build", "FASTA + indexes"),
-        ("Sequence in", "web form"),
-        ("Three searches", "BLAST + HMMER"),
-        ("Result page", "HTML, CSV, JSON"),
+    add_header(slide, "Workflow: what happens, and where", 2)
+    steps = [
+        ("1", "Export", "Read the copied table once. Keep Swiss-Prot and PDB, drop bad rows, remove duplicates.",
+         "PyMySQL  ->  FASTA", RED),
+        ("2", "Index", "Turn that FASTA into files searchable in milliseconds, and cluster it into families.",
+         "makeblastdb, MMseqs2,\nMAFFT, hmmbuild", RED),
+        ("3", "Submit", "A user pastes a sequence. It is parsed and checked before anything runs.",
+         "web form  ->  FASTA", BLUE),
+        ("4", "Search", "All three searches run against the built files. No database is touched.",
+         "blastp, phmmer, hmmscan", BLUE),
+        ("5", "Show", "Attach EC, source and description to each hit, then render the tables.",
+         "SQLite  ->  HTML, CSV, JSON", BLUE),
     ]
-    for i, (title, sub) in enumerate(flow):
+    for i, (number, title, what, tool, accent) in enumerate(steps):
         x = 0.72 + i * 2.42
-        add_rect(slide, x, 1.75, 2.05, 1.05, fill=WHITE, line=LINE)
-        add_text(slide, title, x + 0.2, 1.98, 1.7, 0.3, size=13.5, bold=True)
-        add_text(slide, sub, x + 0.2, 2.34, 1.7, 0.26, size=10.5, color=MUTED)
+        add_rect(slide, x, 1.62, 2.24, 2.72, fill=WHITE, line=LINE)
+        add_rect(slide, x, 1.62, 2.24, 0.46, fill=accent, line=accent, radius=False, line_width=0)
+        add_text(slide, f"{number}   {title}", x + 0.2, 1.72, 1.9, 0.28, size=14, bold=True, color=WHITE)
+        add_text(slide, what, x + 0.2, 2.24, 1.86, 1.35, size=11.5, color=INK, line_spacing=1.12)
+        add_line(slide, x + 0.2, 3.62, x + 2.04, 3.62, color=LINE, width=1)
+        add_text(slide, tool, x + 0.2, 3.72, 1.9, 0.5, size=9.5, color=MUTED, font=MONO)
         if i < 4:
-            arrow = slide.shapes.add_shape(MSO_SHAPE.RIGHT_ARROW, Inches(x + 2.12), Inches(2.12), Inches(0.24), Inches(0.32))
+            arrow = slide.shapes.add_shape(MSO_SHAPE.RIGHT_ARROW, Inches(x + 2.265), Inches(2.84), Inches(0.15), Inches(0.24))
             arrow.fill.solid()
             arrow.fill.fore_color.rgb = rgb(LINE)
             arrow.line.color.rgb = rgb(LINE)
-    cards = [
-        ("Reference builder", ["Reads the copied DB once", "Swiss-Prot and PDB rows", "Writes FASTA, indexes, profiles"], RED),
-        ("Search service", ["blastp, phmmer, hmmscan", "Plain function, no web framework", "Callable from the EnzymeX scheduler"], BLUE),
-        ("Result page", ["One table per method", "EC, source, description per hit", "CSV and JSON export"], GREEN),
+
+    where = [
+        (0.72, 4.66, "OFFLINE", "Runs on a schedule after each database refresh", "minutes", RED, RED_LIGHT),
+        (5.56, 7.06, "ONLINE", "Runs per user request, inside the existing job queue", "seconds", BLUE, BLUE_LIGHT),
     ]
-    for i, (title, items, accent) in enumerate(cards):
-        x = 0.72 + i * 4.02
-        add_rect(slide, x, 3.3, 3.8, 2.45, fill=PANEL, line=LINE)
-        add_rect(slide, x, 3.3, 3.8, 0.11, fill=accent, line=accent, radius=False, line_width=0)
-        add_text(slide, title, x + 0.28, 3.62, 3.3, 0.36, size=18, bold=True, color=accent)
-        add_bullets(slide, items, x + 0.28, 4.2, 3.3, 1.9, size=13.5, spacing=10)
-    set_notes(slide, "Standalone test server. The search core is a library, so EnzymeX can call run_search "
-                     "from its existing scheduled job without taking any of the web code.")
+    for x, w, label, body, timing, accent, light in where:
+        add_rect(slide, x, 4.56, w, 1.28, fill=light, line=light)
+        add_text(slide, label, x + 0.3, 4.76, 2.0, 0.32, size=15, bold=True, color=accent)
+        add_text(slide, timing, x + w - 1.5, 4.78, 1.2, 0.28, size=13, bold=True, color=accent,
+                 align=PP_ALIGN.RIGHT)
+        add_text(slide, body, x + 0.3, 5.2, w - 0.6, 0.42, size=13, color=INK)
+    add_rect(slide, 0.72, 6.1, 11.9, 0.62, fill=PANEL, line=LINE)
+    add_text(slide, "Step 1 is the only database connection in the entire flow. Everything after it reads files written by step 2.",
+             0.72, 6.28, 11.9, 0.3, size=13.5, bold=True, color=CHARCOAL, align=PP_ALIGN.CENTER)
+    set_notes(slide, "Steps 1 and 2 are the reference build. Steps 3 to 5 are one user request. The search "
+                     "code between them is a plain function with no web framework in it, so EnzymeX calls "
+                     "it from its existing scheduled job rather than taking any of my web layer.")
 
     # 3 -------------------------------------------------------- tech stack
     slide = prs.slides.add_slide(blank)
