@@ -1,134 +1,107 @@
 <!doctype html>
 <html><head><meta charset="utf-8"><title>Cheat sheet</title>
 <style>
-@page { size: letter; margin: 6mm; }
+@page { size: letter; margin: 8mm; }
 * { box-sizing: border-box; }
-body { font-family: "Segoe UI", Arial, sans-serif; color:#18212B; font-size: 6.9pt; line-height:1.2; margin:0; }
-.top { display:flex; justify-content:space-between; align-items:baseline; border-bottom:2px solid #B71A1A; padding-bottom:1.2mm; margin-bottom:2mm; }
-h1 { font-size: 11.5pt; margin:0; }
-.date { color:#667085; font-size:7.4pt; }
+body { font-family: "Segoe UI", Arial, sans-serif; color:#18212B; font-size: 7.6pt; line-height:1.24; margin:0; }
+.top { display:flex; justify-content:space-between; align-items:baseline; border-bottom:2px solid #B71A1A; padding-bottom:1.3mm; margin-bottom:2.2mm; }
+h1 { font-size: 12pt; margin:0; }
+.date { color:#667085; font-size:7.6pt; }
 .cols { display:grid; grid-template-columns:1fr 1fr; gap:0 6mm; align-items:start; }
-h2 { font-size:7.1pt; margin:0 0 1mm 0; color:#B71A1A; text-transform:uppercase; letter-spacing:.6px; border-bottom:1px solid #E4E8EE; padding-bottom:.6mm; }
-.sec { break-inside:avoid; margin-bottom:1.9mm; }
-dl { margin:0; }
+h2 { font-size:7.6pt; margin:0 0 1.1mm 0; color:#B71A1A; text-transform:uppercase; letter-spacing:.6px; border-bottom:1px solid #E4E8EE; padding-bottom:.6mm; }
+.sec { break-inside:avoid; margin-bottom:2.6mm; }
 dt { display:inline; font-weight:700; }
 dd { display:inline; margin:0; color:#3A4048; }
-.row { margin-bottom:.62mm; }
-.m { font-family: Consolas, monospace; font-size:6.7pt; }
-.num .row { margin-bottom:.68mm; }
+.row { margin-bottom:.85mm; }
+.m { font-family: Consolas, monospace; font-size:7.5pt; }
 .num dt { color:#176B87; }
-.key { background:#F5F7FA; border-left:2.5px solid #B71A1A; padding:1.1mm 2mm; margin-bottom:2.2mm; font-size:6.8pt; }
+.key { background:#F5F7FA; border-left:2.5px solid #B71A1A; padding:1.3mm 2.2mm; margin-bottom:2.4mm; font-size:7.6pt; }
 .key b { color:#B71A1A; }
 .key .s { color:#B9C0CA; margin:0 1.2mm; }
+.beat { border-left:2px solid #E4E8EE; padding-left:2mm; margin-bottom:1.3mm; }
+.beat b { color:#B71A1A; }
+.say { color:#176B87; }
 </style></head><body>
 
 <div class="top">
-  <h1>Cheat sheet &mdash; what everything is</h1>
+  <h1>Cheat sheet</h1>
   <div class="date">EnzymeX BLAST + HMMER &nbsp;·&nbsp; 4 August 2026</div>
 </div>
 
 <div class="key">
-<b>The yearbook</b> &mdash; 273,000 people. A <b>photo</b> = a sequence, a <b>job title</b> = an EC number. A stranger's photo comes in; you find who they look like.
-<span class="s">|</span> warehouse = <span class="m">enzymesdata</span> <span class="s">|</span> filing cabinet = BLAST db <span class="s">|</span> family portrait = profile HMM <span class="s">|</span> name cards = <span class="m">metadata.sqlite3</span> <span class="s">|</span> edition no. = build ID
-<span class="s">|</span> <b>Build the yearbook once offline; every search reads only that, three ways, and never touches the database.</b>
+<b>The yearbook</b> &mdash; a book of 273,000 people. A <b>photo</b> = a protein sequence. A <b>job title</b> = an EC number. A stranger's photo comes in; you find who they look like, and their job titles are your evidence.
+<span class="s">|</span> warehouse = <span class="m">enzymesdata</span> (MySQL) <span class="s">|</span> filing cabinet = BLAST db <span class="s">|</span> family portrait = profile HMM <span class="s">|</span> name cards = <span class="m">metadata.sqlite3</span> <span class="s">|</span> edition no. = build ID
+<br><b>Print the book once offline. Every search reads only that book, three ways, and never touches the database.</b>
 </div>
 
 <div class="cols">
 
 <div class="sec">
-<h2>Biology</h2>
-<div class="row"><dt>Protein sequence</dt><dd> &mdash; a string of letters, one per amino acid. All these tools ever look at.</dd></div>
-<div class="row"><dt>Enzyme</dt><dd> &mdash; a protein that speeds up a chemical reaction.</dd></div>
-<div class="row"><dt>EC number</dt><dd> &mdash; four-part code naming that reaction, e.g. <span class="m">1.15.1.1</span>. Names a <b>reaction, not a family</b>.</dd></div>
-<div class="row"><dt>Fusion construct</dt><dd> &mdash; two proteins deliberately joined into one. Common in PDB. The GFP problem.</dd></div>
-<div class="row"><dt>GFP</dt><dd> &mdash; jellyfish protein that glows green. Not an enzyme. Used as my negative control.</dd></div>
-<div class="row"><dt>SOD</dt><dd> &mdash; superoxide dismutase. My positive control. Has Cu/Zn and Mn/Fe versions that share one EC and look nothing alike.</dd></div>
-</div>
-
-<div class="sec">
-<h2>Data and formats</h2>
-<div class="row"><dt>FASTA</dt><dd> &mdash; plain text sequence format: a <span class="m">&gt;</span> header line, then the sequence letters. Every tool reads it.</dd></div>
-<div class="row"><dt>Swiss-Prot</dt><dd> &mdash; manually reviewed protein database. High quality. One of my two sources.</dd></div>
-<div class="row"><dt>PDB</dt><dd> &mdash; Protein Data Bank. Proteins with an experimentally solved 3D structure. My other source.</dd></div>
-<div class="row"><dt>TrEMBL / KEGG</dt><dd> &mdash; the other two sources EnzymeX pulls. Excluded, per Dr. Kang.</dd></div>
-<div class="row"><dt><span class="m">enzymesdata</span></dt><dd> &mdash; the EnzymeX MySQL table with all those sequences plus EC, source and description. I read a copy.</dd></div>
-<div class="row"><dt>Accession / UniProt ID</dt><dd> &mdash; the public ID for an entry, e.g. <span class="m">P04179</span>.</dd></div>
-<div class="row"><dt>Build ID</dt><dd> &mdash; a stamp on every file produced by one export, so a hit and its EC always come from the same snapshot.</dd></div>
-</div>
-
-<div class="sec">
-<h2>Tools</h2>
-<div class="row"><dt>BLAST / <span class="m">blastp</span></dt><dd> &mdash; the standard sequence search tool since 1990. Aligns your sequence against every known one and ranks matches. <span class="m">blastp</span> = protein vs protein.</dd></div>
-<div class="row"><dt>HMMER</dt><dd> &mdash; a different search toolkit using probability models instead of direct alignment. Better at distant relatives.</dd></div>
-<div class="row"><dt><span class="m">phmmer</span></dt><dd> &mdash; HMMER, one sequence against every reference. Same coverage as BLAST, different maths.</dd></div>
-<div class="row"><dt><span class="m">hmmscan</span></dt><dd> &mdash; HMMER, one sequence against family models. Returns a family, not an individual protein.</dd></div>
-<div class="row"><dt>Profile HMM</dt><dd> &mdash; a statistical portrait of a protein family, built from an alignment of its members. What <span class="m">hmmscan</span> searches.</dd></div>
-<div class="row"><dt>MMseqs2</dt><dd> &mdash; very fast clustering. I use it to group references into families by sequence similarity.</dd></div>
-<div class="row"><dt>MAFFT</dt><dd> &mdash; multiple sequence aligner. Lines up a cluster so a profile can be built from it.</dd></div>
-<div class="row"><dt><span class="m">makeblastdb</span>, <span class="m">hmmbuild</span>, <span class="m">hmmpress</span></dt><dd> &mdash; index builders. Turn a FASTA or alignment into something searchable in milliseconds.</dd></div>
-<div class="row"><dt>DIAMOND</dt><dd> &mdash; a faster, less sensitive BLAST alternative. <b>EnzymeX already runs it</b> to pick proteins for the interpretation images.</dd></div>
-</div>
-
-<div class="sec">
-<h2>What the scores mean</h2>
-<div class="row"><dt>E-value</dt><dd> &mdash; how many matches this good you would expect by pure luck. <b>Smaller is stronger.</b> <span class="m">1e-100</span> is essentially impossible by chance.</dd></div>
-<div class="row"><dt>Bit score</dt><dd> &mdash; raw strength of a match. Unlike E-value it does not change with database size.</dd></div>
-<div class="row"><dt>Percent identity</dt><dd> &mdash; what fraction of aligned letters are literally the same. BLAST reports it; HMMER does not.</dd></div>
-<div class="row"><dt>Query / subject</dt><dd> &mdash; query is what the user submitted, subject is the known protein it matched.</dd></div>
-<div class="row"><dt>Coverage</dt><dd> &mdash; how much of the query, and how much of the subject, the alignment spans.</dd></div>
-<div class="row"><dt>HSP</dt><dd> &mdash; one matching stretch inside an alignment. A hit can have several; I merge them to get subject coverage.</dd></div>
-<div class="row"><dt>EC purity</dt><dd> &mdash; how consistent the EC labels are inside one of my clusters. Measured, not assumed.</dd></div>
+<h2>The demo &mdash; 4 beats</h2>
+<div class="beat"><b>1. <span class="m">/health</span> tab.</b> Point at the build ID, then at <span class="m">reachable: false</span> sitting next to three <span class="m">ok</span>s.
+<br><span class="say">&ldquo;MySQL is down on this machine. I left it off. All three searches still work, because they read files, not the database.&rdquo;</span></div>
+<div class="beat"><b>2. Paste SOD2.</b> Tick all three methods. ~2 s. Read the grey box at the top out loud. Top hit is SOD2 itself, right EC, <b>both coverage columns near 1.00</b>.
+<br><span class="say">&ldquo;Whole photo matched to whole photo. That's a real match.&rdquo;</span></div>
+<div class="beat"><b>3. Paste GFP.</b> Set it up first: <span class="say">&ldquo;jellyfish protein, does no chemistry, has no EC number.&rdquo;</span> 25 hits come back at up to 97.5%, 15 carrying EC numbers. <b>Pause &mdash; let it look like a failure.</b> Then point at Source (all <span class="m">pdb</span>), then <b>query 1.00 / subject 0.55</b>.
+<br><span class="say">&ldquo;It's a group photo. PDB is full of enzymes with GFP glued on so people can see them. I matched the GFP half. The EC belongs to the half I didn't match. BLAST has no field for that number &mdash; I compute it.&rdquo;</span></div>
+<div class="beat"><b>4. <span class="m">ls var/jobs/&lt;id&gt;/</span></b> &mdash; query, raw output from all three tools, stderr, parsed result. Skip if short on time.</div>
 </div>
 
 <div class="sec num">
-<h2>My numbers, decoded</h2>
-<div class="row"><dt>452 / 452</dt><dd> &mdash; every query in Beomsu's set gave my pipeline the same top match as his. Proves the plumbing, not the biology.</dd></div>
-<div class="row"><dt>450 / 452</dt><dd> &mdash; same for the whole top-25 list, not just the winner. The two that differ are tie-ordering between BLAST versions.</dd></div>
-<div class="row"><dt>272,112</dt><dd> &mdash; how many known proteins a search compares against.</dd></div>
-<div class="row"><dt><span class="m">-evalue 1e-3</span></dt><dd> &mdash; my cutoff. Anything weaker than 1-in-1,000-by-chance is not shown.</dd></div>
-<div class="row"><dt><span class="m">-max_target_seqs 500</span></dt><dd> &mdash; how many hits BLAST keeps internally. It is a search cutoff, not a top-N filter, so I rank to 25 afterwards in code.</dd></div>
-<div class="row"><dt>35% identity / 80% coverage</dt><dd> &mdash; the clustering rule. Two sequences join a family if 35% of letters match across 80% of both.</dd></div>
-<div class="row"><dt>13 / 4 / 5</dt><dd> &mdash; how many separate sequence families one single EC number split into. This is why profiles are not built per EC.</dd></div>
-<div class="row"><dt>97.5% identity, E 8.4e-175</dt><dd> &mdash; GFP's top hit. Nearly the same protein, zero chance of coincidence &mdash; and still the wrong answer, because it is a fusion.</dd></div>
-<div class="row"><dt>query 1.00 / subject 0.55</dt><dd> &mdash; the match covers all of my sequence but only 55% of theirs. That gap is the fusion signature.</dd></div>
-<div class="row"><dt>1.8 s / 7.1 s</dt><dd> &mdash; blastp and phmmer, one query against 272k references.</dd></div>
+<h2>Commands</h2>
+<div class="row"><dt><span class="m">make serve</span></dt><dd> &mdash; start the server on 127.0.0.1:8000. <b>Run first, leave the terminal open.</b></dd></div>
+<div class="row"><dt><span class="m">make health</span></dt><dd> &mdash; the health JSON in the terminal. Same as the <span class="m">/health</span> tab.</dd></div>
+<div class="row"><dt><span class="m">make status</span></dt><dd> &mdash; what is currently built: build ID, sequence count, profile count.</dd></div>
+<div class="row"><dt><span class="m">make versions</span></dt><dd> &mdash; every tool version, if anyone asks.</dd></div>
+<div class="row"><dt><span class="m">make refbuild</span></dt><dd> &mdash; reprint the whole yearbook. The 4-minute one.</dd></div>
+<div class="row"><dt><span class="m">ls var/jobs/&lt;id&gt;/</span></dt><dd> &mdash; one search's folder.</dd></div>
+<div class="row"><dt><span class="m">head var/jobs/&lt;id&gt;/blastp_hits.tsv</span></dt><dd> &mdash; BLAST's raw output, untouched. <b>Show this if asked about output format.</b></dd></div>
+<div class="row"><dt><span class="m">make clean</span></dt><dd> &mdash; <b>do not run this.</b> It deletes the built yearbook.</dd></div>
 </div>
 
 <div class="sec num">
-<h2>Where the output lives</h2>
-<div class="row"><dt><span class="m">/jobs/&lt;id&gt;</span></dt><dd> &mdash; the results page. Submitting redirects here automatically.</dd></div>
-<div class="row"><dt><span class="m">/jobs/&lt;id&gt;/results.csv</span> &middot; <span class="m">.json</span></dt><dd> &mdash; links in the grey strip at the top of that page.</dd></div>
-<div class="row"><dt><span class="m">var/jobs/&lt;id&gt;/</span></dt><dd> &mdash; on disk: <span class="m">query.fasta</span>, <span class="m">blastp_hits.tsv</span>, <span class="m">phmmer_tblout.txt</span>, <span class="m">phmmer_domtblout.txt</span>, <span class="m">hmmscan_tblout.txt</span>, <span class="m">hmmscan_domtblout.txt</span>, <span class="m">*_full.txt</span>, <span class="m">*.stderr.txt</span>, <span class="m">results.json</span>.</dd></div>
-<div class="row"><dt><span class="m">outfmt 6</span></dt><dd> &mdash; BLAST's raw output: a tab-separated table, no headers. 13 columns, my choice.</dd></div>
-<div class="row"><dt><span class="m">--tblout</span> / <span class="m">--domtblout</span></dt><dd> &mdash; HMMER's equivalents. tblout = one row per sequence matched, domtblout = one row per region.</dd></div>
-<div class="row"><dt><span class="m">qlen slen sstart send</span></dt><dd> &mdash; the four columns I asked for on purpose. <b>Subject coverage is computed from these.</b> BLAST has no field for it.</dd></div>
-<div class="row"><dt>Normalized</dt><dd> &mdash; three formats retyped onto one shape (hit id, EC, identity, E-value, bits, coverage), kept in <b>three tables</b> because the scores are not comparable.</dd></div>
-<div class="row"><dt>Show it as</dt><dd> &mdash; raw <span class="m">blastp_hits.tsv</span> &rarr; <span class="m">results.json</span> &rarr; the page. Answers Kang's output-format question in 40 seconds.</dd></div>
-</div>
-
-<div class="sec num">
-<h2>Positioning, and the two asks</h2>
-<div class="row"><dt>Models vs mine</dt><dd> &mdash; ECPICK / HIT-EC / CLEAN <b>always answer</b>, even with no known relative. Mine only answers if something resembles you, can say <b>nothing</b>, and always shows who and how similar.</dd></div>
-<div class="row"><dt>Do not say</dt><dd> &mdash; &ldquo;more accurate&rdquo;. Say: they can predict where I cannot; when I answer, the answer is checkable.</dd></div>
-<div class="row"><dt>DIAMOND &mdash; careful</dt><dd> &mdash; BLAST+ has no subject-coverage field, but <b>DIAMOND can emit <span class="m">scovhsp</span></b>. Do not claim they lack it. <b>Ask:</b> &ldquo;does your DIAMOND output already have it? I'd rather use your column.&rdquo;</dd></div>
-<div class="row"><dt>Ask 1 &mdash; access</dt><dd> &mdash; <span class="m">datax-lab/enzymex</span> 404s. Used the public HIT-EC Swiss-Prot/PDB file and built 272k to prove scale; need the real local DB with proper source tags.</dd></div>
-<div class="row"><dt>Ask 2 &mdash; placement</dt><dd> &mdash; how should BLAST/HMMER appear on the result page next to the existing DIAMOND workflow.</dd></div>
-<div class="row"><dt>Say first</dt><dd> &mdash; profiles are not built on the 272k set yet. Volunteer it before they find it.</dd></div>
-<div class="row"><dt>Families</dt><dd> &mdash; <b>I build them</b>, nothing upstream provides them. Used by <b>hmmscan only</b>; phmmer builds a throwaway profile from the query instead.</dd></div>
-<div class="row"><dt>Quarterly cron</dt><dd> &mdash; <b>theirs, already running.</b> It restocks <span class="m">enzymesdata</span>. My build just hangs off it: restock &rarr; rebuild &rarr; new build ID.</dd></div>
+<h2>Numbers</h2>
+<div class="row"><dt>452 / 452</dt><dd> &mdash; same top hit as Beomsu's earlier run, every query. Proves the plumbing, not the biology.</dd></div>
+<div class="row"><dt>1,574 &middot; 47</dt><dd> &mdash; sequences and family profiles in the demo build.</dd></div>
+<div class="row"><dt>272,112</dt><dd> &mdash; the big build. <b>No profiles on it yet.</b></dd></div>
+<div class="row"><dt>4 min / 2 sec</dt><dd> &mdash; print the book / look someone up.</dd></div>
+<div class="row"><dt>query 1.00 / subject 0.55</dt><dd> &mdash; the GFP tell. All of mine matched, half of theirs did.</dd></div>
+<div class="row"><dt>0.9994</dt><dd> &mdash; mean EC purity. I clustered by looks, then <i>measured</i> whether the job titles agreed.</dd></div>
 </div>
 
 <div class="sec">
-<h2>Stack words &mdash; what each one is</h2>
-<div class="row"><dt>FastAPI</dt><dd> &mdash; Python web framework. The web layer of <b>my</b> test server.</dd></div>
-<div class="row"><dt>Pyramid</dt><dd> &mdash; older Python web framework. What <b>EnzymeX</b> runs on. Same job as FastAPI.</dd></div>
-<div class="row"><dt>uvicorn / uWSGI</dt><dd> &mdash; keep a Python web app running and hand it requests. Mine uses uvicorn, EnzymeX uses uWSGI.</dd></div>
-<div class="row"><dt>Pydantic</dt><dd> &mdash; checks incoming data is the right shape before you use it.</dd></div>
-<div class="row"><dt>MySQL</dt><dd> &mdash; the database EnzymeX stores everything in. A server you connect to.</dd></div>
-<div class="row"><dt>SQLite</dt><dd> &mdash; a database that is just one file, no server. My search reads one instead of connecting to MySQL.</dd></div>
-<div class="row"><dt>PyMySQL</dt><dd> &mdash; the library that talks to MySQL. Pure Python, so nothing needs compiling on the server.</dd></div>
-<div class="row"><dt>micromamba</dt><dd> &mdash; environment manager. Needed because BLAST+, HMMER, MAFFT and MMseqs2 are programs, not pip packages.</dd></div>
-<div class="row"><dt>Scheduler / runner</dt><dd> &mdash; EnzymeX's background job system. Runs ECPICK, HIT-EC and CLEAN. <b>My searches become another step in it.</b></dd></div>
+<h2>Say these</h2>
+<div class="row"><dt>Positioning</dt><dd> &mdash; &ldquo;Evidence, not a prediction. It sits <b>next to</b> ECPICK, HIT-EC and CLEAN, not instead of them.&rdquo;</dd></div>
+<div class="row"><dt>Models vs mine</dt><dd> &mdash; they always answer, even with no known relative. Mine only answers if something resembles you, <b>can say nothing</b>, and always shows its work. Do <b>not</b> say &ldquo;more accurate&rdquo;.</dd></div>
+<div class="row"><dt>Three tables</dt><dd> &mdash; never merged. Each tool scores on its own scale; one ranking would fake a comparison.</dd></div>
+<div class="row"><dt>Volunteer it</dt><dd> &mdash; profiles are not built on the 272k set yet. Say it before they find it.</dd></div>
+<div class="row"><dt>DIAMOND &mdash; ask, don't claim</dt><dd> &mdash; BLAST has no subject-coverage field, but DIAMOND <i>can</i> emit it. <b>&ldquo;Does your DIAMOND output already have subject coverage? I'd rather use your column.&rdquo;</b></dd></div>
+</div>
+
+<div class="sec">
+<h2>The two asks &mdash; don't leave without</h2>
+<div class="row"><dt>1. Repo access</dt><dd> &mdash; <span class="m">datax-lab/enzymex</span> 404s for me. I used the public HIT-EC Swiss-Prot/PDB file and built 272k to prove it scales, but the real local DB has proper source tags.</dd></div>
+<div class="row"><dt>2. Placement</dt><dd> &mdash; where should BLAST/HMMER appear on the result page next to the existing DIAMOND workflow.</dd></div>
+</div>
+
+<div class="sec">
+<h2>If asked what something means</h2>
+<div class="row"><dt>Source</dt><dd> &mdash; how much the job title is worth. <b>swissprot</b>: a human curator read the paper. <b>pdb</b>: someone solved the structure, but the entry is whatever was in the crystal &mdash; that is where the group photos come from. TrEMBL and KEGG dropped: machine-guessed labels.</dd></div>
+<div class="row"><dt>E-value</dt><dd> &mdash; how many matches this good you'd expect by pure luck. <b>Smaller is stronger.</b> Not comparable between the three methods.</dd></div>
+<div class="row"><dt>Coverage</dt><dd> &mdash; how much of the query, and how much of the hit, the match spans. <b>The gap between the two is the group-photo alarm.</b></dd></div>
+<div class="row"><dt>Families</dt><dd> &mdash; <b>I build them</b>, nothing upstream provides them. MMseqs2 groups lookalikes, MAFFT lines them up, hmmbuild blends them into one portrait. <b>Only hmmscan uses them</b>; phmmer builds a throwaway one from the query instead.</dd></div>
+<div class="row"><dt>Filters</dt><dd> &mdash; under 30 letters out, over 10,000 out, &gt;10% unreadable letters out, duplicates merged, non-Swiss-Prot/PDB out. Every rejection logged with a reason in <span class="m">skipped.tsv</span>.</dd></div>
+<div class="row"><dt>Build ID</dt><dd> &mdash; fingerprint of the sequences <i>plus</i> the rules. Same data and rules &rarr; same ID. Change either &rarr; new ID automatically.</dd></div>
+<div class="row"><dt>Quarterly cron</dt><dd> &mdash; <b>theirs, already running.</b> It restocks <span class="m">enzymesdata</span>. My build just hangs off it.</dd></div>
+</div>
+
+<div class="sec">
+<h2>Defending the stack</h2>
+<div class="row"><dt>Python</dt><dd> &mdash; same as EnzymeX. Nothing new for them to maintain.</dd></div>
+<div class="row"><dt>FastAPI</dt><dd> &mdash; only my test server's web layer. <b>The search code imports no web framework</b>, so their Pyramid app calls it as a plain function. No rewrite.</dd></div>
+<div class="row"><dt>MySQL / SQLite</dt><dd> &mdash; MySQL read-only for the build. SQLite is one file, no server, which is why search has no DB connection.</dd></div>
+<div class="row"><dt>micromamba</dt><dd> &mdash; only because BLAST+, HMMER, MAFFT and MMseqs2 are standalone programs, not pip packages.</dd></div>
+<div class="row"><dt>The one line</dt><dd> &mdash; <b>&ldquo;Same language, same database engine, and the search code has no web framework in it, so it drops into your existing scheduler.&rdquo;</b></dd></div>
 </div>
 
 </div>
