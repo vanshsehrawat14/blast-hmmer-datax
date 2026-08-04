@@ -3,11 +3,11 @@
 <style>
 @page { size: letter; margin: 8mm; }
 * { box-sizing: border-box; }
-body { font-family: "Segoe UI", Arial, sans-serif; color:#18212B; font-size: 6.85pt; line-height:1.21; margin:0; }
+body { font-family: "Segoe UI", Arial, sans-serif; color:#18212B; font-size: 6.35pt; line-height:1.19; margin:0; }
 .top { display:flex; justify-content:space-between; align-items:baseline; border-bottom:2px solid #B71A1A; padding-bottom:1.3mm; margin-bottom:2.2mm; }
 h1 { font-size: 12pt; margin:0; }
 .date { color:#667085; font-size:7.6pt; }
-.cols { display:grid; grid-template-columns:1fr 1fr; gap:0 6mm; align-items:start; }
+.cols { column-count:2; column-gap:6mm; }
 h2 { font-size:7.6pt; margin:0 0 1.1mm 0; color:#B71A1A; text-transform:uppercase; letter-spacing:.6px; border-bottom:1px solid #E4E8EE; padding-bottom:.6mm; }
 .sec { break-inside:avoid; margin-bottom:2.6mm; }
 dt { display:inline; font-weight:700; }
@@ -35,6 +35,21 @@ dd { display:inline; margin:0; color:#3A4048; }
 </div>
 
 <div class="cols">
+
+<div class="sec">
+<h2>Before they walk in</h2>
+<div class="row"><dt>1.</dt><dd> <span class="m">make serve</span> in WSL, <b>leave that terminal open.</b></dd></div>
+<div class="row"><dt>2.</dt><dd> Two browser tabs: <span class="m">127.0.0.1:8000</span> and <span class="m">127.0.0.1:8000/health</span>.</dd></div>
+<div class="row"><dt>3.</dt><dd> Two Notepad tabs: <b>SOD2</b> (the clean one) and <b>GFP</b> (the trap). Paste from these, don't retype.</dd></div>
+<div class="row"><dt>4.</dt><dd> This sheet and the procedure handout printed.</dd></div>
+</div>
+
+<div class="sec">
+<h2>How to open &mdash; 30 seconds</h2>
+<div class="beat"><b>What it is.</b> <span class="say">&ldquo;You paste a protein sequence, it tells you which known enzymes it resembles and what reactions those do, with the evidence attached. Three search methods, three separate tables.&rdquo;</span></div>
+<div class="beat"><b>The one design decision.</b> <span class="say">&ldquo;It's two stages. One offline program reads the database once and writes a reference. Every search after that reads only those files. The web app has no database connection in it at all.&rdquo;</span></div>
+<div class="beat"><b>Then go straight to the demo.</b> Don't explain more first &mdash; the <span class="m">/health</span> tab proves the sentence you just said.</div>
+</div>
 
 <div class="sec">
 <h2>The demo &mdash; 4 beats</h2>
@@ -78,6 +93,19 @@ dd { display:inline; margin:0; color:#3A4048; }
 </div>
 
 <div class="sec">
+<h2>Engineering &mdash; work these in</h2>
+<div class="row"><dt>The split</dt><dd> &mdash; <b>one program touches MySQL, and it is not the web app.</b> Everything else is a consequence of that.</dd></div>
+<div class="row"><dt>Three locks on their data</dt><dd> &mdash; a SELECT-only account, a read-only transaction, and an env flag that must confirm &ldquo;this is a copy&rdquo; or it <b>refuses to connect</b>. I never had write access and built it so I couldn't get it by accident.</dd></div>
+<div class="row"><dt>Frozen snapshot</dt><dd> &mdash; both export passes read one pinned view, so a mid-build insert can't produce a half-and-half yearbook.</dd></div>
+<div class="row"><dt>Build ID is earned</dt><dd> &mdash; rows come out in primary-key order &rarr; identical bytes &rarr; identical hash. <b>Rerun it today, same ID.</b> A timestamp would only tell you when someone pressed the button.</dd></div>
+<div class="row"><dt><span class="m">-max_target_seqs 500</span></dt><dd> &mdash; it is a <b>search cutoff, not a top-500 filter</b> (Shah 2018 &mdash; widely misused). I set it wide and rank to 25 in my own code.</dd></div>
+<div class="row"><dt>hmmscan, not hmmsearch</dt><dd> &mdash; hmmsearch's E-value moves depending on how many sequences you submit at once. Same query, different batch, different number. hmmscan's doesn't.</dd></div>
+<div class="row"><dt>Subject coverage</dt><dd> &mdash; <b>no tool emits it.</b> I merge the matched intervals myself. That column is what catches the group photos.</dd></div>
+<div class="row"><dt>Three outcomes, never blank</dt><dd> &mdash; <span class="m">ok</span> / <span class="m">no_hits</span> / <span class="m">error</span>. A crash and &ldquo;nothing resembles you&rdquo; are different answers and the page says which.</dd></div>
+<div class="row"><dt>Raw output kept</dt><dd> &mdash; every search writes its own folder: query, unmodified tool output, stderr, parsed result. <b>Nothing on screen that I can't trace back to a file.</b></dd></div>
+</div>
+
+<div class="sec">
 <h2>The two asks &mdash; don't leave without</h2>
 <div class="row"><dt>1. Repo access</dt><dd> &mdash; <span class="m">datax-lab/enzymex</span> 404s for me. I used the public HIT-EC Swiss-Prot/PDB file and built 272k to prove it scales, but the real local DB has proper source tags.</dd></div>
 <div class="row"><dt>2. Placement</dt><dd> &mdash; where should BLAST/HMMER appear on the result page next to the existing DIAMOND workflow.</dd></div>
@@ -108,6 +136,7 @@ dd { display:inline; margin:0; color:#3A4048; }
 <div class="row"><dt>Python</dt><dd> &mdash; same as EnzymeX. Nothing new for them to maintain.</dd></div>
 <div class="row"><dt>FastAPI vs Pyramid</dt><dd> &mdash; both just turn a web request into a web page. Mine uses FastAPI, theirs Pyramid. <b>Doesn't matter: the search code imports neither.</b> It is a plain function their Pyramid app can call. No rewrite.</dd></div>
 <div class="row"><dt>MySQL vs SQLite</dt><dd> &mdash; MySQL is a server you connect to over the network. SQLite is <b>one file on disk</b>. Build uses MySQL once, read-only; search uses the file. That is <i>why</i> search has no DB connection.</dd></div>
+<div class="row"><dt>Jinja2</dt><dd> &mdash; the form-letter printer. <span class="m">results.html</span> is a page with blanks in it; Python hands it the numbers, Jinja fills them in and sends finished HTML. <b>No JavaScript framework, no build step</b> &mdash; the browser just displays a page. EnzymeX already uses templates the same way.</dd></div>
 <div class="row"><dt>micromamba</dt><dd> &mdash; BLAST+, HMMER, MAFFT and MMseqs2 are downloadable programs, not Python libraries. <span class="m">pip</span> cannot install them; micromamba can. Only reason it is here.</dd></div>
 <div class="row"><dt>Families &mdash; the 4 tools</dt><dd> &mdash; <b>MMseqs2</b> groups lookalikes (35% id / 80% cov) &rarr; QC gates (5+ members, 40+ match states) &rarr; <b>MAFFT</b> lines them up &rarr; <b>hmmbuild</b> blends them into one portrait &rarr; <b>hmmpress</b> indexes them. 201 groups &rarr; 47 profiles.</dd></div>
 <div class="row"><dt>Why those numbers</dt><dd> &mdash; <b>35%</b> is just above the twilight zone, below which similarity stops meaning shared structure. <b>80% both ways</b> forces the same domain layout. <b>5 members</b> because below that a profile adds little over phmmer and looks more confident than it is.</dd></div>
