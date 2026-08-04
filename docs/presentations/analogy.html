@@ -53,7 +53,8 @@ li { margin-bottom:.8mm; }
 <tr><td class="step">1</td><td class="y">Go get the photos</td><td class="m">references/db.py</td>
 <td>Opens the warehouse once, read-only, reads in primary-key order, then closes it. <b>This is the only database connection in the entire system.</b></td></tr>
 <tr><td class="step">2</td><td class="y">Throw out the junk</td><td class="m">references/export.py</td>
-<td>Drops sequences under 30 letters, over 10,000, more than 10% unreadable letters, and exact duplicates. Keeps Swiss-Prot and PDB, drops TrEMBL and KEGG. Every rejection is written down with a reason &mdash; a silent export is a useless export.</td></tr>
+<td>Drops sequences under 30 letters, over 10,000, more than 10% unreadable letters, and exact duplicates. Every rejection is written down with a reason &mdash; a silent export is a useless export.<br>
+<b>Source is how much you trust the job title on the back of the photo.</b> <span class="m">swissprot</span>: a human curator read the paper and wrote the EC down. <span class="m">pdb</span>: someone solved the 3D structure, so the photo is real, but the entry is whatever was in the crystal &mdash; which is where the group-photo problem comes from. <span class="m">trembl</span>: a computer guessed the label and nobody checked. <span class="m">kegg</span>: EC inherited from elsewhere. The first two are kept, the last two dropped.</td></tr>
 <tr><td class="step">3</td><td class="y">Type up the name cards</td><td class="m">references/metadata.py</td>
 <td>Photo id &rarr; EC number, source, description, in a single local file. This is why a search can label a hit without ever reopening MySQL.</td></tr>
 <tr><td class="step">4</td><td class="y">Make the photos fast to find</td><td class="m">references/blast_build.py</td>
@@ -66,6 +67,7 @@ li { margin-bottom:.8mm; }
 <td>Fingerprints the sequences plus the settings that decide what is searchable. Same data and settings &rarr; same id, so the build is reproducible; change anything &rarr; new id, automatically.</td></tr>
 </table>
 <div class="note"><b>Why sort by looks and not by job title?</b> Because plumbers don't look alike. Blending &ldquo;everyone whose job is plumber&rdquo; gives grey mush that vaguely resembles everybody and identifies nobody. An EC number names a <i>reaction</i>, not a family: glutathione transferase is one EC spread across 13 families that look nothing like each other. So cluster by appearance first, then check which job titles landed in each family and report that purity instead of assuming it.</div>
+<div class="note"><b>Whose schedule?</b> Theirs, and it already exists. EnzymeX runs a quarterly cron that pulls from Swiss-Prot, PDB, KEGG and TrEMBL and refills <span class="m">enzymesdata</span> &mdash; that is the warehouse being restocked, and it has nothing to do with this code. The build just hangs off it: warehouse restocks &rarr; reprint the yearbook &rarr; a new edition number falls out on its own. Roughly four times a year, four minutes each time.</div>
 
 <h2>Part 2 &mdash; Someone walks in (online, seconds, per request)</h2>
 <table>
@@ -90,6 +92,32 @@ li { margin-bottom:.8mm; }
 <tr><td class="m">hmmscan</td><td>Ignores individuals and compares against the family portraits instead.</td><td>Answers &ldquo;which family are you in&rdquo;, which is useful when no single person is a good match but a family clearly is.</td></tr>
 </table>
 <div class="note">The three results are shown as three separate tables and are never merged into one ranked list. Each tool scores on its own scale, so combining them would be like ranking runners by mixing seconds with miles per hour.</div>
+<div class="note"><b>Only hmmscan uses the families.</b> phmmer builds a throwaway portrait from <i>your</i> submitted sequence on the spot and compares that against every individual in the book &mdash; no families involved. And nothing upstream hands you families: the warehouse gives you loose photos and nothing else. MMseqs2 works out who looks alike during the build. Of 201 groups found, 47 were big and consistent enough to be worth a portrait.</div>
+
+<h2>Where the output actually lives</h2>
+<table>
+<tr><th style="width:32%">Where</th><th>What is in it</th></tr>
+<tr><td class="m">/jobs/&lt;id&gt;</td><td>The results page. Submitting redirects here automatically. Three tables, plus a grey strip at the top carrying the job id, the build id and the download links.</td></tr>
+<tr><td class="m">/jobs/&lt;id&gt;/results.csv<br>/jobs/&lt;id&gt;/results.json</td><td>The same data, machine-readable. One row per hit; a method that found nothing or failed still emits a row carrying its status, so &ldquo;searched, found nothing&rdquo; stays distinguishable from &ldquo;never ran&rdquo;.</td></tr>
+<tr><td class="m">var/jobs/&lt;id&gt;/</td><td>On disk: <span class="m">query.fasta</span>, <span class="m">blastp_hits.tsv</span>, <span class="m">phmmer_tblout.txt</span>, <span class="m">phmmer_domtblout.txt</span>, <span class="m">hmmscan_tblout.txt</span>, <span class="m">hmmscan_domtblout.txt</span>, the <span class="m">*_full.txt</span> human-readable versions, every <span class="m">*.stderr.txt</span>, and <span class="m">results.json</span>.</td></tr>
+</table>
+<div class="note"><b>The raw formats.</b> <span class="m">outfmt 6</span> is BLAST's tab-separated table with no headers; the 13 columns are chosen, not default. <span class="m">--tblout</span> is HMMER's one-row-per-sequence, <span class="m">--domtblout</span> its one-row-per-region. Four of the BLAST columns &mdash; <span class="m">qlen slen sstart send</span> &mdash; are requested specifically because subject coverage is computed from them. All three formats are then retyped onto one common shape (hit id, EC, identity, E-value, bit score, coverage) and kept in three separate tables.
+<br><b>To show it in 40 seconds:</b> raw <span class="m">blastp_hits.tsv</span> &rarr; normalized <span class="m">results.json</span> &rarr; the rendered page.</div>
+
+<h2>Where this sits next to the models</h2>
+<div class="two">
+<div class="avoid">
+<ul>
+<li><b>ECPICK, HIT-EC, CLEAN are models.</b> They learned patterns and will return an EC for <i>any</i> sequence, including one with no known relative anywhere. They always answer, and you cannot tell which answers to doubt.</li>
+</ul>
+</div>
+<div class="avoid">
+<ul>
+<li><b>This is a lookup.</b> It only answers if something in the book resembles you, it can say <i>nothing</i>, and it always shows its work: who matched, how closely, and over how much of each sequence.</li>
+</ul>
+</div>
+</div>
+<div class="note">The honest framing is not &ldquo;more accurate&rdquo;. It is: <b>the models can predict where this cannot; when this answers, the answer is checkable.</b> Which is why the results page says, in its own words, that these tables sit next to ECPICK, HIT-EC and CLEAN rather than replacing them.</div>
 
 <h2>Two things this design buys, and one trap it catches</h2>
 <div class="two">

@@ -1,9 +1,9 @@
 <!doctype html>
 <html><head><meta charset="utf-8"><title>Cheat sheet</title>
 <style>
-@page { size: letter; margin: 6mm; }
+@page { size: letter; margin: 7mm; }
 * { box-sizing: border-box; }
-body { font-family: "Segoe UI", Arial, sans-serif; color:#18212B; font-size: 6.55pt; line-height:1.19; margin:0; }
+body { font-family: "Segoe UI", Arial, sans-serif; color:#18212B; font-size: 7.7pt; line-height:1.26; margin:0; }
 .top { display:flex; justify-content:space-between; align-items:baseline; border-bottom:2px solid #B71A1A; padding-bottom:1.2mm; margin-bottom:2mm; }
 h1 { font-size: 11.5pt; margin:0; }
 .date { color:#667085; font-size:7.4pt; }
@@ -92,6 +92,30 @@ dd { display:inline; margin:0; color:#3A4048; }
 <div class="row"><dt>97.5% identity, E 8.4e-175</dt><dd> &mdash; GFP's top hit. Nearly the same protein, zero chance of coincidence &mdash; and still the wrong answer, because it is a fusion.</dd></div>
 <div class="row"><dt>query 1.00 / subject 0.55</dt><dd> &mdash; the match covers all of my sequence but only 55% of theirs. That gap is the fusion signature.</dd></div>
 <div class="row"><dt>1.8 s / 7.1 s</dt><dd> &mdash; blastp and phmmer, one query against 272k references.</dd></div>
+</div>
+
+<div class="sec num">
+<h2>Where the output lives</h2>
+<div class="row"><dt><span class="m">/jobs/&lt;id&gt;</span></dt><dd> &mdash; the results page. Submitting redirects here automatically.</dd></div>
+<div class="row"><dt><span class="m">/jobs/&lt;id&gt;/results.csv</span> &middot; <span class="m">.json</span></dt><dd> &mdash; links in the grey strip at the top of that page.</dd></div>
+<div class="row"><dt><span class="m">var/jobs/&lt;id&gt;/</span></dt><dd> &mdash; on disk: <span class="m">query.fasta</span>, <span class="m">blastp_hits.tsv</span>, <span class="m">phmmer_tblout.txt</span>, <span class="m">phmmer_domtblout.txt</span>, <span class="m">hmmscan_tblout.txt</span>, <span class="m">hmmscan_domtblout.txt</span>, <span class="m">*_full.txt</span>, <span class="m">*.stderr.txt</span>, <span class="m">results.json</span>.</dd></div>
+<div class="row"><dt><span class="m">outfmt 6</span></dt><dd> &mdash; BLAST's raw output: a tab-separated table, no headers. 13 columns, my choice.</dd></div>
+<div class="row"><dt><span class="m">--tblout</span> / <span class="m">--domtblout</span></dt><dd> &mdash; HMMER's equivalents. tblout = one row per sequence matched, domtblout = one row per region.</dd></div>
+<div class="row"><dt><span class="m">qlen slen sstart send</span></dt><dd> &mdash; the four columns I asked for on purpose. <b>Subject coverage is computed from these.</b> BLAST has no field for it.</dd></div>
+<div class="row"><dt>Normalized</dt><dd> &mdash; three formats retyped onto one shape (hit id, EC, identity, E-value, bits, coverage), kept in <b>three tables</b> because the scores are not comparable.</dd></div>
+<div class="row"><dt>Show it as</dt><dd> &mdash; raw <span class="m">blastp_hits.tsv</span> &rarr; <span class="m">results.json</span> &rarr; the page. Answers Kang's output-format question in 40 seconds.</dd></div>
+</div>
+
+<div class="sec num">
+<h2>Positioning, and the two asks</h2>
+<div class="row"><dt>Models vs mine</dt><dd> &mdash; ECPICK / HIT-EC / CLEAN <b>always answer</b>, even with no known relative. Mine only answers if something resembles you, can say <b>nothing</b>, and always shows who and how similar.</dd></div>
+<div class="row"><dt>Do not say</dt><dd> &mdash; &ldquo;more accurate&rdquo;. Say: they can predict where I cannot; when I answer, the answer is checkable.</dd></div>
+<div class="row"><dt>DIAMOND &mdash; careful</dt><dd> &mdash; BLAST+ has no subject-coverage field, but <b>DIAMOND can emit <span class="m">scovhsp</span></b>. Do not claim they lack it. <b>Ask:</b> &ldquo;does your DIAMOND output already have it? I'd rather use your column.&rdquo;</dd></div>
+<div class="row"><dt>Ask 1 &mdash; access</dt><dd> &mdash; <span class="m">datax-lab/enzymex</span> 404s. Used the public HIT-EC Swiss-Prot/PDB file and built 272k to prove scale; need the real local DB with proper source tags.</dd></div>
+<div class="row"><dt>Ask 2 &mdash; placement</dt><dd> &mdash; how should BLAST/HMMER appear on the result page next to the existing DIAMOND workflow.</dd></div>
+<div class="row"><dt>Say first</dt><dd> &mdash; profiles are not built on the 272k set yet. Volunteer it before they find it.</dd></div>
+<div class="row"><dt>Families</dt><dd> &mdash; <b>I build them</b>, nothing upstream provides them. Used by <b>hmmscan only</b>; phmmer builds a throwaway profile from the query instead.</dd></div>
+<div class="row"><dt>Quarterly cron</dt><dd> &mdash; <b>theirs, already running.</b> It restocks <span class="m">enzymesdata</span>. My build just hangs off it: restock &rarr; rebuild &rarr; new build ID.</dd></div>
 </div>
 
 <div class="sec">
