@@ -1,0 +1,115 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>The yearbook walkthrough</title>
+<style>
+@page { size: letter; margin: 11mm; }
+* { box-sizing: border-box; }
+body { font-family: "Segoe UI", Arial, sans-serif; color:#18212B; font-size: 8.7pt; line-height:1.32; margin:0; }
+.top { display:flex; justify-content:space-between; align-items:baseline; border-bottom:2px solid #B71A1A; padding-bottom:1.4mm; margin-bottom:2.6mm; }
+h1 { font-size: 13pt; margin:0; }
+.date { color:#667085; font-size:7.8pt; }
+h2 { font-size:8pt; margin:3.6mm 0 1.4mm 0; color:#B71A1A; text-transform:uppercase; letter-spacing:.6px; border-bottom:1px solid #E4E8EE; padding-bottom:.7mm; }
+h2:first-of-type { margin-top:0; }
+.lede { background:#F5F7FA; border-left:3px solid #B71A1A; padding:2mm 2.6mm; margin-bottom:3mm; }
+table { width:100%; border-collapse:collapse; }
+td, th { padding:1.1mm 2mm; border-bottom:1px solid #E9EDF2; text-align:left; vertical-align:top; }
+th { background:#F5F7FA; font-size:7.2pt; text-transform:uppercase; letter-spacing:.4px; color:#52565B; border-bottom:1px solid #D9DEE7; }
+.m { font-family: Consolas, monospace; font-size:8pt; color:#176B87; }
+.y { font-weight:700; color:#18212B; }
+.step { color:#B71A1A; font-weight:700; }
+.two { display:grid; grid-template-columns:1fr 1fr; gap:0 6mm; align-items:start; }
+.note { color:#667085; font-size:8pt; margin-top:1.4mm; }
+.big { font-size:9.4pt; font-weight:700; }
+ul { margin:.8mm 0 0 4mm; padding:0; }
+li { margin-bottom:.8mm; }
+.avoid { break-inside:avoid; }
+</style></head><body>
+
+<div class="top">
+  <h1>The yearbook walkthrough</h1>
+  <div class="date">BLAST + HMMER for EnzymeX &nbsp;·&nbsp; how the analogy maps onto the code</div>
+</div>
+
+<div class="lede">
+<span class="big">The whole product in one picture.</span> You have a yearbook with 273,000 people in it. Each person's photo is a protein sequence; each person's job title is their EC number. Someone walks in with a photo of a stranger and asks what that person does for a living. You don't know &mdash; but if you find the people in the yearbook who look most like them, and they're all plumbers, that is real evidence. Everything below is the machinery for answering that question fast, and for being honest about how good the answer is.
+</div>
+
+<h2>The key</h2>
+<table>
+<tr><th style="width:34%">In the analogy</th><th style="width:30%">In real life</th><th>Where it lives</th></tr>
+<tr><td class="y">A photo</td><td>A protein sequence</td><td class="m">references.fasta</td></tr>
+<tr><td class="y">A job title</td><td>An EC number, e.g. 1.15.1.1</td><td class="m">metadata.sqlite3</td></tr>
+<tr><td class="y">The warehouse of photos</td><td>The EnzymeX <span class="m">enzymesdata</span> MySQL table</td><td>read once, offline</td></tr>
+<tr><td class="y">The filing cabinet</td><td>The BLAST database</td><td class="m">blastdb/references.*</td></tr>
+<tr><td class="y">A family portrait</td><td>A profile HMM</td><td class="m">profiles/profiles.hmm</td></tr>
+<tr><td class="y">The name-card box</td><td>Local lookup: id &rarr; EC, source, description</td><td class="m">metadata.sqlite3</td></tr>
+<tr><td class="y">The edition number</td><td>The reference build id, <span class="m">32abd580b689</span></td><td class="m">build_manifest.json</td></tr>
+<tr><td class="y">The reject pile</td><td>Every row dropped, with its reason</td><td class="m">skipped.tsv</td></tr>
+<tr><td class="y">One visit to the counter</td><td>One search job</td><td class="m">var/jobs/&lt;id&gt;/</td></tr>
+</table>
+
+<h2>Part 1 &mdash; Preparing the yearbook (offline, minutes, on a schedule)</h2>
+<table>
+<tr><th style="width:4%"></th><th style="width:30%">What happens</th><th style="width:22%">Module</th><th>Detail worth knowing</th></tr>
+<tr><td class="step">1</td><td class="y">Go get the photos</td><td class="m">references/db.py</td>
+<td>Opens the warehouse once, read-only, reads in primary-key order, then closes it. <b>This is the only database connection in the entire system.</b></td></tr>
+<tr><td class="step">2</td><td class="y">Throw out the junk</td><td class="m">references/export.py</td>
+<td>Drops sequences under 30 letters, over 10,000, more than 10% unreadable letters, and exact duplicates. Keeps Swiss-Prot and PDB, drops TrEMBL and KEGG. Every rejection is written down with a reason &mdash; a silent export is a useless export.</td></tr>
+<tr><td class="step">3</td><td class="y">Type up the name cards</td><td class="m">references/metadata.py</td>
+<td>Photo id &rarr; EC number, source, description, in a single local file. This is why a search can label a hit without ever reopening MySQL.</td></tr>
+<tr><td class="step">4</td><td class="y">Make the photos fast to find</td><td class="m">references/blast_build.py</td>
+<td>Hands the pile to <span class="m">makeblastdb</span>. Turns &ldquo;compare against 273,000 photos&rdquo; from minutes into milliseconds.</td></tr>
+<tr><td class="step">5</td><td class="y">Sort people into families</td><td class="m">references/cluster.py</td>
+<td>MMseqs2 groups by <i>who actually looks alike</i> &mdash; 35% of letters matching across 80% of both. Families too small or too ragged to blend are kicked out and logged.</td></tr>
+<tr><td class="step">6</td><td class="y">Blend each family into one portrait</td><td class="m">references/hmmer_build.py</td>
+<td>MAFFT lines the family up, <span class="m">hmmbuild</span> blends them into a composite where shared features come out sharp and variable ones blurry, <span class="m">hmmpress</span> makes it fast to read. That composite is a profile HMM.</td></tr>
+<tr><td class="step">7</td><td class="y">Stamp the edition number</td><td class="m">references/manifest.py</td>
+<td>Fingerprints the sequences plus the settings that decide what is searchable. Same data and settings &rarr; same id, so the build is reproducible; change anything &rarr; new id, automatically.</td></tr>
+</table>
+<div class="note"><b>Why sort by looks and not by job title?</b> Because plumbers don't look alike. Blending &ldquo;everyone whose job is plumber&rdquo; gives grey mush that vaguely resembles everybody and identifies nobody. An EC number names a <i>reaction</i>, not a family: glutathione transferase is one EC spread across 13 families that look nothing like each other. So cluster by appearance first, then check which job titles landed in each family and report that purity instead of assuming it.</div>
+
+<h2>Part 2 &mdash; Someone walks in (online, seconds, per request)</h2>
+<table>
+<tr><th style="width:4%"></th><th style="width:30%">What happens</th><th style="width:22%">Module</th><th>Detail worth knowing</th></tr>
+<tr><td class="step">1</td><td class="y">Check it's a real photo</td><td class="m">fasta.py</td>
+<td>Right letters, long enough, not a strip of DNA pasted by mistake. Bad input is refused before anything expensive starts.</td></tr>
+<tr><td class="step">2</td><td class="y">Open a folder for this visit</td><td class="m">jobs.py</td>
+<td>Everything about this one search goes in it: the query, what each tool printed on stdout and stderr, and the parsed result. Nothing is discarded, so any past search can be reopened and explained.</td></tr>
+<tr><td class="step">3</td><td class="y">Ask the same question three ways</td><td class="m">search/blast.py<br>search/hmmer.py</td>
+<td>blastp, phmmer and hmmscan run as separate programs with a timeout, reading only the files from Part 1. <b>No database is opened.</b></td></tr>
+<tr><td class="step">4</td><td class="y">Read back what they said</td><td class="m">search/parsers.py<br>search/outcome.py</td>
+<td>Tool output is turned into rows and checked. &ldquo;Found nothing&rdquo;, &ldquo;crashed&rdquo; and &ldquo;timed out&rdquo; are kept as three different answers, so a failure never renders as an empty table.</td></tr>
+<tr><td class="step">5</td><td class="y">Write the names on and show it</td><td class="m">search/service.py<br>web/routes.py</td>
+<td>Each hit comes back as a bare id; it's looked up in the name-card box for its EC, source and description, then rendered as three tables plus CSV and JSON.</td></tr>
+</table>
+
+<h2>The three searches</h2>
+<table>
+<tr><th style="width:14%">Tool</th><th style="width:40%">What it does in the yearbook</th><th>What that buys you</th></tr>
+<tr><td class="m">blastp</td><td>Holds the photo next to every single yearbook photo, one at a time, and reports the closest ones with a percentage.</td><td>Fast and precise, and the only one that gives a percent identity. Only catches people who genuinely look alike.</td></tr>
+<tr><td class="m">phmmer</td><td>Works out which features actually matter and weighs those, instead of comparing flat.</td><td>Catches distant cousins that blunt comparison misses. Slower, and it cannot report a percent identity.</td></tr>
+<tr><td class="m">hmmscan</td><td>Ignores individuals and compares against the family portraits instead.</td><td>Answers &ldquo;which family are you in&rdquo;, which is useful when no single person is a good match but a family clearly is.</td></tr>
+</table>
+<div class="note">The three results are shown as three separate tables and are never merged into one ranked list. Each tool scores on its own scale, so combining them would be like ranking runners by mixing seconds with miles per hour.</div>
+
+<h2>Two things this design buys, and one trap it catches</h2>
+<div class="two">
+<div class="avoid">
+<ul>
+<li><b>The site can't be dragged down by the database.</b> Searches read files. If MySQL is busy or down, search still answers &mdash; I have run it in exactly that state.</li>
+<li><b>Every answer is attributable.</b> The edition number is on the result page, so six months later you can say precisely which snapshot produced it.</li>
+</ul>
+</div>
+<div class="avoid">
+<ul>
+<li><b>The GFP trap.</b> GFP is not an enzyme, but it comes back with 25 hits at up to 97.5% identity, because PDB is full of proteins glued to GFP to make them visible. 15 of those carry an EC number and none of them are GFP's.</li>
+<li><b>How it's caught:</b> the match covers 100% of the query but only 55% of the subject. It matched a <i>piece</i>. BLAST does not report that number, so it is computed here from merged match intervals.</li>
+</ul>
+</div>
+</div>
+
+<h2>If you remember nothing else</h2>
+<div class="lede" style="margin-bottom:0">
+Build the yearbook once, offline, and stamp it with an edition number. Then every search reads only that yearbook, three different ways, and never touches the database at all.
+</div>
+
+</body></html>
