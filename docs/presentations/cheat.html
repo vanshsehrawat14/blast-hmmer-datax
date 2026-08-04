@@ -1,9 +1,9 @@
 <!doctype html>
 <html><head><meta charset="utf-8"><title>Cheat sheet</title>
 <style>
-@page { size: letter; margin: 7mm; }
+@page { size: letter; margin: 6mm; }
 * { box-sizing: border-box; }
-body { font-family: "Segoe UI", Arial, sans-serif; color:#18212B; font-size: 7.7pt; line-height:1.26; margin:0; }
+body { font-family: "Segoe UI", Arial, sans-serif; color:#18212B; font-size: 6.9pt; line-height:1.2; margin:0; }
 .top { display:flex; justify-content:space-between; align-items:baseline; border-bottom:2px solid #B71A1A; padding-bottom:1.2mm; margin-bottom:2mm; }
 h1 { font-size: 11.5pt; margin:0; }
 .date { color:#667085; font-size:7.4pt; }
@@ -120,34 +120,15 @@ dd { display:inline; margin:0; color:#3A4048; }
 
 <div class="sec">
 <h2>Stack words &mdash; what each one is</h2>
-<div class="row"><dt>Python</dt><dd> &mdash; the language everything is written in, mine and EnzymeX's.</dd></div>
-<div class="row"><dt>FastAPI</dt><dd> &mdash; a Python web framework. The web layer of <b>my</b> test server. Modern, lightweight.</dd></div>
-<div class="row"><dt>Pyramid</dt><dd> &mdash; an older Python web framework. What the <b>EnzymeX</b> site runs on. Same job as FastAPI.</dd></div>
-<div class="row"><dt>Jinja2</dt><dd> &mdash; a template engine. Takes an HTML file with blanks and fills them with your data. Both sides use it.</dd></div>
-<div class="row"><dt>uvicorn / uWSGI</dt><dd> &mdash; the programs that keep a Python web app running and hand it incoming requests. Mine uses uvicorn, EnzymeX uses uWSGI.</dd></div>
-<div class="row"><dt>nginx</dt><dd> &mdash; the web server sitting in front of all that, taking traffic off the internet.</dd></div>
-<div class="row"><dt>Pydantic</dt><dd> &mdash; a Python library that checks incoming data is the right shape before you use it. Catches bad input early.</dd></div>
+<div class="row"><dt>FastAPI</dt><dd> &mdash; Python web framework. The web layer of <b>my</b> test server.</dd></div>
+<div class="row"><dt>Pyramid</dt><dd> &mdash; older Python web framework. What <b>EnzymeX</b> runs on. Same job as FastAPI.</dd></div>
+<div class="row"><dt>uvicorn / uWSGI</dt><dd> &mdash; keep a Python web app running and hand it requests. Mine uses uvicorn, EnzymeX uses uWSGI.</dd></div>
+<div class="row"><dt>Pydantic</dt><dd> &mdash; checks incoming data is the right shape before you use it.</dd></div>
 <div class="row"><dt>MySQL</dt><dd> &mdash; the database EnzymeX stores everything in. A server you connect to.</dd></div>
-<div class="row"><dt>SQLite</dt><dd> &mdash; a database that is just one file, no server. My search reads one of these instead of connecting to MySQL.</dd></div>
-<div class="row"><dt>PyMySQL</dt><dd> &mdash; the Python library that talks to MySQL. Pure Python, so nothing needs compiling on the server.</dd></div>
-<div class="row"><dt>pytest</dt><dd> &mdash; the Python testing framework. "183 tests pass" means pytest ran them.</dd></div>
-<div class="row"><dt>micromamba</dt><dd> &mdash; an environment manager. Needed because BLAST+, HMMER, MAFFT and MMseqs2 are standalone programs, not pip packages.</dd></div>
-<div class="row"><dt>Docker Compose / systemd</dt><dd> &mdash; two ways to keep the server running and restart it if it dies.</dd></div>
-<div class="row"><dt>cron</dt><dd> &mdash; the Linux scheduler that runs a command on a timetable. EnzymeX pulls new data quarterly with it.</dd></div>
-<div class="row"><dt>Scheduler / runner</dt><dd> &mdash; EnzymeX's background job system. It runs ECPICK, HIT-EC and CLEAN. <b>My searches would become another step in it.</b></dd></div>
-</div>
-
-<div class="sec num">
-<h2>Slide notes &mdash; the point of each</h2>
-<div class="row"><dt>1 Title</dt><dd> &mdash; evidence beside the three predictions, not a fourth predictor. Say it once, up front.</dd></div>
-<div class="row"><dt>2 Workflow</dt><dd> &mdash; five steps, and which two run offline. Step 1 is the only database connection in the whole flow.</dd></div>
-<div class="row"><dt>3 Tech stack</dt><dd> &mdash; same language, same database engine as EnzymeX. The search code imports no web framework, so it drops in.</dd></div>
-<div class="row"><dt>4 Build once</dt><dd> &mdash; the build is the only thing that touches the database. A search reads files, so it cannot slow or leak it.</dd></div>
-<div class="row"><dt>5 Three searches</dt><dd> &mdash; separate tables because the three scores are different quantities. Merging them would invite a false comparison.</dd></div>
-<div class="row"><dt>6 Profiles</dt><dd> &mdash; the judgement call. Clustered by sequence because one EC can hold unrelated proteins. Mn-SOD test proves it works.</dd></div>
-<div class="row"><dt>7 Validation</dt><dd> &mdash; two BLAST versions, his parameters, same top hit every time. Correctness, not accuracy. Do not let it get quoted as accuracy.</dd></div>
-<div class="row"><dt>8 Real data</dt><dd> &mdash; tell it as a story: a clean test set could not have produced the GFP failure, real data did, and the coverage column caught it.</dd></div>
-<div class="row"><dt>9 Next</dt><dd> &mdash; access is the only blocker. Everything after it is about a day each. Ask early, not at the end.</dd></div>
+<div class="row"><dt>SQLite</dt><dd> &mdash; a database that is just one file, no server. My search reads one instead of connecting to MySQL.</dd></div>
+<div class="row"><dt>PyMySQL</dt><dd> &mdash; the library that talks to MySQL. Pure Python, so nothing needs compiling on the server.</dd></div>
+<div class="row"><dt>micromamba</dt><dd> &mdash; environment manager. Needed because BLAST+, HMMER, MAFFT and MMseqs2 are programs, not pip packages.</dd></div>
+<div class="row"><dt>Scheduler / runner</dt><dd> &mdash; EnzymeX's background job system. Runs ECPICK, HIT-EC and CLEAN. <b>My searches become another step in it.</b></dd></div>
 </div>
 
 </div>
