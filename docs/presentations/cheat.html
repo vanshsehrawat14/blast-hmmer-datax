@@ -3,7 +3,7 @@
 <style>
 @page { size: letter; margin: 8mm; }
 * { box-sizing: border-box; }
-body { font-family: "Segoe UI", Arial, sans-serif; color:#18212B; font-size: 7.6pt; line-height:1.24; margin:0; }
+body { font-family: "Segoe UI", Arial, sans-serif; color:#18212B; font-size: 6.85pt; line-height:1.21; margin:0; }
 .top { display:flex; justify-content:space-between; align-items:baseline; border-bottom:2px solid #B71A1A; padding-bottom:1.3mm; margin-bottom:2.2mm; }
 h1 { font-size: 12pt; margin:0; }
 .date { color:#667085; font-size:7.6pt; }
@@ -61,7 +61,6 @@ dd { display:inline; margin:0; color:#3A4048; }
 
 <div class="sec num">
 <h2>Numbers</h2>
-<div class="row"><dt>452 / 452</dt><dd> &mdash; same top hit as Beomsu's earlier run, every query. Proves the plumbing, not the biology.</dd></div>
 <div class="row"><dt>1,574 &middot; 47</dt><dd> &mdash; sequences and family profiles in the demo build.</dd></div>
 <div class="row"><dt>272,112</dt><dd> &mdash; the big build. <b>No profiles on it yet.</b></dd></div>
 <div class="row"><dt>4 min / 2 sec</dt><dd> &mdash; print the book / look someone up.</dd></div>
@@ -89,18 +88,29 @@ dd { display:inline; margin:0; color:#3A4048; }
 <div class="row"><dt>Source</dt><dd> &mdash; how much the job title is worth. <b>swissprot</b>: a human curator read the paper. <b>pdb</b>: someone solved the structure, but the entry is whatever was in the crystal &mdash; that is where the group photos come from. TrEMBL and KEGG dropped: machine-guessed labels.</dd></div>
 <div class="row"><dt>E-value</dt><dd> &mdash; how many matches this good you'd expect by pure luck. <b>Smaller is stronger.</b> Not comparable between the three methods.</dd></div>
 <div class="row"><dt>Coverage</dt><dd> &mdash; how much of the query, and how much of the hit, the match spans. <b>The gap between the two is the group-photo alarm.</b></dd></div>
-<div class="row"><dt>Families</dt><dd> &mdash; <b>I build them</b>, nothing upstream provides them. MMseqs2 groups lookalikes, MAFFT lines them up, hmmbuild blends them into one portrait. <b>Only hmmscan uses them</b>; phmmer builds a throwaway one from the query instead.</dd></div>
+<div class="row"><dt>Families</dt><dd> &mdash; <b>I build them</b>, nothing upstream provides them. <b>Only hmmscan uses them</b>; phmmer builds a throwaway one from the query instead.</dd></div>
 <div class="row"><dt>Filters</dt><dd> &mdash; under 30 letters out, over 10,000 out, &gt;10% unreadable letters out, duplicates merged, non-Swiss-Prot/PDB out. Every rejection logged with a reason in <span class="m">skipped.tsv</span>.</dd></div>
 <div class="row"><dt>Build ID</dt><dd> &mdash; fingerprint of the sequences <i>plus</i> the rules. Same data and rules &rarr; same ID. Change either &rarr; new ID automatically.</dd></div>
 <div class="row"><dt>Quarterly cron</dt><dd> &mdash; <b>theirs, already running.</b> It restocks <span class="m">enzymesdata</span>. My build just hangs off it.</dd></div>
 </div>
 
 <div class="sec">
+<h2>Validation &mdash; what Beomsu sent</h2>
+<div class="row"><dt>He sent</dt><dd> &mdash; his <b>stack of query sequences</b> (the &ldquo;fold&rdquo; = the batch he tested on), his <b>EC answer key</b>, and his <b>raw unedited BLAST printout</b>. I asked for raw, not a summary, so I could diff line by line.</dd></div>
+<div class="row"><dt>His setup</dt><dd> &mdash; Swiss-Prot Apr 2025, 199,727 sequences, BLAST+ <b>2.5.0</b>, <span class="m">-evalue 1e-5 -max_target_seqs 100</span>.</dd></div>
+<div class="row"><dt>What I did</dt><dd> &mdash; rebuilt the reference from <b>his</b> dataset so it is apples to apples, ran <b>his</b> queries through <b>my</b> pipeline on BLAST+ <b>2.16</b>, diffed row by row.</dd></div>
+<div class="row"><dt>452 / 452</dt><dd> &mdash; same #1 match as his, every query. <b>450/452</b> same top-25 set. <b>447/452</b> same top score. <b>0</b> provenance mismatches.</dd></div>
+<div class="row"><dt>What it proves</dt><dd> &mdash; <b>the plumbing, not the biology.</b> Two BLAST versions eleven years apart, same data, same answers. Say that limit yourself before someone else does.</dd></div>
+</div>
+
+<div class="sec">
 <h2>Defending the stack</h2>
 <div class="row"><dt>Python</dt><dd> &mdash; same as EnzymeX. Nothing new for them to maintain.</dd></div>
-<div class="row"><dt>FastAPI</dt><dd> &mdash; only my test server's web layer. <b>The search code imports no web framework</b>, so their Pyramid app calls it as a plain function. No rewrite.</dd></div>
-<div class="row"><dt>MySQL / SQLite</dt><dd> &mdash; MySQL read-only for the build. SQLite is one file, no server, which is why search has no DB connection.</dd></div>
-<div class="row"><dt>micromamba</dt><dd> &mdash; only because BLAST+, HMMER, MAFFT and MMseqs2 are standalone programs, not pip packages.</dd></div>
+<div class="row"><dt>FastAPI vs Pyramid</dt><dd> &mdash; both just turn a web request into a web page. Mine uses FastAPI, theirs Pyramid. <b>Doesn't matter: the search code imports neither.</b> It is a plain function their Pyramid app can call. No rewrite.</dd></div>
+<div class="row"><dt>MySQL vs SQLite</dt><dd> &mdash; MySQL is a server you connect to over the network. SQLite is <b>one file on disk</b>. Build uses MySQL once, read-only; search uses the file. That is <i>why</i> search has no DB connection.</dd></div>
+<div class="row"><dt>micromamba</dt><dd> &mdash; BLAST+, HMMER, MAFFT and MMseqs2 are downloadable programs, not Python libraries. <span class="m">pip</span> cannot install them; micromamba can. Only reason it is here.</dd></div>
+<div class="row"><dt>Families &mdash; the 4 tools</dt><dd> &mdash; <b>MMseqs2</b> groups lookalikes (35% id / 80% cov) &rarr; QC gates (5+ members, 40+ match states) &rarr; <b>MAFFT</b> lines them up &rarr; <b>hmmbuild</b> blends them into one portrait &rarr; <b>hmmpress</b> indexes them. 201 groups &rarr; 47 profiles.</dd></div>
+<div class="row"><dt>Why those numbers</dt><dd> &mdash; <b>35%</b> is just above the twilight zone, below which similarity stops meaning shared structure. <b>80% both ways</b> forces the same domain layout. <b>5 members</b> because below that a profile adds little over phmmer and looks more confident than it is.</dd></div>
 <div class="row"><dt>The one line</dt><dd> &mdash; <b>&ldquo;Same language, same database engine, and the search code has no web framework in it, so it drops into your existing scheduler.&rdquo;</b></dd></div>
 </div>
 
