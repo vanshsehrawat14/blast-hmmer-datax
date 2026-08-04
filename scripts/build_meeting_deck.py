@@ -230,11 +230,9 @@ def build_deck(output: Path, logo_deck: Path | None) -> None:
     if logo:
         slide.shapes.add_picture(io.BytesIO(logo), Inches(1.0), Inches(0.9), width=Inches(4.3))
     add_text(slide, "BLAST and HMMER", 1.0, 2.85, 11.0, 0.85, size=44, bold=True)
-    add_text(slide, "Sequence similarity search for the result page", 1.03, 3.82, 11.0, 0.5,
-             size=20, color=CHARCOAL)
-    add_chip(slide, "blastp", 1.03, 4.6, 1.12, fill=BLUE_LIGHT, color=BLUE)
-    add_chip(slide, "phmmer", 2.3, 4.6, 1.22, fill=GREEN_LIGHT, color=GREEN)
-    add_chip(slide, "hmmscan", 3.67, 4.6, 1.3, fill=PURPLE_LIGHT, color=PURPLE)
+    add_chip(slide, "blastp", 1.03, 3.95, 1.12, fill=BLUE_LIGHT, color=BLUE)
+    add_chip(slide, "phmmer", 2.3, 3.95, 1.22, fill=GREEN_LIGHT, color=GREEN)
+    add_chip(slide, "hmmscan", 3.67, 3.95, 1.3, fill=PURPLE_LIGHT, color=PURPLE)
     add_text(slide, "Vansh Sehrawat", 1.03, 6.35, 6.0, 0.35, size=16, bold=True)
     add_text(slide, "August 4th 2026", 1.03, 6.73, 6.0, 0.32, size=14, color=MUTED)
     set_notes(slide, "Sequence-similarity evidence next to the model predictions. Not a fourth EC predictor.")
@@ -279,7 +277,7 @@ def build_deck(output: Path, logo_deck: Path | None) -> None:
                  align=PP_ALIGN.RIGHT)
         add_text(slide, body, x + 0.3, 5.2, w - 0.6, 0.42, size=13, color=INK)
     add_rect(slide, 0.72, 6.1, 11.9, 0.62, fill=PANEL, line=LINE)
-    add_text(slide, "Step 1 is the only database connection in the entire flow. Everything after it reads files written by step 2.",
+    add_text(slide, "Step 1 is the only database connection in the entire flow.",
              0.72, 6.28, 11.9, 0.3, size=13.5, bold=True, color=CHARCOAL, align=PP_ALIGN.CENTER)
     set_notes(slide, "Steps 1 and 2 are the reference build. Steps 3 to 5 are one user request. The search "
                      "code between them is a plain function with no web framework in it, so EnzymeX calls "
@@ -308,9 +306,6 @@ def build_deck(output: Path, logo_deck: Path | None) -> None:
         ("Jobs", "scheduler with a runner table"),
         ("Data pulling", "cron, quarterly"),
     ], 6.83, 1.6, 5.79, accent=BLUE, light=BLUE_LIGHT)
-    add_rect(slide, 0.72, 6.35, 11.9, 0.62, fill=PANEL, line=LINE)
-    add_text(slide, "Same language, same database engine. The integration point is one function call from the existing scheduler.",
-             0.72, 6.53, 11.9, 0.3, size=13.5, bold=True, color=CHARCOAL, align=PP_ALIGN.CENTER)
     set_notes(slide, "Nothing here is exotic and nothing conflicts. The web layer I used is FastAPI only "
                      "because it was a standalone test server; the search code itself imports no web "
                      "framework, so the Pyramid side needs no rewrite. BLAST+, HMMER, MAFFT and MMseqs2 "
@@ -406,8 +401,7 @@ def build_deck(output: Path, logo_deck: Path | None) -> None:
     add_bullets(slide, [
         "Beomsu's query set, his parameters",
         "BLAST+ 2.5, evalue 1e-5, max_target_seqs 100",
-        "Confirms the pipeline reproduces the existing result",
-    ], 5.6, 2.15, 6.8, 1.3, size=15, spacing=10)
+    ], 5.6, 2.35, 6.8, 1.3, size=15, spacing=10)
     add_metric(slide, "450 / 452", "same top-25 subject set", 0.72, 3.95, 3.85, accent=CHARCOAL)
     add_metric(slide, "447 / 452", "same top score", 4.74, 3.95, 3.85, accent=CHARCOAL)
     add_metric(slide, "0", "provenance mismatches", 8.76, 3.95, 3.85, accent=GREEN)
