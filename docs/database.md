@@ -145,6 +145,48 @@ named `id`, which the schema detector accepts as the export key. Internal
 identifiers are `EXR<key>` and rows are ordered by that value. Without it,
 `iter_rows` refuses rather than producing a build that changes between runs.
 
+## The real EnzymeX copy: required view
+
+`enzymesdata` has no primary key, and it stores one row per (protein, EC)
+rather than one row per protein — see `docs/integration.md`. Both problems are
+solved by the same view, which is the supported way to point this build at a
+real copy:
+
+```sql
+CREATE VIEW enzymesdata_export AS
+SELECT
+    CAST(UniprotID AS CHAR(255))                        AS id,
+    MIN(CAST(Description AS CHAR(4000)))                AS Description,
+    MIN(CAST(Sequence AS CHAR(40000)))                  AS Sequence,
+    GROUP_CONCAT(DISTINCT EC ORDER BY EC SEPARATOR ';') AS EC,
+    MIN(CAST(Motif AS CHAR(4000)))                      AS Motif,
+    MIN(CAST(Active AS CHAR(4000)))                     AS Active,
+    MIN(CAST(Binding AS CHAR(4000)))                    AS Binding,
+    MIN(CAST(Interpretation AS CHAR(4000)))             AS Interpretation,
+    MIN(CAST(Source AS CHAR(50)))                       AS Source,
+    MIN(Created)                                        AS Created,
+    MAX(Modified)                                       AS Modified,
+    CAST(UniprotID AS CHAR(255))                        AS UniprotID
+FROM enzymesdata
+WHERE Source IN ('Swiss-Prot','PDB')
+GROUP BY CAST(UniprotID AS CHAR(255));
+```
+
+Then set `ENZYMEX_DB_TABLE=enzymesdata_export` and grant the read-only account
+`SELECT` on it. Three things to know before relying on it:
+
+* `MIN()` on the non-key columns is safe only because they do not vary within a
+  `UniprotID`. `Source` was verified constant per protein; `Description` and
+  `Sequence` follow from `UniprotID` determining the sequence. Re-verify after
+  any upstream schema change rather than assuming it still holds.
+* The `WHERE` clause duplicates the exporter's source policy. That is
+  deliberate — it keeps the excluded sources out of the key space so `id`
+  values do not shift when the policy changes — but it means the two have to be
+  kept in step.
+* The destructive refresh in `pull_ecpick_data.py` drops `enzymesdata`, which
+  invalidates this view. It must be recreated after every data pull, and a
+  build must not run during one.
+
 Table and column names are validated against `[A-Za-z0-9_$]` before being
 interpolated into any statement. Identifiers cannot be passed as bound
 parameters, so they are checked instead of quoted-and-hoped. All values are

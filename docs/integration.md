@@ -144,13 +144,31 @@ them. 5,643 sequences are shorter than `ENZYMEX_MIN_SEQUENCE_LENGTH` (30) and
 13 exceed `ENZYMEX_MAX_REFERENCE_LENGTH` (10,000); the longest is 35,213
 residues. No row has a blank `EC`.
 
-**`UniprotID` alone cannot be the export key.** Over the 454,980 exportable
-rows there are 404,340 distinct values; 37,645 of them appear on more than one
-row, up to 14 rows each. The pair **`(UniprotID, Sequence)` is unique across
-all 454,980 rows** — 404,340 distinct pairs with zero collisions once identical
-sequences are folded, which is exactly the deduplication the export already
-performs. That pair is what the copy-side view should expose as `id`.
-`(UniprotID, EC)` is *not* sufficient: it collides on 757 rows.
+**The table is one row per (protein, EC), not one row per protein.** This is
+the finding that decides the export design. Over the 454,980 exportable rows
+there are 404,340 distinct `UniprotID` values, and **no `UniprotID` ever
+carries two different sequences** — zero, measured. A `UniprotID` repeats
+because the protein has more than one EC number, each on its own row:
+
+```
+1A49_1  2.7.10.2  PDB  PYRUVATE KINASE  530 aa
+1A49_1  2.7.1.40  PDB  PYRUVATE KINASE  530 aa
+1A49_1  2.7.11.1  PDB  PYRUVATE KINASE  530 aa
+```
+
+Adding `Sequence` to the key therefore buys nothing, and `(UniprotID, EC)` is
+not unique either — 757 groups are exact duplicate rows, 1,001 rows in total.
+`Source` is constant per protein (zero `UniprotID`s span more than one).
+
+So the copy-side view must **group by `UniprotID`** and fold the EC values into
+the `;`-separated form `normalize_ec` already parses, exposing `UniprotID` as
+`id`. That yields 404,340 keyed references, 37,545 of which carry more than one
+EC. Grouping is not cosmetic: without it, sequence deduplication would collapse
+a multi-EC protein's rows into a single reference and keep only one of its EC
+numbers, which for a page that prints EC next to every hit is silent data loss.
+The longest folded EC string is 107 characters, comfortably inside MySQL's
+default `group_concat_max_len` of 1024, but a view that relies on
+`GROUP_CONCAT` should assert that rather than assume it.
 
 The `user` table holds a single row, so the "secured user accounts data"
 mentioned in the handover is one administrative account rather than a user
@@ -234,12 +252,11 @@ absent ones. The DIAMOND parameters cannot be reconciled until it is available.
 
    `UniprotID` is a real `NOT NULL` column, so it — not row position — is what
    that key should be derived from; a positional key would re-point identifiers
-   at different proteins on every destructive refresh. It is not unique on its
-   own: 37,645 values cover more than one exportable row. `(UniprotID,
-   Sequence)` is unique across all 454,980 of them and is the key the view
-   should expose as `id`. Preserve `UniprotID` in a dedicated metadata field
-   rather than leaving it embedded in `description`. Keep the safe internal ID
-   for BLAST/HMMER deflines.
+   at different proteins on every destructive refresh. It repeats across raw
+   rows only because a protein's EC numbers are stored one per row, so once the
+   view groups by `UniprotID` it is a genuine key over 404,340 references.
+   Preserve it in a dedicated metadata field rather than leaving it embedded in
+   `description`. Keep the safe internal ID for BLAST/HMMER deflines.
 
 ## Suggested order of work
 
