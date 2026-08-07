@@ -26,7 +26,9 @@ from pathlib import Path
 from app.config import Settings, get_settings
 from app.references import blast_build, cluster, db as dbmod, hmmer_build
 from app.references.export import export_references
-from app.references.manifest import read_manifest, write_manifest
+from app.references.manifest import (
+    compute_build_id, read_manifest, sha256_file, write_manifest,
+)
 from app.references.metadata import connect_write
 
 log = logging.getLogger("refbuild")
@@ -63,9 +65,28 @@ def cmd_export(settings: Settings, args) -> int:
 
 
 def cmd_blast(settings: Settings, args) -> int:
+    # The id must identify the reference set on disk, not whatever the last
+    # manifest happens to record. `export` does not rewrite the manifest, so
+    # reading the id from there stamped a freshly exported database with the
+    # *previous* build's id — and makeblastdb bakes it into `-title`, where it
+    # then outlives the manifest that produced it.
     manifest = read_manifest(settings) or {}
-    build_id = manifest.get("reference_build_id", "unversioned")
+    if settings.references_fasta.exists():
+        build_id = compute_build_id(settings, sha256_file(settings.references_fasta))
+    else:
+        build_id = manifest.get("reference_build_id", "unversioned")
+
+    stored = manifest.get("reference_build_id")
+    if stored and stored != build_id:
+        log.warning(
+            "references have changed since the last manifest (%s -> %s); the "
+            "BLAST database will carry the new id, but run `all` to bring the "
+            "manifest and the profile layer back in step",
+            stored, build_id,
+        )
+
     stats = blast_build.build(settings, build_id)
+    stats["reference_build_id"] = build_id
     print(json.dumps(stats, indent=2, default=str))
     return 0
 
@@ -150,6 +171,16 @@ def cmd_all(settings: Settings, args) -> int:
     if args.skip_profiles:
         log.info("step 3/4: skipped (--skip-profiles); phmmer still covers every reference")
         sections["hmmer"] = {"profiles_built": 0, "skipped": "--skip-profiles"}
+        # Recording profiles_built = 0 is not enough: any profile database
+        # left from an earlier build is still on disk and still passes the
+        # readiness check, so hmmscan would answer with families clustered
+        # from a different reference set and family metadata that no longer
+        # resolves. Skipping the layer has to mean the layer is absent.
+        profile_dir = settings.profile_db.parent
+        if profile_dir.exists():
+            log.info("removing the previous profile database at %s", profile_dir)
+            shutil.rmtree(profile_dir)
+            sections["hmmer"]["removed_stale_profiles"] = True
     else:
         log.info("step 3/4: cluster and build profile HMMs")
         sections["hmmer"] = build_hmmer_layer(settings, args.keep_work)
