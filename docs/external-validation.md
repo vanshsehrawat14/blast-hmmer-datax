@@ -90,3 +90,70 @@ The development fixture's `pdb` values are synthetic source labels on reviewed
 Swiss-Prot sequences. This benchmark therefore exercises the combined-source
 selection, deduplication and search paths, but it does not validate genuine
 PDB-derived sequences or PDB provenance.
+
+## The Agave cross-check, 2026-08-04 to 2026-08-07
+
+The EnzymeX team asked for a cross-check of an existing BLAST annotation of the
+Agave proteome. The inputs were the notebook, the raw BLAST output, the query
+set, the Swiss-Prot EC table and the shipped predictions. Nothing here runs in
+this project's code path; it is recorded because the same best-hit question
+decides what this application shows a user.
+
+The search itself was `blastp` (BLAST+ 2.5.0) with `-evalue 1e-5
+-comp_based_stats 2 -max_target_seqs 100 -outfmt 6`. Those parameters are
+sound, and `-comp_based_stats 2` is blastp's own default rather than an added
+choice. The shipped file reproduces from the notebook exactly: all 42,295 rows
+identical, so the file matches the code that made it.
+
+The finding is the selection rule. The notebook takes the best hit with
+
+```python
+df_hit.loc[df_hit.groupby("qseqid")["pident"].idxmax()]
+```
+
+`-outfmt 6` emits one row per HSP, not one per hit, and `pident` is computed
+over the aligned region alone. Maximising it therefore selects the highest
+local identity, which is often a short fragment, and 75,873 query-subject
+pairs in this run have more than one HSP. Over the 15,757 annotated queries,
+4,751 winning alignments (30.2%) covered less than half the query. The clearest
+case is `AgateWBH1.16G051300.1.p`, 1,834 aa: EC 2.1.1.369 was taken from a
+46-residue alignment at bit score 67, while a 1,023-residue alignment at bit
+score 1001 carrying EC 1.14.11.67 was discarded. A further 44 queries had a tie
+on maximum `pident` across hits with different ECs, so their annotation was
+decided by row order in the TSV.
+
+The annotation's author confirmed on 2026-08-07 that every hit had already
+passed the `1e-5` threshold and agreed that ranking by E-value is the better
+rule. The
+re-annotation therefore keeps the same search, the same threshold and the same
+schema, and changes only the key: lowest E-value, then highest bit score, then
+subject accession so the outcome no longer depends on row order.
+
+| | max `pident` | min E-value |
+| --- | --- | --- |
+| queries annotated | 15,757 | 15,757 |
+| best-hit subject differs | | 7,483 (47.5%) |
+| assigned EC differs | | 2,133 (13.5%) |
+| median bit score, where the subject changed | 134 | 233 |
+| median aligned length, where the subject changed | 204 | 335 |
+| median query coverage | 0.827 | 0.923 |
+| coverage below 50% | 4,751 (30.2%) | 2,406 (15.3%) |
+| coverage below 20% | 1,829 (11.6%) | 496 (3.1%) |
+
+No query gained or lost an annotation; the threshold did not move. Of the 7,483
+queries whose subject changed, 24 end on a lower bit score than before. That is
+composition-based statistics rescaling per subject, which lets the reported
+E-value and bit-score orders disagree very slightly; bit score is the more
+consistent key, but at 24 of 15,757 the difference does not justify departing
+from what was agreed.
+
+Two things this does not fix. E-value ranking reduces the short-alignment
+problem but does not remove it: 2,406 annotations still rest on an alignment
+covering under half the query, and a coverage floor is a separate decision
+nobody has made. And a best hit of any kind transfers the EC of one protein,
+so a multi-domain query still inherits the annotation of whichever domain
+aligned best.
+
+The same reasoning is why this application ranks by E-value with bit score as
+the tiebreak, reports query coverage on every hit, and returns a ranked list
+rather than a single answer.
