@@ -181,6 +181,58 @@ and the dump stays out of git and out of any fixture.
 `schedule/exception_hitec_predictor.py:26`, and that module is one of the
 absent ones. The DIAMOND parameters cannot be reconciled until it is available.
 
+## First build against the real copy, 2026-08-07
+
+Build `161bdee61cbb`. `enzymesdata` was loaded from the production dump into a
+local MySQL 9.7.1 as `enzymex_real` — that table only; `user`, `job` and
+`job_result` were deliberately not loaded — and exported through the
+`enzymesdata_export` view in `docs/database.md`.
+
+| | |
+|---|---|
+| view rows read | 404,340 |
+| references exported | **278,573** (swissprot 234,839, pdb 43,734) |
+| references carrying >1 EC | 23,184 |
+| skipped: duplicate sequence | 123,300 |
+| skipped: too short / too long | 2,298 / 9 |
+| skipped: excessive ambiguity | 153 |
+| skipped: looks like nucleotide | 7 |
+| export | 395 s |
+| `makeblastdb` | 11 s, 151 MB index |
+| blastp, one 348-aa query | 2.4 s |
+| phmmer, one 348-aa query | 7.8 s |
+
+Two consecutive exports produced identical counts and the same FASTA digest,
+so the build is deterministic at this scale. The profile layer was skipped on
+this first build (`all --skip-profiles`); clustering 278,573 references has not
+been timed yet and should not be assumed to fit the same budget.
+
+Item 2 below is therefore discharged for BLAST and phmmer and still open for
+the profile layer.
+
+**A validation search behaves correctly.** Submitting P00330 (yeast alcohol
+dehydrogenase 1) returns itself first from both methods at 100% identity and
+100% coverage, `EC 1.1.1.1;1.1.1.54;1.1.1.78`, followed by the PDB structures
+of the same protein and then ADH2. The three EC numbers on the top hit are the
+view's grouping working as intended: they are three separate rows in
+`enzymesdata`, and without the grouping the reference would have carried one of
+them.
+
+**An upstream data-quality problem worth reporting.** The 7 rows rejected as
+nucleotide are genuine nucleic acid stored in the protein table, carrying EC
+numbers inherited from the complex they were solved with:
+
+```
+1ASY_1  6.1.1.12  PDB  T-RNA (75-MER)  UCCGUGAUAGUUUAAUGGUCAGAAUGGGCGCUUGUC…
+1GTR_1  6.1.1.18  PDB  RNA (74-MER)    GGGGUAUCGCCAAGCGGUAAGGCACCGGAUUCUGAU…
+6KW4_5  3.6.4.12  PDB  DNA 167         CTAGTACTTCTCGACAAGCTTCAGGATGTATATATC…
+```
+
+Also `1ASZ_1`, `3DHS_1`, `3ZN8_3`, `5G2Y_1`. This export rejects them
+compositionally, but ECPICK and the DIAMOND retrieval read the same table
+without that check. It is EnzymeX's data to decide on — report it, do not
+patch it here.
+
 ## What must change once EnzymeX repository access is granted
 
 1. **Confirm the real `enzymesdata` schema.** *Done — see above; the table has
