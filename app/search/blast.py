@@ -30,10 +30,12 @@ def blastp_args(settings: Settings, query_fasta: Path, out_path: Path) -> list[s
         "-evalue", str(settings.blast_evalue),
         "-max_target_seqs", str(settings.blast_max_target_seqs),
         "-num_threads", str(settings.search_threads),
-        # Composition-based statistics (Yu, Wootton & Altschul 2003) is
-        # blastp's default and is what makes E-values from a compositionally
-        # biased query trustworthy. Stated explicitly so a future change to it
-        # is a visible decision rather than a silent default drift.
+        # Mode 2 is blastp's own default: the compositional score adjustment
+        # of Yu & Altschul, Bioinformatics 21:902, 2005, conditioned on
+        # sequence properties. It is what makes E-values from a
+        # compositionally biased query trustworthy. Stated explicitly so a
+        # future change to it is a visible decision rather than a silent
+        # default drift.
         "-comp_based_stats", "2",
     ]
 

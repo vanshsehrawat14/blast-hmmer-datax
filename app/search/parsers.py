@@ -277,7 +277,7 @@ def rank_hits(hits: list[RawHit], limit: int) -> dict[str, list[RawHit]]:
     """Group by query and rank by E-value, then descending bit score.
 
     Ranking is ours, not the tool's: BLAST's `-max_target_seqs` is a
-    search-time cutoff rather than a "best N" filter (Shah et al. 2018,
+    search-time cutoff rather than a "best N" filter (Shah et al. 2019,
     Bioinformatics 35:1786), so truncating here is the only way to get a
     defensible top-N list.
     """

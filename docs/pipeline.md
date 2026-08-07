@@ -111,7 +111,7 @@ identity, alignment length, E-value and bit score describe the single
 best-scoring pair, while coverage is summed across all of them, because a hit
 that aligns in three pieces really does cover three pieces. And the top-25 list
 is ranked here rather than taken from `-max_target_seqs`, which is a
-search-time cutoff and not a best-N filter (Shah et al., *Bioinformatics* 2018).
+search-time cutoff and not a best-N filter (Shah et al., *Bioinformatics* 2019).
 
 ## What phmmer does
 

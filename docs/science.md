@@ -154,13 +154,17 @@ HSP intervals; BLAST+ has no `scovs` field.
 **`-max_target_seqs` is not a "top N" filter.** It is a search-time cutoff
 that interacts with the traceback stage, and using it as a top-N control gives
 results that depend on database order (Shah et al., *Bioinformatics* 35:1786,
-2018). It is set generously (500) and the displayed list is truncated by our
+2019). It is set generously (500) and the displayed list is truncated by our
 own ranking afterwards.
 
 **Composition-based statistics** (`-comp_based_stats 2`, blastp's default) is
 passed explicitly so that a future change to it is a visible decision rather
 than silent default drift. It is what makes E-values from compositionally
-biased queries trustworthy (Yu, Wootton & Altschul, *NAR* 31:3980, 2003).
+biased queries trustworthy. Mode 2 is the compositional score adjustment of
+Yu & Altschul, *Bioinformatics* 21:902, 2005, conditioned on sequence
+properties; mode 1 is the earlier composition-based statistics of Schäffer et
+al., *NAR* 29:2994, 2001. These are the papers `blastp -help` names for each
+mode, and they are different methods, not two accounts of one.
 
 **Nucleotide input cannot be caught by alphabet.** A, C, G, T, U and N are all
 valid amino acid letters, so a pasted gene sequence passes an alphabet check

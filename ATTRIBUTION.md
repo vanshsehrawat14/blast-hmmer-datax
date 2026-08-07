@@ -424,10 +424,24 @@ python tests/test_pipeline.py
 > Bioinformatics 35(9):1786–1788. https://doi.org/10.1093/bioinformatics/bty833
 > — why `-max_target_seqs` is not used as a top-N filter.
 
+> Yu Y.-K., Altschul S.F. (2005). *The construction of amino acid substitution
+> matrices for the comparison of proteins with non-standard compositions.*
+> Bioinformatics 21(7):902–911. https://doi.org/10.1093/bioinformatics/bti070
+> — the compositional score adjustment `-comp_based_stats 2` applies. This is
+> the paper `blastp -help` names for modes 2 and 3.
+
+> Schäffer A.A., Aravind L., Madden T.L., Shavirin S., Spouge J.L., Wolf Y.I.,
+> Koonin E.V., Altschul S.F. (2001). *Improving the accuracy of PSI-BLAST
+> protein database searches with composition-based statistics and other
+> refinements.* Nucleic Acids Research 29(14):2994–3005.
+> https://doi.org/10.1093/nar/29.14.2994
+> — the earlier composition-based statistics of `-comp_based_stats 1`. Not
+> used here; recorded so the two modes are not conflated.
+
 > Yu Y.-K., Wootton J.C., Altschul S.F. (2003). *The compositional adjustment
 > of amino acid substitution matrices.* PNAS 100(26):15688–15693.
 > https://doi.org/10.1073/pnas.2533904100
-> — the basis of `-comp_based_stats 2`.
+> — the compositional adjustment theory the 2005 construction builds on.
 
 > Eddy S.R. (2008). *A probabilistic model of local sequence alignment that
 > simplifies statistical significance estimation.* PLoS Computational Biology
@@ -482,8 +496,16 @@ references, 47 profiles) on one machine (WSL2 / Ubuntu 24.04). They are there
 so the deployment guidance is grounded in something, not to compare tools.
 
 **EnzymeX itself is not modified.** No code in this repository was taken from,
-written to, or deployed to the EnzymeX codebase or production server. The
-public `datax-lab/enzymex` repository was not reachable during this work
-(HTTP 404 as of 2026-07-26), so compatibility expectations rest on the
-documented `enzymesdata` column list and the public EnzymeX site, and must be
-re-verified once repository access is granted.
+written to, or deployed to the EnzymeX codebase or production server.
+
+Everything in this repository through the `56b491bee73d` build was developed
+without repository access: `datax-lab/enzymex` is private and returned HTTP 404
+throughout, so compatibility expectations rested on the documented
+`enzymesdata` column list and the public EnzymeX site. Access was granted on
+2026-08-05 and the repository has since been read, from a clone whose push URL
+is disabled. Nothing has been pushed to it.
+
+What that access confirmed and corrected — including the real `enzymesdata`
+DDL, which differs from the inferred one in ways that matter — is recorded in
+[`docs/integration.md`](docs/integration.md). Figures produced before
+2026-08-05 carry their build id and were not retroactively edited.

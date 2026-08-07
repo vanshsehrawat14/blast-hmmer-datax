@@ -103,7 +103,7 @@ class Settings(BaseSettings):
     # ---------------------------------------------------------------- search parameters
     blast_evalue: float = 1e-3
     # NCBI's -max_target_seqs is a search-time cutoff, not a "best N" filter
-    # (Shah et al., Bioinformatics 2018), so it is set generously here and the
+    # (Shah et al., Bioinformatics 2019), so it is set generously here and the
     # displayed list is truncated afterwards by our own ranking.
     blast_max_target_seqs: int = 500
     phmmer_evalue: float = 1e-3
