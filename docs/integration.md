@@ -33,22 +33,88 @@ Pydantic model. This call is the integration boundary, but the Pyramid
 application must adapt it to EnzymeX's existing scheduled job, `job`,
 `job_result`, `ref_data`, temporary-directory and result-page behavior.
 
+## Confirmed from the EnzymeX repository, 2026-08-05
+
+Access to `datax-lab/enzymex` was granted on 2026-08-05. The following is read
+from that source, not inferred. Everything else in this document that is not
+listed here remains as written, including the parts still marked inferred.
+
+**The real `enzymesdata` DDL** — `pull_data/pull_ecpick_data.py:83-97`:
+
+```sql
+CREATE TABLE temp_enzymesdata(
+	Description text Not NULL,
+    Sequence Text NOT NULL,
+    EC varchar(15) NOT NULL,
+    Motif text,
+    Active text,
+    Binding text,
+    Interpretation text,
+    Source text NOT NULL,
+    Modified date NOT NULL,
+    Created date NOT NULL,
+    UniprotID text NOT NULL
+    );
+```
+
+No primary key, no `id`, no index, no `ENGINE` clause. The risk pre-flagged in
+item 1 below is therefore confirmed, not hypothetical: `iter_rows` in
+`app/references/db.py` raises rather than exporting from an unkeyed table, and
+the copy-side view is the required path, not a contingency.
+
+**`UniprotID` is a real `NOT NULL` column**, not an identifier buried in the
+description. It is the natural content-derived export key and it corrects
+item 7, which was written before the column was confirmed to exist.
+
+**The refresh is destructive** — same file, lines 76-101: `DROP TABLE
+enzymesdata`, then `RENAME TABLE temp_enzymesdata TO enzymesdata`, then
+recreate `temp_enzymesdata`. Three consequences the builder has to survive:
+there is a window in which `enzymesdata` does not exist, so a scheduled build
+can land in it; any copy-side view over the table is invalidated by every
+refresh and has to be recreated; and row order is not stable across refreshes,
+so a positional key would silently re-point `EXR…` identifiers at different
+proteins. This is the argument for keying on `UniprotID` rather than row
+position.
+
+**The real source vocabulary is `Swiss-Prot`, `PDB`, `KEGG`, `TEST`** —
+`views/base.py:90, 203, 219-366`. TrEMBL does not appear in any query, despite
+being named in some handoff documents. Casing is inconsistent in the upstream
+queries themselves (`'Swiss-Prot'` at line 229, `'swiss-prot'` at line 306),
+which only works because of MySQL's case-insensitive collation.
+`normalize_source` in `app/references/export.py` was re-run against these exact
+values: `Swiss-Prot` → `swissprot` and `PDB` → `pdb` are exported, `KEGG` and
+`TEST` are excluded. No change needed.
+
+**The repository is a partial subtree of the deployed application**, not a
+buildable project. It contains `templates/`, `views/`, `schedule/`,
+`pull_data/` and `README.md`. Absent, and never present in history
+(`git log --all --diff-filter=D` returns nothing for any of them): `setup.py`,
+any `.ini`, `requirements.txt`, `ecpick/__init__.py`, `ecpick/models/`,
+`ecpick/csv_to_fasta.py`, `static/`. So "confirm the build makes sense" cannot
+be answered from the repository alone — the package root has to come from the
+local-server archive.
+
+**Item 6 stays blocked.** `execute_diamond` is imported from
+`ecpick.csv_to_fasta` by `schedule/hitec_predictor.py:26`,
+`schedule/exception_predictor.py:28` and
+`schedule/exception_hitec_predictor.py:26`, and that module is one of the
+absent ones. The DIAMOND parameters cannot be reconciled until it is available.
+
 ## What must change once EnzymeX repository access is granted
 
-1. **Confirm the real `enzymesdata` schema.** The alias table in
+1. **Confirm the real `enzymesdata` schema.** *Done — see above; the table has
+   no primary key, so the copy-side view is required.* The alias table in
    `app/references/db.py` was written against the documented column list and
-   verified against a synthetic fixture. The July 2026 handoff presentation
-   shows `Source` and `UniprotID` but no marked primary key; `UniprotID` is now
-   recognized as an accession alias, but the screenshot is not a substitute
-   for inspecting the actual copy. Run `enzymex-refbuild inspect` first. If the
-   real table has no primary key, the export needs a read-only copy-side view
-   that supplies a deterministic key.
+   verified against a synthetic fixture. Still run `enzymex-refbuild inspect`
+   against the actual copy: the DDL gives the columns, but not the storage
+   engine, the row count, or whether the deployed table has drifted from the
+   statement that creates it.
 
-   Also inspect the real source vocabulary and counts. The exporter now fails
-   closed without a source column and selects only normalized `swissprot` and
-   `pdb` rows. The handoff documents say `enzymesdata` contains only subsets of
-   the upstream databases, so a successful build must not be described as the
-   complete Swiss-Prot or PDB corpus.
+   The exporter fails closed without a source column and selects only
+   normalized `swissprot` and `pdb` rows. The handoff documents say
+   `enzymesdata` contains only subsets of the upstream databases, so a
+   successful build must not be described as the complete Swiss-Prot or PDB
+   corpus.
 
    The two-pass export requires InnoDB or a view whose source tables are
    transactional. The builder rejects a physical table with another reported
@@ -96,15 +162,20 @@ application must adapt it to EnzymeX's existing scheduled job, `job`,
    small set: DIAMOND's default mode missed the most distant positive query
    that `--very-sensitive`, BLAST and HMMER all found.
 
-7. **Settle identifier policy.** References here are
-   `EXR<stable copy/view key>`. If the real table lacks a primary key, the
-   copy-side view must expose its deterministic unique key as `id`, which the
+7. **Settle identifier policy.** *Corrected by the confirmed DDL.* References
+   here are `EXR<stable copy/view key>`. The real table has no primary key, so
+   the copy-side view must expose a deterministic unique key as `id`, which the
    schema detector accepts as the export key. `source_pk` stores that key.
-   `UniprotID` values, including PDB-style identifiers in the handoff example,
-   are currently embedded only in `description`; they are not a structured
-   accession mapping. Preserve them in a dedicated metadata field during the
-   EnzymeX integration if the result page needs them. Keep the safe internal
-   ID for BLAST/HMMER deflines.
+
+   `UniprotID` is a real `NOT NULL` column, so it — not row position — is what
+   that key should be derived from; a positional key would re-point identifiers
+   at different proteins on every destructive refresh. It is not guaranteed
+   unique on its own (the same accession can appear under more than one EC), so
+   the view's key has to be `UniprotID` plus enough of the row to disambiguate,
+   and that has to be checked against the real copy before it is relied on.
+   Preserve `UniprotID` in a dedicated metadata field rather than leaving it
+   embedded in `description`. Keep the safe internal ID for BLAST/HMMER
+   deflines.
 
 ## Suggested order of work
 
