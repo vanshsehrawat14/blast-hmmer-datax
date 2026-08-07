@@ -63,8 +63,9 @@ item 1 below is therefore confirmed, not hypothetical: `iter_rows` in
 the copy-side view is the required path, not a contingency.
 
 **`UniprotID` is a real `NOT NULL` column**, not an identifier buried in the
-description. It is the natural content-derived export key and it corrects
-item 7, which was written before the column was confirmed to exist.
+description. It is the basis of the content-derived export key and it corrects
+item 7, which was written before the column was confirmed to exist. It is
+**not unique on its own** — see the measured counts below.
 
 **The refresh is destructive** — same file, lines 76-101: `DROP TABLE
 enzymesdata`, then `RENAME TABLE temp_enzymesdata TO enzymesdata`, then
@@ -76,23 +77,85 @@ so a positional key would silently re-point `EXR…` identifiers at different
 proteins. This is the argument for keying on `UniprotID` rather than row
 position.
 
-**The real source vocabulary is `Swiss-Prot`, `PDB`, `KEGG`, `TEST`** —
-`views/base.py:90, 203, 219-366`. TrEMBL does not appear in any query, despite
-being named in some handoff documents. Casing is inconsistent in the upstream
-queries themselves (`'Swiss-Prot'` at line 229, `'swiss-prot'` at line 306),
-which only works because of MySQL's case-insensitive collation.
-`normalize_source` in `app/references/export.py` was re-run against these exact
-values: `Swiss-Prot` → `swissprot` and `PDB` → `pdb` are exported, `KEGG` and
-`TEST` are excluded. No change needed.
+**The real source vocabulary is `Swiss-Prot`, `PDB`, `KEGG`, `Test`** —
+`views/base.py:90, 203, 219-366` and confirmed against the data below. Casing
+is inconsistent both in the upstream queries (`'Swiss-Prot'` at line 229,
+`'swiss-prot'` at line 306) and between the queries and the stored values
+(`'TEST'` is queried, `Test` is stored), which only works because the table's
+collation is `utf8mb4_0900_ai_ci`. `normalize_source` in
+`app/references/export.py` lowercases before matching and was re-run against
+these exact values: `Swiss-Prot` → `swissprot` and `PDB` → `pdb` are exported,
+`KEGG` and `Test` are excluded. No change needed.
+
+TrEMBL is not a `Source` value. It lives in a **separate `trembldata` table**
+(170,502 rows, a different and smaller column set: no `UniprotID`, everything
+nullable). Handoff documents that describe `enzymesdata` as including TrEMBL
+are describing the database, not the table. Nothing in this project reads it.
 
 **The repository is a partial subtree of the deployed application**, not a
 buildable project. It contains `templates/`, `views/`, `schedule/`,
 `pull_data/` and `README.md`. Absent, and never present in history
 (`git log --all --diff-filter=D` returns nothing for any of them): `setup.py`,
 any `.ini`, `requirements.txt`, `ecpick/__init__.py`, `ecpick/models/`,
-`ecpick/csv_to_fasta.py`, `static/`. So "confirm the build makes sense" cannot
-be answered from the repository alone — the package root has to come from the
-local-server archive.
+`ecpick/csv_to_fasta.py`, `static/`.
+
+Those files are not lost — they are in the local-server archive
+(`ECPICK-Python.zip`), which carries the full package root: `setup.py`,
+`production.ini`, `pytest.ini`, `ecpick/models/`, `dependent.txt` and
+`ecpick_ddl.sql`. So the answer to "does the build make sense" is that the
+GitHub repository is a subset of a working Pyramid application, not a broken
+project: `setup.py` declares Pyramid, SQLAlchemy, alembic, apscheduler,
+biopython and mysql-connector-python, exposes `main = ecpick:main` as the
+`paste.app_factory`, and `production.ini` serves it under waitress on 6543 in
+development and uwsgi from `/var/www/ecpick-python/ECPICK-Python-master` in
+production. The archive is dated 2024 and predates the `schedule/` code in the
+GitHub repository, so it is a reference for structure, not the current tree.
+
+## Confirmed from the production database dump
+
+Read from `enzymex.sql` (mysqldump 10.13, MySQL 8.0.43, database
+`ecpick_python`), which supersedes the inferred figures wherever the two
+disagree. The dump is not in this repository and must not be committed.
+
+The deployed `enzymesdata` DDL matches `pull_ecpick_data.py` exactly and adds
+what the script omits: `ENGINE=InnoDB`, `CHARSET=utf8mb4`,
+`COLLATE=utf8mb4_0900_ai_ci`. **InnoDB satisfies the two-pass export's
+transactional requirement**, and the absence of a primary key is confirmed at
+the deployed level, not just in the statement that creates the table.
+
+| | rows |
+|---|---:|
+| `enzymesdata` total | 561,510 |
+| — `Swiss-Prot` | 302,500 |
+| — `PDB` | 152,480 |
+| — `KEGG` (excluded) | 87,441 |
+| — `Test` (excluded) | 19,089 |
+| **exported under the current source policy** | **454,980** |
+| distinct sequences within that | 280,309 |
+| `trembldata` | 170,502 |
+| `ref_data` | 1,145 |
+| `job` / `job_result` | 449 / 372 |
+| `user` | 1 |
+
+Exact-sequence deduplication removes 174,671 rows, so a full build produces
+roughly **280,309 references** — about 100× the 1,574-reference fixture every
+runtime figure in these docs was measured on. Re-measure before quoting any of
+them. 5,643 sequences are shorter than `ENZYMEX_MIN_SEQUENCE_LENGTH` (30) and
+13 exceed `ENZYMEX_MAX_REFERENCE_LENGTH` (10,000); the longest is 35,213
+residues. No row has a blank `EC`.
+
+**`UniprotID` alone cannot be the export key.** Over the 454,980 exportable
+rows there are 404,340 distinct values; 37,645 of them appear on more than one
+row, up to 14 rows each. The pair **`(UniprotID, Sequence)` is unique across
+all 454,980 rows** — 404,340 distinct pairs with zero collisions once identical
+sequences are folded, which is exactly the deduplication the export already
+performs. That pair is what the copy-side view should expose as `id`.
+`(UniprotID, EC)` is *not* sufficient: it collides on 757 rows.
+
+The `user` table holds a single row, so the "secured user accounts data"
+mentioned in the handover is one administrative account rather than a user
+base. It still never enters this project: the export reads `enzymesdata` only,
+and the dump stays out of git and out of any fixture.
 
 **Item 6 stays blocked.** `execute_diamond` is imported from
 `ecpick.csv_to_fasta` by `schedule/hitec_predictor.py:26`,
@@ -122,8 +185,10 @@ absent ones. The DIAMOND parameters cannot be reconciled until it is available.
    view.
 
 2. **Re-measure the build.** Every runtime figure in these docs comes from a
-   1,574-reference synthetic fixture build. The clustering thresholds and QC
-   gates are defaults chosen on that scale; on the real table, check
+   1,574-reference synthetic fixture build; the real table yields roughly
+   280,309 references after deduplication, about 100× that. The clustering
+   thresholds and QC gates are defaults chosen on the small scale; on the real
+   table, check
    `skipped_clusters.tsv` and
    `profile_member_coverage` in the manifest before trusting the profile layer,
    and expect `ENZYMEX_PROFILE_MIN_MEMBERS` to need raising if the number of
@@ -169,13 +234,12 @@ absent ones. The DIAMOND parameters cannot be reconciled until it is available.
 
    `UniprotID` is a real `NOT NULL` column, so it — not row position — is what
    that key should be derived from; a positional key would re-point identifiers
-   at different proteins on every destructive refresh. It is not guaranteed
-   unique on its own (the same accession can appear under more than one EC), so
-   the view's key has to be `UniprotID` plus enough of the row to disambiguate,
-   and that has to be checked against the real copy before it is relied on.
-   Preserve `UniprotID` in a dedicated metadata field rather than leaving it
-   embedded in `description`. Keep the safe internal ID for BLAST/HMMER
-   deflines.
+   at different proteins on every destructive refresh. It is not unique on its
+   own: 37,645 values cover more than one exportable row. `(UniprotID,
+   Sequence)` is unique across all 454,980 of them and is the key the view
+   should expose as `id`. Preserve `UniprotID` in a dedicated metadata field
+   rather than leaving it embedded in `description`. Keep the safe internal ID
+   for BLAST/HMMER deflines.
 
 ## Suggested order of work
 
