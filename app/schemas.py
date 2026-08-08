@@ -114,6 +114,9 @@ class JobResult(BaseModel):
     reference_sequences: int | None = None
     profile_count: int | None = None
     requested_methods: list[Method] = Field(default_factory=list)
+    # What the search actually ran with, so a hit list can be reproduced from
+    # the record alone rather than from whatever the server defaults are today.
+    search_parameters: dict = Field(default_factory=dict)
     queries: list[QueryResult] = Field(default_factory=list)
     total_runtime_seconds: float | None = None
     notes: list[str] = Field(default_factory=list)

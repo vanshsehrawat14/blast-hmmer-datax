@@ -15,11 +15,15 @@ from fastapi import APIRouter, File, Form, Request, UploadFile
 from fastapi.responses import JSONResponse, RedirectResponse, StreamingResponse
 from fastapi.templating import Jinja2Templates
 
+from app import formatting
 from app.config import get_settings
 from app.fasta import FastaError, parse_submission
 from app.jobs import load
 from app.references import db as dbmod
 from app.schemas import FLAT_SCHEMA, METHOD_LABELS
+from app.search.params import (
+    COMP_BASED_STATS_LABELS, MATRICES, ParamError, SearchParams,
+)
 from app.search.service import ALL_METHODS, ServerBusy, reference_status, run_search
 from app.web.app_paths import TEMPLATE_DIR
 
@@ -33,27 +37,9 @@ templates = Jinja2Templates(directory=str(TEMPLATE_DIR))
 templates.env.autoescape = True
 
 
-def _fmt_evalue(value) -> str:
-    """BLAST prints 0.0 when the E-value underflows; say so rather than
-    rendering a zero that reads like a missing number."""
-    if value is None:
-        return "—"
-    if value == 0:
-        return "<1e-180"
-    return f"{value:.1e}" if value < 0.01 else f"{value:.3g}"
-
-
-def _fmt_fraction(value) -> str:
-    return "—" if value is None else f"{value * 100:.0f}%"
-
-
-def _fmt_percent1(value) -> str:
-    return "—" if value is None else f"{value:.1f}%"
-
-
-templates.env.filters["evalue"] = _fmt_evalue
-templates.env.filters["frac"] = _fmt_fraction
-templates.env.filters["pct1"] = _fmt_percent1
+templates.env.filters["evalue"] = formatting.evalue
+templates.env.filters["frac"] = formatting.fraction
+templates.env.filters["pct1"] = formatting.percent1
 
 EXAMPLE_FASTA = """>sp|P00330|ADH1_YEAST Alcohol dehydrogenase 1
 MSIPETQKGVIFYESHGKLEYKDIPVPKPKANELLINVKYSGVCHTDLHAWHGDWPLPVKL
@@ -79,6 +65,9 @@ def index(request: Request):
         "methods": ALL_METHODS,
         "method_labels": METHOD_LABELS,
         "example": EXAMPLE_FASTA,
+        "defaults": SearchParams.defaults(settings),
+        "matrices": MATRICES,
+        "comp_based_stats": COMP_BASED_STATS_LABELS,
     })
 
 
@@ -98,6 +87,13 @@ async def search(
     fasta_file: UploadFile | None = File(default=None),
 ):
     settings = _settings()
+    form = await request.form()
+
+    try:
+        params = SearchParams.from_form(form, settings)
+    except ParamError as exc:
+        return _submission_error(request, settings, str(exc), sequences or "",
+                                 methods, form=form)
 
     text = sequences or ""
     if fasta_file is not None and fasta_file.filename:
@@ -107,20 +103,20 @@ async def search(
             return _submission_error(
                 request, settings,
                 f"Uploaded file exceeds the {settings.max_upload_bytes // 1000} kB limit.",
-                text, methods, status_code=413)
+                text, methods, form=form, status_code=413)
         try:
             text = raw.decode("utf-8")
         except UnicodeDecodeError:
             return _submission_error(
                 request, settings,
                 "The uploaded file is not UTF-8 text. Upload a plain FASTA file.",
-                text, methods)
+                text, methods, form=form)
 
     if len(text.encode("utf-8")) > settings.max_upload_bytes:
         return _submission_error(
             request, settings,
             f"Submission exceeds the {settings.max_upload_bytes // 1000} kB limit.",
-            "", methods, status_code=413)
+            "", methods, form=form, status_code=413)
 
     try:
         records = parse_submission(
@@ -129,13 +125,14 @@ async def search(
             max_length=settings.max_query_length,
         )
     except FastaError as exc:
-        return _submission_error(request, settings, str(exc), text, methods)
+        return _submission_error(request, settings, str(exc), text, methods,
+                                 form=form)
 
     try:
-        result = run_search(settings, records, methods or None)
+        result = run_search(settings, records, methods or None, params=params)
     except ServerBusy as exc:
         return _submission_error(request, settings, str(exc), text, methods,
-                                 status_code=503)
+                                 form=form, status_code=503)
 
     return RedirectResponse(f"/jobs/{result.job_id}", status_code=303)
 
@@ -231,7 +228,7 @@ def health():
 
 
 def _submission_error(request: Request, settings, message: str, text: str,
-                      methods: list[str], status_code: int = 400):
+                      methods: list[str], form=None, status_code: int = 400):
     """Re-render the form with the message and the user's input preserved."""
     return templates.TemplateResponse(request, "index.html", {
         "settings": settings,
@@ -239,7 +236,14 @@ def _submission_error(request: Request, settings, message: str, text: str,
         "methods": ALL_METHODS,
         "method_labels": METHOD_LABELS,
         "example": EXAMPLE_FASTA,
+        "defaults": SearchParams.defaults(settings),
+        "matrices": MATRICES,
+        "comp_based_stats": COMP_BASED_STATS_LABELS,
         "error": message,
         "submitted_text": text[:20_000],
         "selected_methods": methods,
+        # Whatever they typed into the parameter panel, so a rejected value is
+        # corrected rather than retyped from scratch.
+        "submitted": {k: str(v) for k, v in (form or {}).items()
+                      if k != "fasta_file"},
     }, status_code=status_code)

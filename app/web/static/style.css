@@ -83,6 +83,25 @@ textarea {
 fieldset.field { border: 1px solid var(--line); border-radius: 5px; padding: 12px 14px; }
 label.check { font-weight: 400; display: block; margin: 4px 0; }
 .hint { color: var(--muted); font-size: 13px; margin: 6px 0 0; }
+input[type="text"], input[type="number"], select {
+  width: 100%;
+  font-size: 14px;
+  padding: 7px 8px;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  background: #fff;
+}
+.params {
+  border: 1px solid var(--line); border-radius: 5px;
+  padding: 10px 14px; margin: 16px 0;
+}
+.params > summary { font-weight: 600; cursor: pointer; }
+.params .row:first-of-type { margin-top: 10px; }
+.gap-costs { display: flex; gap: 8px; }
+.param-list { display: grid; grid-template-columns: max-content 1fr;
+              gap: 4px 16px; margin: 12px 0 4px; font-size: 14px; }
+.param-list dt { color: var(--muted); }
+.param-list dd { margin: 0; }
 .tag { font-size: 11px; text-transform: uppercase; letter-spacing: .04em;
        background: var(--panel); border: 1px solid var(--line); border-radius: 3px;
        padding: 1px 5px; color: var(--muted); }

@@ -54,6 +54,86 @@
     </fieldset>
   </div>
 
+  {% set sub = submitted or {} %}
+  <details class="params" {% if error %}open{% endif %}>
+    <summary>Search parameters</summary>
+    <p class="hint">
+      Every field below starts on the tool's own default. Change one only if you
+      mean to: the defaults are what make the reported E-values comparable to
+      published BLAST and HMMER results.
+    </p>
+
+    <div class="row">
+      <div class="field">
+        <label for="evalue">E-value threshold</label>
+        <input type="text" id="evalue" name="evalue" inputmode="decimal"
+               value="{{ sub.get('evalue', '') }}"
+               placeholder="{{ '%g'|format(defaults.blast_evalue) }}">
+        <p class="hint">Applies to every method that runs. Greater than 0, at most 10.</p>
+      </div>
+
+      <div class="field">
+        <label for="max_hits">Hits per query</label>
+        <input type="number" id="max_hits" name="max_hits" min="1" max="100"
+               value="{{ sub.get('max_hits', '') }}"
+               placeholder="{{ defaults.max_hits }}">
+        <p class="hint">How many ranked hits to show. 1 to 100.</p>
+      </div>
+
+      <div class="field">
+        <label for="min_query_coverage">Minimum query coverage (%)</label>
+        <input type="number" id="min_query_coverage" name="min_query_coverage"
+               min="0" max="100" step="1"
+               value="{{ sub.get('min_query_coverage', '') }}" placeholder="0">
+        <p class="hint">
+          Drops hits whose alignment covers less of your sequence than this. Off
+          by default; a high-identity match over a short fragment is the usual
+          reason a best hit is misleading.
+        </p>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="field">
+        <label for="matrix">Scoring matrix <span class="muted">(BLAST only)</span></label>
+        <select id="matrix" name="matrix">
+          {% for m in matrices %}
+          <option value="{{ m }}" {% if sub.get('matrix', defaults.matrix) == m %}selected{% endif %}>
+            {{ m }}{% if m == defaults.matrix %} (default){% endif %}
+          </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="comp_based_stats">Composition-based statistics <span class="muted">(BLAST only)</span></label>
+        <select id="comp_based_stats" name="comp_based_stats">
+          {% for value, label in comp_based_stats.items() %}
+          <option value="{{ value }}" {% if sub.get('comp_based_stats', defaults.comp_based_stats) == value %}selected{% endif %}>
+            {{ label }}
+          </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="gapopen">Gap costs <span class="muted">(BLAST only)</span></label>
+        <div class="gap-costs">
+          <input type="number" id="gapopen" name="gapopen" min="5" max="25"
+                 value="{{ sub.get('gapopen', '') }}" placeholder="open"
+                 aria-label="Gap open cost">
+          <input type="number" id="gapextend" name="gapextend" min="1" max="5"
+                 value="{{ sub.get('gapextend', '') }}" placeholder="extend"
+                 aria-label="Gap extend cost">
+        </div>
+        <p class="hint">
+          Leave both blank to use the defaults for the chosen matrix. BLAST
+          accepts only certain pairs and will say so if the pair is not one.
+        </p>
+      </div>
+    </div>
+  </details>
+
   <button type="submit">Run search</button>
 </form>
 

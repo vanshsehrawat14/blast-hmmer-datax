@@ -30,6 +30,7 @@ from app.schemas import (
 from app.search.blast import run_blastp
 from app.search.hmmer import run_hmmscan, run_phmmer
 from app.search.outcome import SearchOutcome
+from app.search.params import SearchParams
 from app.search.parsers import RawHit
 
 log = logging.getLogger(__name__)
@@ -93,8 +94,10 @@ def resolve_methods(settings: Settings, requested: list[str] | None) -> list[Met
 
 def run_search(settings: Settings, records: list[SequenceRecord],
                requested_methods: list[str] | None = None,
-               job_id: str | None = None) -> JobResult:
+               job_id: str | None = None,
+               params: SearchParams | None = None) -> JobResult:
     """Run the search and return the normalized result. Persists to disk."""
+    params = params or SearchParams.defaults(settings)
     methods = resolve_methods(settings, requested_methods)
     disabled = [m for m in (requested_methods or list(ALL_METHODS))
                 if m in ALL_METHODS and m not in methods]
@@ -117,13 +120,13 @@ def run_search(settings: Settings, records: list[SequenceRecord],
         for method in methods:
             log.info("job %s: running %s over %d quer%s", job_id, method,
                      len(records), "y" if len(records) == 1 else "ies")
-            outcomes[method] = RUNNERS[method](settings, d, query_fasta)
+            outcomes[method] = RUNNERS[method](settings, d, query_fasta, params)
     finally:
         sem.release()
     elapsed = time.monotonic() - started
 
     result = _assemble(settings, job_id, build_id, records, methods, disabled,
-                       outcomes, manifest, elapsed)
+                       outcomes, manifest, elapsed, params)
     save(settings, result)
     if not settings.keep_raw_outputs:
         discard_raw_outputs(settings, job_id)
@@ -133,7 +136,7 @@ def run_search(settings: Settings, records: list[SequenceRecord],
 def _assemble(settings: Settings, job_id: str, build_id: str,
               records: list[SequenceRecord], methods: list[Method],
               disabled: list[str], outcomes: dict[str, SearchOutcome],
-              manifest: dict, elapsed: float) -> JobResult:
+              manifest: dict, elapsed: float, params: SearchParams) -> JobResult:
     ref_ids, family_ids = [], []
     for method, outcome in outcomes.items():
         for hits in outcome.hits_by_query.values():
@@ -191,6 +194,12 @@ def _assemble(settings: Settings, job_id: str, build_id: str,
             "Profile HMM results cover only the reference clusters that passed "
             "quality control during the build, not the whole reference set."
         )
+    if params.min_query_coverage:
+        notes.append(
+            "Hits covering less than "
+            f"{params.min_query_coverage * 100:.0f}% of the submitted sequence "
+            "were removed before ranking."
+        )
 
     return JobResult(
         job_id=job_id,
@@ -198,6 +207,7 @@ def _assemble(settings: Settings, job_id: str, build_id: str,
         reference_sequences=(manifest.get("export") or {}).get("exported"),
         profile_count=(manifest.get("hmmer") or {}).get("profiles_built"),
         requested_methods=methods,
+        search_parameters=params.as_dict(),
         queries=queries,
         total_runtime_seconds=round(elapsed, 3),
         notes=notes,

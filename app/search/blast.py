@@ -14,33 +14,43 @@ from pathlib import Path
 from app.config import Settings
 from app.schemas import ErrorCode
 from app.search.outcome import SearchOutcome
+from app.search.params import SearchParams
 from app.search.parsers import BLAST_OUTFMT, ParseError, parse_blast_tabular, rank_hits
 from app.search.subprocess_utils import ToolNotFound, run_tool, tool_version
 
 log = logging.getLogger(__name__)
 
 
-def blastp_args(settings: Settings, query_fasta: Path, out_path: Path) -> list[str]:
+def blastp_args(settings: Settings, query_fasta: Path, out_path: Path,
+                params: SearchParams | None = None) -> list[str]:
     """Build the exact blastp argument list used by the request path."""
-    return [
+    p = params or SearchParams.defaults(settings)
+    args = [
         "-query", str(query_fasta),
         "-db", str(settings.blast_db),
         "-outfmt", BLAST_OUTFMT,
         "-out", str(out_path),
-        "-evalue", str(settings.blast_evalue),
+        "-evalue", str(p.blast_evalue),
         "-max_target_seqs", str(settings.blast_max_target_seqs),
         "-num_threads", str(settings.search_threads),
+        "-matrix", p.matrix,
         # Mode 2 is blastp's own default: the compositional score adjustment
         # of Yu & Altschul, Bioinformatics 21:902, 2005, conditioned on
         # sequence properties. It is what makes E-values from a
         # compositionally biased query trustworthy. Stated explicitly so a
         # future change to it is a visible decision rather than a silent
         # default drift.
-        "-comp_based_stats", "2",
+        "-comp_based_stats", p.comp_based_stats,
     ]
+    # Omitted unless the user set them, so blastp applies the defaults that go
+    # with the chosen matrix rather than a pairing we invented.
+    if p.gapopen is not None and p.gapextend is not None:
+        args += ["-gapopen", str(p.gapopen), "-gapextend", str(p.gapextend)]
+    return args
 
 
-def run_blastp(settings: Settings, job_dir: Path, query_fasta: Path) -> SearchOutcome:
+def run_blastp(settings: Settings, job_dir: Path, query_fasta: Path,
+               params: SearchParams | None = None) -> SearchOutcome:
     db = settings.blast_db
     # .pin is the index makeblastdb always writes for a protein database;
     # its absence means the build step never ran or did not finish.
@@ -51,8 +61,9 @@ def run_blastp(settings: Settings, job_dir: Path, query_fasta: Path) -> SearchOu
             "The BLAST reference database has not been built on this server.",
         )
 
+    p = params or SearchParams.defaults(settings)
     out_path = job_dir / "blastp_hits.tsv"
-    args = blastp_args(settings, query_fasta, out_path)
+    args = blastp_args(settings, query_fasta, out_path, p)
 
     try:
         run = run_tool(
@@ -76,7 +87,7 @@ def run_blastp(settings: Settings, job_dir: Path, query_fasta: Path) -> SearchOu
     if run.returncode != 0:
         return SearchOutcome.failure(
             "blastp", ErrorCode.NONZERO_EXIT,
-            "BLAST exited with an error. The raw output has been kept for diagnosis.",
+            _exit_message(run.stderr_snippet, p),
             version=version, runtime=run.duration,
         )
 
@@ -95,5 +106,23 @@ def run_blastp(settings: Settings, job_dir: Path, query_fasta: Path) -> SearchOu
         method="blastp",
         version=version,
         runtime=run.duration,
-        hits_by_query=rank_hits(hits, settings.max_hits_per_query),
+        hits_by_query=rank_hits(hits, p.max_hits,
+                                min_query_coverage=p.min_query_coverage),
     )
+
+
+def _exit_message(stderr: str, p: SearchParams) -> str:
+    """Turn blastp's own complaint into something the submitter can act on.
+
+    Only the gap-cost case is special-cased, because it is the one failure a
+    user can cause from the parameter form: BLAST accepts gap costs only in
+    the combinations tabulated for the chosen matrix, and it is the authority
+    on which those are.
+    """
+    if "gap existence" in stderr.lower() or "gap penalt" in stderr.lower():
+        return (
+            f"BLAST does not accept a gap open cost of {p.gapopen} with a gap "
+            f"extend cost of {p.gapextend} for {p.matrix}. Clear both fields to "
+            "use the defaults for that matrix, or pick a supported pair."
+        )
+    return "BLAST exited with an error. The raw output has been kept for diagnosis."

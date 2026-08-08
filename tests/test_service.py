@@ -49,7 +49,7 @@ def built(settings):
 
 
 def stub(method, hits_by_query=None, **kw):
-    def runner(settings, job_dir, query_fasta):
+    def runner(settings, job_dir, query_fasta, params=None):
         return SearchOutcome(method=method, version=f"{method} 1.0", runtime=0.1,
                              hits_by_query=hits_by_query or {}, **kw)
     return runner
@@ -78,7 +78,7 @@ def test_no_methods_requested_runs_everything_enabled(built, monkeypatch):
 def test_one_method_failing_does_not_affect_the_others(built, monkeypatch):
     monkeypatch.setitem(service.RUNNERS, "blastp", stub(
         "blastp", {"Q1": [RawHit("Q1", "EXR1", 1e-99, 400.0, percent_identity=98.0)]}))
-    monkeypatch.setitem(service.RUNNERS, "phmmer", lambda s, d, q: SearchOutcome.failure(
+    monkeypatch.setitem(service.RUNNERS, "phmmer", lambda s, d, q, p=None: SearchOutcome.failure(
         "phmmer", ErrorCode.TIMEOUT, "HMMER (phmmer) did not finish within 300 seconds."))
     monkeypatch.setitem(service.RUNNERS, "hmmscan", stub("hmmscan"))
 
@@ -175,7 +175,7 @@ def test_raw_outputs_are_discarded_when_configured(built, monkeypatch):
     built.keep_raw_outputs = False
     built.enable_phmmer = built.enable_profile_hmm = False
 
-    def runner_writing_junk(settings, job_dir, query_fasta):
+    def runner_writing_junk(settings, job_dir, query_fasta, params=None):
         (job_dir / "blastp_hits.tsv").write_text("raw output")
         return SearchOutcome(method="blastp", version="x", runtime=0.1)
 

@@ -22,13 +22,15 @@ from pathlib import Path
 from app.config import Settings
 from app.schemas import ErrorCode
 from app.search.outcome import SearchOutcome
+from app.search.params import SearchParams
 from app.search.parsers import ParseError, parse_hmmscan, parse_phmmer, rank_hits
 from app.search.subprocess_utils import ToolNotFound, run_tool, tool_version
 
 log = logging.getLogger(__name__)
 
 
-def run_phmmer(settings: Settings, job_dir: Path, query_fasta: Path) -> SearchOutcome:
+def run_phmmer(settings: Settings, job_dir: Path, query_fasta: Path,
+               params: SearchParams | None = None) -> SearchOutcome:
     target = settings.references_fasta
     if not target.exists():
         return SearchOutcome.failure(
@@ -36,21 +38,23 @@ def run_phmmer(settings: Settings, job_dir: Path, query_fasta: Path) -> SearchOu
             "The reference sequence database has not been built on this server.",
         )
 
+    p = params or SearchParams.defaults(settings)
     tbl = job_dir / "phmmer_tblout.txt"
     dom = job_dir / "phmmer_domtblout.txt"
     args = [
         "--tblout", str(tbl),
         "--domtblout", str(dom),
         "-o", str(job_dir / "phmmer_full.txt"),
-        "-E", str(settings.phmmer_evalue),
+        "-E", str(p.phmmer_evalue),
         "--cpu", str(settings.search_threads),
         str(query_fasta), str(target),
     ]
     return _run(settings, job_dir, "phmmer", settings.phmmer_bin, args, tbl, dom,
-                parse=parse_phmmer, label="HMMER (phmmer)")
+                parse=parse_phmmer, label="HMMER (phmmer)", params=p)
 
 
-def run_hmmscan(settings: Settings, job_dir: Path, query_fasta: Path) -> SearchOutcome:
+def run_hmmscan(settings: Settings, job_dir: Path, query_fasta: Path,
+                params: SearchParams | None = None) -> SearchOutcome:
     db = settings.profile_db
     pressed = db.exists() and db.with_suffix(db.suffix + ".h3i").exists()
     if not pressed:
@@ -60,22 +64,24 @@ def run_hmmscan(settings: Settings, job_dir: Path, query_fasta: Path) -> SearchO
             "BLAST and phmmer cover the full reference set regardless.",
         )
 
+    p = params or SearchParams.defaults(settings)
     tbl = job_dir / "hmmscan_tblout.txt"
     dom = job_dir / "hmmscan_domtblout.txt"
     args = [
         "--tblout", str(tbl),
         "--domtblout", str(dom),
         "-o", str(job_dir / "hmmscan_full.txt"),
-        "-E", str(settings.hmmscan_evalue),
+        "-E", str(p.hmmscan_evalue),
         "--cpu", str(settings.search_threads),
         str(db), str(query_fasta),
     ]
     return _run(settings, job_dir, "hmmscan", settings.hmmscan_bin, args, tbl, dom,
-                parse=parse_hmmscan, label="HMMER (hmmscan)")
+                parse=parse_hmmscan, label="HMMER (hmmscan)", params=p)
 
 
 def _run(settings: Settings, job_dir: Path, method: str, binary: str,
-         args: list[str], tbl: Path, dom: Path, *, parse, label: str) -> SearchOutcome:
+         args: list[str], tbl: Path, dom: Path, *, parse, label: str,
+         params: SearchParams) -> SearchOutcome:
     try:
         run = run_tool(
             binary, args,
@@ -116,5 +122,6 @@ def _run(settings: Settings, job_dir: Path, method: str, binary: str,
 
     return SearchOutcome(
         method=method, version=version, runtime=run.duration,
-        hits_by_query=rank_hits(hits, settings.max_hits_per_query),
+        hits_by_query=rank_hits(hits, params.max_hits,
+                                min_query_coverage=params.min_query_coverage),
     )

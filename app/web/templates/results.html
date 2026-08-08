@@ -31,6 +31,25 @@
 </div>
 {% endif %}
 
+{% set p = result.search_parameters %}
+{% if p %}
+<details class="params">
+  <summary>Parameters used</summary>
+  <dl class="param-list">
+    <dt>E-value threshold</dt><dd>{{ '%g'|format(p.evalue) }}</dd>
+    <dt>Hits per query</dt><dd>{{ p.max_hits }}</dd>
+    <dt>Scoring matrix</dt><dd>{{ p.matrix }} <span class="muted">(BLAST)</span></dd>
+    <dt>Composition-based statistics</dt>
+    <dd>{{ p.comp_based_stats }} <span class="muted">(BLAST)</span></dd>
+    <dt>Gap costs</dt>
+    <dd>{% if p.gapopen is not none %}open {{ p.gapopen }}, extend {{ p.gapextend }}
+        {% else %}matrix defaults{% endif %} <span class="muted">(BLAST)</span></dd>
+    <dt>Minimum query coverage</dt>
+    <dd>{% if p.min_query_coverage %}{{ p.min_query_coverage | frac }}{% else %}not filtered{% endif %}</dd>
+  </dl>
+</details>
+{% endif %}
+
 {% for q in result.queries %}
 <section class="query">
   <h2>

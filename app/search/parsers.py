@@ -273,16 +273,25 @@ def parse_hmmscan(text_tbl: str, text_dom: str) -> list[RawHit]:
     return _parse_hmmer(text_tbl, text_dom, query_is_hmm=False)
 
 
-def rank_hits(hits: list[RawHit], limit: int) -> dict[str, list[RawHit]]:
+def rank_hits(hits: list[RawHit], limit: int,
+              min_query_coverage: float | None = None) -> dict[str, list[RawHit]]:
     """Group by query and rank by E-value, then descending bit score.
 
     Ranking is ours, not the tool's: BLAST's `-max_target_seqs` is a
     search-time cutoff rather than a "best N" filter (Shah et al. 2019,
     Bioinformatics 35:1786), so truncating here is the only way to get a
     defensible top-N list.
+
+    `min_query_coverage` drops hits whose alignment covers too little of the
+    submitted sequence. A hit whose coverage could not be computed is kept:
+    the filter removes what is known to be short, never what is unknown.
     """
     by_query: dict[str, list[RawHit]] = {}
     for h in hits:
+        if (min_query_coverage is not None
+                and h.query_coverage is not None
+                and h.query_coverage < min_query_coverage):
+            continue
         by_query.setdefault(h.query_id, []).append(h)
     for q in by_query:
         by_query[q].sort(key=lambda h: (h.evalue, -h.bitscore, h.hit_id))
