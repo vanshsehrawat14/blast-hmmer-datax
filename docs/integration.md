@@ -274,16 +274,21 @@ patch it here.
    a complete versioned generation and switch an active pointer only after all
    artifacts pass validation.
 
-4. **Replace `app/web/` with EnzymeX views and templates.** The results page
-   here is a reference implementation of *what to show*, not markup to lift.
-   The three tables are deliberately separate (see the E-value comparability
-   note in `docs/science.md`) and that separation should survive the port.
+4. **Replace `app/web/` with EnzymeX views and templates.** *Written — see
+   `enzymex/`.* A Pyramid view and two templates in ECPICK's own layout and
+   markup, plus the three `config.add_route` lines the lab has to apply. The
+   three method tables stay deliberately separate (see the E-value
+   comparability note in `docs/science.md`); that separation survives the port.
 
-5. **Decide on execution mode.** Synchronous is fine at the scale measured
-   here. EnzymeX already runs ECPICK, HIT-EC and CLEAN through a scheduler; if
-   BLAST/HMMER results are to appear on the same result page, the natural
-   thing is to run them as additional steps in that existing job rather than
-   in the request. `run_search` is a plain function and will work either way.
+5. **Decide on execution mode.** *Decided: synchronous.* The existing queue
+   exists because the deep models need a GPU and minutes. Against the real
+   278,573-reference build blastp answers in about 2.4 s and phmmer in about
+   7.8 s, so putting a search behind that queue would make it slower and add a
+   table for nothing. What bounds the risk is the process-wide concurrency
+   limit in `app/search/service.py`: an over-limit request is refused with
+   "try again in a moment" rather than queued until memory runs out.
+   `run_search` remains a plain function, so moving it into the scheduler later
+   is a one-line change if EnzymeX would rather it lived there.
 
 6. **Reconcile with DIAMOND.** EnzymeX already uses DIAMOND internally to
    retrieve up to 20 similar proteins for interpretation, with a documented
@@ -312,17 +317,69 @@ patch it here.
 
 ## Suggested order of work
 
-1. Point `enzymex-refbuild inspect` at the real copy; verify its primary key,
+1. ~~Point `enzymex-refbuild inspect` at the real copy; verify its primary key,
    storage engine, source vocabulary, `UniprotID` mapping and representative
-   PDB identifiers.
-2. Run a full build with `ENZYMEX_EXPORT_LIMIT` set, then unset. Compare the
-   manifests.
-3. Wire `run_search` into a scratch EnzymeX view and check hits resolve to the
-   right EC and source.
+   PDB identifiers.~~ Done.
+2. ~~Run a full build with `ENZYMEX_EXPORT_LIMIT` set, then unset. Compare the
+   manifests.~~ Done — build `161bdee61cbb`, 278,573 references.
+3. ~~Wire `run_search` into a scratch EnzymeX view and check hits resolve to the
+   right EC and source.~~ Done — see the section below.
 4. Port the results markup into the EnzymeX result page alongside the model
    predictions.
 5. Decide DIAMOND's fate.
 6. Move the build to whatever schedule the database refresh follows.
+
+## The EnzymeX view, 2026-08-07
+
+`enzymex/` holds the drop-in: `views/search.py` and `templates/search/`, in
+ECPICK's layout and markup, with an install note and the three route lines.
+
+It was verified rather than eyeballed. `tests/test_enzymex_view.py` performs
+exactly the install the README describes into a throwaway `ecpick` package,
+scans the `@view_config` decorators the way Pyramid does, and drives the pages
+through WSGI. Separately it was rendered inside EnzymeX's real
+`layout.jinja2` — read from the clone, never written to — and run end to end
+against build `161bdee61cbb`:
+
+| | result |
+| --- | --- |
+| `GET /search` in the real layout | 200, 21,524 bytes |
+| `POST /search.do`, P00330, blastp | 302 to `/search/result?job=…` |
+| result page | 200, 25 ranked hits |
+| top hit | `EXRP00330`, EC 1.1.1.1;1.1.1.54;1.1.1.78 |
+| `matrix=BLOSUM62 -out /tmp/pwned` | rejected on the form; no file written |
+
+Three things the lab has to decide are listed at the end of `enzymex/README.md`.
+The first is a blocker for the test-server phase: **`ecpick/routes.py` is not in
+the `datax-lab/enzymex` repository.** That repository holds `views/`,
+`templates/`, `pull_data/` and `schedule/` only — no `routes.py`, no `models/`,
+no `ecpick/__init__.py`, no `.ini`. The route lines cannot be applied from it.
+
+### Search parameters
+
+The lab asked for neutral defaults with the choice left to the user, and both
+halves are now implemented in `app/search/params.py`. The form exposes E-value,
+hits per query, minimum query coverage, scoring matrix, composition-based
+statistics and gap costs; each field is pre-filled with the tool's own default
+and labelled as such, and the panel is collapsed, so the run you get without
+touching anything is the neutral one.
+
+Every value is coerced, bounded and — for matrix and `comp_based_stats` —
+whitelisted before it reaches a command line. Gap costs are the exception worth
+naming: BLAST accepts them only in combinations tabulated per matrix, so they
+are bounded to sane integers and BLAST is left as the authority on the pairing,
+with its complaint translated into a message the submitter can act on. A table
+copied into this repository would be one more thing to keep in sync with NCBI.
+
+The coverage filter is not a BLAST option; it drops hits after parsing and is
+recorded in a note on the result page when used. It exists because of the Agave
+cross-check in `docs/external-validation.md`, where 30% of annotations rested on
+an alignment covering less than half the query. It is off unless asked for,
+because a floor is still nobody's decision.
+
+Whatever ran is recorded on the result as `search_parameters` and shown on the
+page, so a hit list can be reproduced from the record rather than from whatever
+the server defaults happen to be that month.
 
 ## Known limitations to carry across
 

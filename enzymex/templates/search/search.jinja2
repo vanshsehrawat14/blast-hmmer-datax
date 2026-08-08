@@ -1,0 +1,238 @@
+{% extends "ecpick:templates/layout.jinja2" %}
+{% block pageTitle %}Sequence search{% endblock %}
+{% block pageContent %}
+<div class="col-12">
+
+  <div class="page-header mb-3">
+    <h2 class="page-title">Sequence search</h2>
+    <div class="text-muted mt-1">
+      BLAST and HMMER against the EnzymeX reference set. These searches return
+      <strong>sequence-comparison evidence</strong>, not EC predictions &mdash;
+      ECPICK, HIT-EC and CLEAN are not run here.
+    </div>
+  </div>
+
+  {% if error %}
+  <div class="alert alert-danger" role="alert">
+    <strong>Submission rejected.</strong> {{ error }}
+  </div>
+  {% endif %}
+
+  {% if not status.artifacts.references_fasta %}
+  <div class="alert alert-warning" role="alert">
+    <strong>No reference build on this server yet.</strong>
+    The offline build has not run against the database.
+  </div>
+  {% endif %}
+
+  <form class="card" method="post" action="{{ request.route_url('search_do') }}"
+        enctype="multipart/form-data">
+    <div class="card-body">
+
+      <div class="form-group mb-3">
+        <label class="form-label" for="sequences">Protein sequences (FASTA)</label>
+        <textarea class="form-control" id="sequences" name="sequences" rows="10"
+                  spellcheck="false"
+                  placeholder="{{ example }}">{{ submitted_text or '' }}</textarea>
+      </div>
+
+      <div class="row">
+        <div class="col-md-6">
+          <div class="form-group mb-3">
+            <label class="form-label" for="fasta_file">or upload a file</label>
+            <input type="file" class="form-control" id="fasta_file"
+                   name="fasta_file" accept=".fasta,.fa,.faa,.txt">
+            <small class="form-text text-muted">
+              A file replaces the pasted text. Maximum
+              {{ settings.max_upload_bytes // 1000 }} kB.
+            </small>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="form-group mb-3">
+            <label class="form-label">Methods</label>
+            {% for m in methods %}
+            {% set info = status.methods[m] %}
+            <label class="form-check">
+              <input class="form-check-input" type="checkbox" name="methods"
+                     value="{{ m }}"
+                     {% if (selected_methods and m in selected_methods) or (not selected_methods and info.enabled and info.ok) %}checked{% endif %}
+                     {% if not info.enabled or not info.ok %}disabled{% endif %}>
+              <span class="form-check-label">
+                {{ method_labels[m] }}
+                {% if not info.enabled %}<span class="badge bg-secondary">disabled</span>
+                {% elif not info.ok %}<span class="badge bg-secondary">unavailable</span>{% endif %}
+              </span>
+            </label>
+            {% endfor %}
+            <small class="form-text text-muted">
+              Leave all unchecked to run every available method.
+            </small>
+          </div>
+        </div>
+      </div>
+
+      {% set sub = submitted or {} %}
+      <details class="mt-2" {% if error %}open{% endif %}>
+        <summary class="mb-2" style="cursor: pointer; font-weight: 600;">
+          Search parameters
+        </summary>
+        <p class="text-muted small">
+          Every field starts on the tool's own default. Change one only if you
+          mean to: the defaults are what keep the reported E-values comparable
+          to published BLAST and HMMER results.
+        </p>
+
+        <div class="row">
+          <div class="col-md-4">
+            <div class="form-group mb-3">
+              <label class="form-label" for="evalue">E-value threshold</label>
+              <input type="text" class="form-control" id="evalue" name="evalue"
+                     inputmode="decimal" value="{{ sub.get('evalue', '') }}"
+                     placeholder="{{ '%g'|format(defaults.blast_evalue) }}">
+              <small class="form-text text-muted">
+                Applies to every method that runs. Greater than 0, at most 10.
+              </small>
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="form-group mb-3">
+              <label class="form-label" for="max_hits">Hits per query</label>
+              <input type="number" class="form-control" id="max_hits"
+                     name="max_hits" min="1" max="100"
+                     value="{{ sub.get('max_hits', '') }}"
+                     placeholder="{{ defaults.max_hits }}">
+              <small class="form-text text-muted">1 to 100.</small>
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="form-group mb-3">
+              <label class="form-label" for="min_query_coverage">
+                Minimum query coverage (%)
+              </label>
+              <input type="number" class="form-control" id="min_query_coverage"
+                     name="min_query_coverage" min="0" max="100" step="1"
+                     value="{{ sub.get('min_query_coverage', '') }}"
+                     placeholder="0">
+              <small class="form-text text-muted">
+                Drops hits aligning to less of your sequence than this. Off by
+                default. A high-identity match over a short fragment is the
+                usual reason a best hit misleads.
+              </small>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-4">
+            <div class="form-group mb-3">
+              <label class="form-label" for="matrix">
+                Scoring matrix <span class="text-muted">(BLAST only)</span>
+              </label>
+              <select class="form-select form-control" id="matrix" name="matrix">
+                {% for m in matrices %}
+                <option value="{{ m }}"
+                        {% if sub.get('matrix', defaults.matrix) == m %}selected{% endif %}>
+                  {{ m }}{% if m == defaults.matrix %} (default){% endif %}
+                </option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="form-group mb-3">
+              <label class="form-label" for="comp_based_stats">
+                Composition-based statistics <span class="text-muted">(BLAST only)</span>
+              </label>
+              <select class="form-select form-control" id="comp_based_stats"
+                      name="comp_based_stats">
+                {% for value, label in comp_based_stats.items() %}
+                <option value="{{ value }}"
+                        {% if sub.get('comp_based_stats', defaults.comp_based_stats) == value %}selected{% endif %}>
+                  {{ label }}
+                </option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="form-group mb-3">
+              <label class="form-label" for="gapopen">
+                Gap costs <span class="text-muted">(BLAST only)</span>
+              </label>
+              <div class="d-flex" style="gap: 8px;">
+                <input type="number" class="form-control" id="gapopen"
+                       name="gapopen" min="5" max="25" placeholder="open"
+                       aria-label="Gap open cost"
+                       value="{{ sub.get('gapopen', '') }}">
+                <input type="number" class="form-control" id="gapextend"
+                       name="gapextend" min="1" max="5" placeholder="extend"
+                       aria-label="Gap extend cost"
+                       value="{{ sub.get('gapextend', '') }}">
+              </div>
+              <small class="form-text text-muted">
+                Leave both blank for the chosen matrix's defaults. BLAST accepts
+                only certain pairs and will say so if the pair is not one.
+              </small>
+            </div>
+          </div>
+        </div>
+      </details>
+
+    </div>
+
+    <div class="card-footer text-end">
+      <button type="submit" class="btn btn-primary">Run search</button>
+    </div>
+  </form>
+
+  <div class="row mt-3">
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-body">
+          <h3 class="card-title">Limits</h3>
+          <ul class="mb-0 text-muted">
+            <li>At most {{ settings.max_query_sequences }} sequences per submission.</li>
+            <li>At most {{ settings.max_query_length }} residues per sequence.</li>
+            <li>Protein sequences only. Nucleotide input is rejected.</li>
+            <li>Searches run while you wait and are cut off at
+                {{ settings.blast_timeout_seconds }}s (BLAST) /
+                {{ settings.hmmer_timeout_seconds }}s (HMMER).</li>
+            <li>Results are kept for {{ settings.job_retention_hours }} hours.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-body">
+          <h3 class="card-title">What you are searching</h3>
+          <table class="table table-sm mb-0">
+            <tbody>
+              <tr>
+                <td class="text-muted">Reference sequences</td>
+                <td>{{ status.reference_sequences if status.reference_sequences is not none else '—' }}</td>
+              </tr>
+              <tr>
+                <td class="text-muted">Profile HMMs</td>
+                <td>{{ status.profiles if status.profiles is not none else '—' }}</td>
+              </tr>
+              <tr>
+                <td class="text-muted">Build</td>
+                <td><code>{{ status.reference_build_id or 'not built' }}</code></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
