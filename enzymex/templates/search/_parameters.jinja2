@@ -1,0 +1,21 @@
+{#
+  What actually ran, read back off the stored result rather than off the form.
+
+  Expects: p (result.search_parameters), fmt.
+#}
+<table class="table table-sm mb-0">
+  <tbody>
+    <tr><td class="text-muted">E-value threshold</td>
+        <td>{{ '%g'|format(p.evalue) }}</td></tr>
+    <tr><td class="text-muted">Hits per query</td>
+        <td>{{ p.max_hits }}</td></tr>
+    <tr><td class="text-muted">Scoring matrix (BLAST)</td>
+        <td>{{ p.matrix }}</td></tr>
+    <tr><td class="text-muted">Composition-based statistics (BLAST)</td>
+        <td>{{ p.comp_based_stats }}</td></tr>
+    <tr><td class="text-muted">Gap costs (BLAST)</td>
+        <td>{% if p.gapopen is not none %}open {{ p.gapopen }}, extend {{ p.gapextend }}{% else %}matrix defaults{% endif %}</td></tr>
+    <tr><td class="text-muted">Minimum query coverage</td>
+        <td>{% if p.min_query_coverage %}{{ fmt.fraction(p.min_query_coverage) }}{% else %}not filtered{% endif %}</td></tr>
+  </tbody>
+</table>

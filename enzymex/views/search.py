@@ -20,15 +20,18 @@ by `enzymex-refbuild`, which is the only part of this project that reads
 `enzymesdata`.
 """
 
+import re
+
 from pyramid.httpexceptions import HTTPFound, HTTPMethodNotAllowed
-from pyramid.renderers import render_to_response
+from pyramid.renderers import render, render_to_response
+from pyramid.response import Response
 from pyramid.view import view_config
 
 from ecpick.views.base import get_login_user
 
 from app import formatting
 from app.config import get_settings
-from app.fasta import FastaError, parse_submission
+from app.fasta import FastaError, parse_submission, safe_display
 from app.jobs import load
 from app.schemas import METHOD_LABELS
 from app.search.params import (
@@ -38,6 +41,10 @@ from app.search.service import ALL_METHODS, ServerBusy, reference_status, run_se
 
 FORM_TEMPLATE = 'ecpick:templates/search/search.jinja2'
 RESULT_TEMPLATE = 'ecpick:templates/search/result.jinja2'
+FRAGMENT_TEMPLATE = 'ecpick:templates/search/_fragment.jinja2'
+ERROR_TEMPLATE = 'ecpick:templates/search/_error.jinja2'
+
+_WHITESPACE = re.compile(r'\s+')
 
 EXAMPLE_FASTA = """>sp|P00330|ADH1_YEAST Alcohol dehydrogenase 1
 MSIPETQKGVIFYESHGKLEYKDIPVPKPKANELLINVKYSGVCHTDLHAWHGDWPLPVKL
@@ -47,6 +54,26 @@ GSLAVQYAKAMGYRVLGIDGGEGKEELFRSIGGEVFIDFTKEKDIVGAVLKATDGGAHGVI
 NVSVSEAAIEASTRYVRANGTTVLVGMPAGAKCCSDVFNQVVKSISIVGSYVGNRADTREA
 LDFFARGLVKSPIKVVGLSTLPEIYEKMEKGQIVGRYVVDTSK
 """
+
+
+def includeme(config):
+    """Everything this feature needs registering, in one line for `routes.py`.
+
+    `config.include('ecpick.views.search')` from `includeme(config)` there is
+    the whole change to files this project does not own, besides one include
+    line in the EC result template. The routes and the request method are
+    registered together because the template and the view have to agree on
+    them, and a half-applied install should fail loudly at startup rather than
+    at the first click.
+    """
+    config.add_route('search', '/search')
+    config.add_route('search_do', '/search.do')
+    config.add_route('search_result', '/search/result')
+    config.add_route('sequence_search_do', '/search/sequence.do')
+
+    # `request.sequence_search` is how the panel on the EC result page reaches
+    # its own configuration without ecpick.views.ec having to hand it over.
+    config.add_request_method(panel_context, 'sequence_search', reify=True)
 
 
 @view_config(route_name='search', renderer=FORM_TEMPLATE, request_method='GET')
@@ -116,15 +143,127 @@ def search_result(request):
         # Number formatting lives in the portable core so this page and the CSV
         # cannot disagree about what a value means.
         'fmt': formatting,
-        'thresholds': {
-            'blastp': settings.blast_evalue,
-            'phmmer': settings.phmmer_evalue,
-            'hmmscan': settings.hmmscan_evalue,
-        },
+        'thresholds': _thresholds(settings),
+    }
+
+
+@view_config(route_name='sequence_search_do', request_method='POST')
+def sequence_search_do(request):
+    """One method, one sequence, rendered as an HTML fragment.
+
+    This is what the buttons under the model predictions on the EC result page
+    fetch. It returns markup rather than JSON so the hit tables keep a single
+    definition in `_method.jinja2`; the JavaScript inserts the response and
+    formats nothing itself.
+
+    One method per request is deliberate. The lab asked for BLAST and HMMER as
+    options the reader chooses between, and running both on page load would add
+    about fifteen seconds to every EC result whether or not anyone looked.
+    """
+    # The EC result page requires a login, so this does too. There is no
+    # ownership check on the sequence: it arrives in the request body and the
+    # standalone search page already accepts arbitrary sequences, so a check
+    # here would restrict nothing that is not already open.
+    get_login_user(request, required=True)
+
+    settings = get_settings()
+    form = request.POST
+
+    method = form.get('method', '')
+    if method not in ALL_METHODS:
+        return _fragment_error(request, 'Unknown search method.')
+
+    try:
+        params = SearchParams.from_form(form, settings)
+        records = parse_submission(
+            _sequence_as_fasta(form),
+            max_sequences=1,
+            max_length=settings.max_query_length,
+        )
+    except (ParamError, FastaError) as exc:
+        return _fragment_error(request, str(exc))
+
+    try:
+        result = run_search(settings, records, [method], params=params)
+    except ServerBusy as exc:
+        return _fragment_error(request, str(exc))
+
+    query = result.queries[0]
+    return _fragment(request, FRAGMENT_TEMPLATE, {
+        'm': query.methods[0],
+        'result': result,
+        'notes': result.notes,
+        'p': result.search_parameters,
+        'method_labels': METHOD_LABELS,
+        'fmt': formatting,
+        'thresholds': _thresholds(settings),
+    })
+
+
+def panel_context(request) -> dict:
+    """What `_panel.jinja2` needs, reachable as `request.sequence_search`.
+
+    Registered as a request method by `includeme` so the EC result view keeps
+    its own return dict untouched. Reified: several sequences on one page share
+    a single reference-status read.
+    """
+    settings = get_settings()
+    status = reference_status(settings)
+    return {
+        'endpoint': request.route_url('sequence_search_do'),
+        'status': status,
+        'settings': settings,
+        # Only the methods this server can actually answer with. A button that
+        # exists solely to report its own unavailability is worse than no
+        # button, and hmmscan is off until the profile layer is built.
+        'methods': [m for m in ALL_METHODS
+                    if status['methods'][m]['enabled'] and status['methods'][m]['ok']],
+        'method_labels': METHOD_LABELS,
+        'matrices': MATRICES,
+        'comp_based_stats': COMP_BASED_STATS_LABELS,
+        'defaults': SearchParams.defaults(settings),
+        'reference_sequences': status['reference_sequences'],
+        'reference_build_id': status['reference_build_id'],
     }
 
 
 # ---------------------------------------------------------------- internals
+
+def _thresholds(settings) -> dict:
+    return {
+        'blastp': settings.blast_evalue,
+        'phmmer': settings.phmmer_evalue,
+        'hmmscan': settings.hmmscan_evalue,
+    }
+
+
+def _sequence_as_fasta(form) -> str:
+    """Build one FASTA record from the posted sequence and its label.
+
+    The label comes off the EC result page, which got it from the database, so
+    it is not trusted here either: newlines in it would open a second record
+    and turn a one-sequence request into something else. Collapsing whitespace
+    closes that, and `safe_display` caps the length and drops control bytes.
+    """
+    sequence = form.get('sequence') or ''
+    label = safe_display(_WHITESPACE.sub(' ', form.get('label') or '').strip())
+    if label == '(no description)':
+        label = 'query'
+    return f'>{label}\n{sequence}\n'
+
+
+def _fragment(request, template: str, context: dict) -> Response:
+    html = render(template, context, request=request)
+    return Response(html, content_type='text/html', charset='utf-8')
+
+
+def _fragment_error(request, message: str) -> Response:
+    response = _fragment(request, ERROR_TEMPLATE, {'message': message})
+    # The fetch inserts the body either way; the status is for the log and for
+    # anything that is not a browser.
+    response.status_int = 400
+    return response
+
 
 def _submitted_text(form, settings) -> str:
     """Pasted text, or the uploaded file if there is one.

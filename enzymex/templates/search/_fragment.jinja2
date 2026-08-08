@@ -1,0 +1,29 @@
+{#
+  One method's answer, returned to the buttons on the EC result page.
+
+  Not a page: no layout, no <html>. The JavaScript drops this into the panel
+  it came from. Autoescaping still applies, which is the reason this is a
+  template and not a string built in the view.
+#}
+{% for note in notes %}
+<div class="alert alert-warning" role="alert">{{ note }}</div>
+{% endfor %}
+
+{% include "ecpick:templates/search/_method.jinja2" %}
+
+<div class="d-flex justify-content-between align-items-center mt-2">
+  <small class="text-muted">
+    Reference build <code>{{ result.reference_build_id }}</code>,
+    {{ result.reference_sequences }} sequences.
+    Sequence comparison only &mdash; no EC prediction model ran here.
+  </small>
+  <a class="small" href="{{ request.route_url('search_result', _query={'job': result.job_id}) }}"
+     target="_blank" rel="noopener">Open full results</a>
+</div>
+
+{% if p %}
+<details class="mt-2">
+  <summary class="text-muted small" style="cursor: pointer;">Parameters used</summary>
+  {% include "ecpick:templates/search/_parameters.jinja2" %}
+</details>
+{% endif %}

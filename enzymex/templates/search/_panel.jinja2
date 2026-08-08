@@ -1,0 +1,199 @@
+{#
+  BLAST / HMMER buttons, to sit under the model predictions on the EC result
+  page.
+
+  Include it from `ecpick/templates/ec/result.jinja2` inside the per-sequence
+  loop:
+
+    {% with panel_id = outer_index,
+            sequence = results[0].record_sequence,
+            record_label = results[0].record_description %}
+      {% include "ecpick:templates/search/_panel.jinja2" %}
+    {% endwith %}
+
+  Everything else it needs comes from `request.sequence_search`, registered by
+  `ecpick.views.search.includeme`, so the EC result view is not touched.
+
+  Nothing runs on page load. Each button is one request for one method, which
+  is why the predictions above are not made to wait on a search nobody asked
+  for.
+#}
+{% set panel = request.sequence_search %}
+{% if panel.methods %}
+<div class="card mt-2 js-seqsearch"
+     data-endpoint="{{ panel.endpoint }}"
+     data-sequence="{{ sequence }}"
+     data-label="{{ record_label }}">
+
+  <div class="card-header d-flex flex-wrap align-items-center" style="gap: 8px;">
+    <h4 class="card-title mb-0 me-auto">
+      Sequence-comparison evidence
+      <span class="text-muted small d-block">
+        Similar proteins in the EnzymeX reference set. Homologues often share
+        function, but similarity alone does not establish an EC number, and no
+        prediction model runs here.
+      </span>
+    </h4>
+    {% for m in panel.methods %}
+    <button type="button" class="btn btn-outline-primary js-seqsearch-run"
+            data-method="{{ m }}">Run {{ panel.method_labels[m] }}</button>
+    {% endfor %}
+  </div>
+
+  <div class="card-body">
+    <details>
+      <summary class="text-muted small mb-2" style="cursor: pointer;">
+        Search parameters
+      </summary>
+      <p class="text-muted small">
+        Leave a field blank for the tool's own default. The defaults are what
+        keep these E-values comparable with published BLAST and HMMER results.
+      </p>
+
+      <div class="row">
+        <div class="col-md-4">
+          <div class="form-group mb-3">
+            <label class="form-label" for="evalue-{{ panel_id }}">E-value threshold</label>
+            <input type="text" class="form-control js-seqsearch-param"
+                   id="evalue-{{ panel_id }}" name="evalue" inputmode="decimal"
+                   placeholder="{{ '%g'|format(panel.defaults.blast_evalue) }}">
+            <small class="form-text text-muted">Greater than 0, at most 10.</small>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="form-group mb-3">
+            <label class="form-label" for="max_hits-{{ panel_id }}">Hits</label>
+            <input type="number" class="form-control js-seqsearch-param"
+                   id="max_hits-{{ panel_id }}" name="max_hits" min="1" max="100"
+                   placeholder="{{ panel.defaults.max_hits }}">
+            <small class="form-text text-muted">1 to 100.</small>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="form-group mb-3">
+            <label class="form-label" for="min_query_coverage-{{ panel_id }}">
+              Minimum query coverage (%)
+            </label>
+            <input type="number" class="form-control js-seqsearch-param"
+                   id="min_query_coverage-{{ panel_id }}" name="min_query_coverage"
+                   min="0" max="100" step="1" placeholder="0">
+            <small class="form-text text-muted">
+              Drops hits aligning to less of this sequence than that. Off by
+              default. A high-identity match over a short fragment is the usual
+              reason a best hit misleads.
+            </small>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-4">
+          <div class="form-group mb-3">
+            <label class="form-label" for="matrix-{{ panel_id }}">
+              Scoring matrix <span class="text-muted">(BLAST only)</span>
+            </label>
+            <select class="form-select form-control js-seqsearch-param"
+                    id="matrix-{{ panel_id }}" name="matrix">
+              {% for m in panel.matrices %}
+              <option value="{{ m }}"{% if m == panel.defaults.matrix %} selected{% endif %}>
+                {{ m }}{% if m == panel.defaults.matrix %} (default){% endif %}
+              </option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="form-group mb-3">
+            <label class="form-label" for="comp_based_stats-{{ panel_id }}">
+              Composition-based statistics <span class="text-muted">(BLAST only)</span>
+            </label>
+            <select class="form-select form-control js-seqsearch-param"
+                    id="comp_based_stats-{{ panel_id }}" name="comp_based_stats">
+              {% for value, label in panel.comp_based_stats.items() %}
+              <option value="{{ value }}"{% if value == panel.defaults.comp_based_stats %} selected{% endif %}>
+                {{ label }}
+              </option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="form-group mb-3">
+            <label class="form-label" for="gapopen-{{ panel_id }}">
+              Gap costs <span class="text-muted">(BLAST only)</span>
+            </label>
+            <div class="d-flex" style="gap: 8px;">
+              <input type="number" class="form-control js-seqsearch-param"
+                     id="gapopen-{{ panel_id }}" name="gapopen" min="5" max="25"
+                     placeholder="open" aria-label="Gap open cost">
+              <input type="number" class="form-control js-seqsearch-param"
+                     id="gapextend-{{ panel_id }}" name="gapextend" min="1" max="5"
+                     placeholder="extend" aria-label="Gap extend cost">
+            </div>
+            <small class="form-text text-muted">
+              Leave both blank for the matrix's own defaults. BLAST accepts only
+              certain pairs and will say so if the pair is not one.
+            </small>
+          </div>
+        </div>
+      </div>
+    </details>
+
+    <div class="js-seqsearch-output">
+      <p class="text-muted mb-0">
+        Nothing has been run for this sequence yet. Searching
+        {{ panel.reference_sequences }} references takes a few seconds.
+      </p>
+    </div>
+  </div>
+</div>
+
+<script>
+// One delegated handler for every panel on the page. A job can carry several
+// sequences, so this is written once and guarded rather than repeated per card.
+if (!window.__enzymexSeqSearch) {
+  window.__enzymexSeqSearch = true;
+
+  document.addEventListener('click', function (event) {
+    var button = event.target.closest('.js-seqsearch-run');
+    if (!button) { return; }
+    event.preventDefault();
+
+    var panel = button.closest('.js-seqsearch');
+    var output = panel.querySelector('.js-seqsearch-output');
+    var buttons = panel.querySelectorAll('.js-seqsearch-run');
+    var label = button.textContent;
+
+    var body = new FormData();
+    body.append('method', button.dataset.method);
+    body.append('sequence', panel.dataset.sequence);
+    body.append('label', panel.dataset.label);
+    // Blank means "leave it to the tool", so blanks are not sent at all: the
+    // server fills in its own default for anything absent.
+    panel.querySelectorAll('.js-seqsearch-param').forEach(function (field) {
+      if (field.value !== '') { body.append(field.name, field.value); }
+    });
+
+    buttons.forEach(function (b) { b.disabled = true; });
+    button.textContent = 'Running…';
+    output.innerHTML = '<p class="text-muted mb-0">Searching the reference set…</p>';
+
+    fetch(panel.dataset.endpoint, {
+      method: 'POST', body: body, credentials: 'same-origin'
+    }).then(function (response) {
+      return response.text();
+    }).then(function (html) {
+      // Server-rendered and escaped there; the client formats nothing, so the
+      // tables here and on the full results page cannot drift apart.
+      output.innerHTML = html;
+    }).catch(function () {
+      output.innerHTML = '<div class="alert alert-danger mb-0" role="alert">' +
+        'The search could not be reached. Try again in a moment.</div>';
+    }).finally(function () {
+      buttons.forEach(function (b) { b.disabled = false; });
+      button.textContent = label;
+    });
+  });
+}
+</script>
+{% endif %}

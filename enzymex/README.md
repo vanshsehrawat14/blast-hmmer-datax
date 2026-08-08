@@ -1,6 +1,6 @@
 # The EnzymeX drop-in
 
-This directory is the EnzymeX-side half of the project: a Pyramid view and two
+This directory is the EnzymeX-side half of the project: a Pyramid view and its
 templates that add BLAST/HMMER sequence search to ECPICK. Everything else in
 this repository is the test server, which exists so this part can be developed
 and checked without touching the live application.
@@ -8,30 +8,53 @@ and checked without touching the live application.
 Nothing here is copied into the `datax-lab/enzymex` repository by us. It sits
 in this repository so the lab can review it as a diff, then apply it.
 
+It arrives in two places:
+
+- **Under the model predictions on the EC result page**, as BLAST and HMMER
+  buttons the reader can run to compare against what ECPICK, HIT-EC and CLEAN
+  said. This is the part the lab asked for.
+- **On its own page at `/search`**, for searching a sequence that has not been
+  submitted as a job. Same code, same tables.
+
 ## Install
 
-Two files and one directory move:
+Two copies:
 
 ```
 enzymex/views/search.py        ->  ecpick/views/search.py
 enzymex/templates/search/      ->  ecpick/templates/search/
 ```
 
-Then three lines in `ecpick/routes.py`, inside `includeme(config)`:
+One line in `ecpick/routes.py`, inside `includeme(config)`:
 
 ```python
-    # Sequence search
-    config.add_route('search', '/search')
-    config.add_route('search_do', '/search.do')
-    config.add_route('search_result', '/search/result')
+    config.include('ecpick.views.search')
 ```
 
-`config.scan()` already picks the view up from the `@view_config` decorators;
-there is nothing to register by hand.
+That registers the four routes and the `request.sequence_search` the panel
+reads its configuration from. It is one line rather than four so that a
+half-applied install fails at startup instead of at the first click.
+`config.scan()` still picks the views up from their `@view_config` decorators.
 
-Add a link to `search` wherever the navigation lives in `templates/layout.jinja2`.
-We have not written that line, because it is a decision about the site's
-navigation rather than about this feature.
+One include in `ecpick/templates/ec/result.jinja2`, inside the
+`{% for results in job_result %}` loop, after the prediction tables and before
+that loop's closing `</div>`:
+
+```jinja
+    {% with panel_id = outer_index,
+            sequence = results[0].record_sequence,
+            record_label = results[0].record_description %}
+      {% include "ecpick:templates/search/_panel.jinja2" %}
+    {% endwith %}
+```
+
+`ecpick/views/ec.py` does not change. The panel gets what it needs from
+`request.sequence_search`, so the EC result view's return dict is left alone.
+
+Add a link to `search` wherever the navigation lives in
+`templates/layout.jinja2` if you want the standalone page reachable. We have
+not written that line, because it is a decision about the site's navigation
+rather than about this feature.
 
 ## What it needs at runtime
 
@@ -44,20 +67,35 @@ navigation rather than about this feature.
   `ENZYMEX_REFERENCE_DIR` and `ENZYMEX_JOB_DIR` pointing at it. The build runs
   offline against the database; the view never opens a connection.
 
+If there is no build on the server, the panel renders nothing at all and the EC
+result page is exactly what it is today.
+
 ## Decisions worth knowing before review
 
-**It runs synchronously and does not create a `Job`.** Against the 278,573
-reference build, blastp answers in about 2.4 s and phmmer in about 7.8 s. The
-existing queue exists because the deep models need a GPU and minutes; putting a
-search behind it would make the search slower and add a table for nothing. The
-process-wide concurrency bound in `app/search/service.py` is what keeps
-simultaneous searches from exhausting memory, and an over-limit request gets a
-"try again in a moment" rather than a queue slot.
+**Nothing runs on page load.** Each button is one request for one method. Both
+methods together take about fifteen seconds against the 278,573-reference
+build, and adding that to every EC result whether or not anyone scrolled down
+would be a bad trade for a page people open to read a prediction.
 
-**It does not require a login.** Nothing is written to the database, and the
-cost per request is bounded, so it behaves like the enzyme browser rather than
-like an EC submission. Change `required=False` to `required=True` in the view if
+**It runs synchronously and does not create a `Job`.** blastp answers in about
+3 s and phmmer in about 12 s. The existing queue exists because the deep models
+need a GPU and minutes; putting a search behind it would make the search slower
+and add a table for nothing. The process-wide concurrency bound in
+`app/search/service.py` is what keeps simultaneous searches from exhausting
+memory, and an over-limit request gets a "try again in a moment" rather than a
+queue slot.
+
+**The panel endpoint requires a login; the standalone page does not.** The
+panel lives on the EC result page, which redirects anonymous visitors to the
+login, so the endpoint behind its buttons requires one too. The standalone
+`/search` page writes nothing and costs a bounded amount, so it behaves like
+the enzyme browser. Change `required=False` in `search_result` and `search` if
 that is not the policy you want.
+
+There is no ownership check on the sequence the panel posts. It arrives in the
+request body, and `/search` already accepts arbitrary sequences from anyone, so
+a check there would restrict nothing that is not already open. If `/search` is
+put behind a login, this is worth revisiting together.
 
 **The parameter panel is the full set.** E-value, hits per query, minimum query
 coverage, scoring matrix, composition-based statistics and gap costs, each
@@ -72,18 +110,24 @@ the Agave cross-check: ranking by identity selected short high-identity
 fragments, and 30% of those annotations rested on an alignment covering under
 half the query. It is off unless asked for.
 
-**Autoescaping is load-bearing.** FASTA headers are user input and appear on the
-result page. pyramid_jinja2 autoescapes `.jinja2` templates by default and
-`tests/test_enzymex_view.py` asserts it, so a future change to that setting
-fails the suite rather than the deployment.
+**The tables have one definition.** `_method.jinja2` renders the hits, and both
+the standalone result page and the fragment the buttons fetch include it. The
+buttons fetch HTML rather than JSON for that reason: the JavaScript inserts the
+response and formats nothing, so the two places a hit can appear cannot drift
+apart as columns change.
+
+**Autoescaping is load-bearing.** FASTA headers and reference descriptions are
+user input and appear in both. pyramid_jinja2 autoescapes `.jinja2` templates
+by default and `tests/test_enzymex_view.py` asserts it, so a future change to
+that setting fails the suite rather than the deployment.
 
 ## Open questions for the lab
 
 1. **`ecpick/routes.py` is not in the `datax-lab/enzymex` repository.** That
    repository holds `views/`, `templates/`, `pull_data/` and `schedule/` only —
-   no `routes.py`, no `models/`, no `ecpick/__init__.py`, no `.ini`. The three
-   route lines above cannot be applied from it. Either those files come from
-   somewhere else, or the change has to be made on the server.
+   no `routes.py`, no `models/`, no `ecpick/__init__.py`, no `.ini`. The
+   `config.include` line above cannot be applied from it. Either those files
+   come from somewhere else, or the change has to be made on the server.
 
 2. **The `app` package name is generic.** Nothing in the ECPICK tree imports a
    top-level `app` today, so there is no collision, but it is a broad name to

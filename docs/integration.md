@@ -275,10 +275,11 @@ patch it here.
    artifacts pass validation.
 
 4. **Replace `app/web/` with EnzymeX views and templates.** *Written — see
-   `enzymex/`.* A Pyramid view and two templates in ECPICK's own layout and
-   markup, plus the three `config.add_route` lines the lab has to apply. The
-   three method tables stay deliberately separate (see the E-value
-   comparability note in `docs/science.md`); that separation survives the port.
+   `enzymex/`.* Pyramid views and templates in ECPICK's own layout and markup.
+   The lab applies one `config.include` line in `routes.py` and one `include`
+   in `templates/ec/result.jinja2`; `views/ec.py` does not change. The three
+   method tables stay deliberately separate (see the E-value comparability note
+   in `docs/science.md`); that separation survives the port.
 
 5. **Decide on execution mode.** *Decided: synchronous.* The existing queue
    exists because the deep models need a GPU and minutes. Against the real
@@ -324,10 +325,51 @@ patch it here.
    manifests.~~ Done — build `161bdee61cbb`, 278,573 references.
 3. ~~Wire `run_search` into a scratch EnzymeX view and check hits resolve to the
    right EC and source.~~ Done — see the section below.
-4. Port the results markup into the EnzymeX result page alongside the model
-   predictions.
+4. ~~Port the results markup into the EnzymeX result page alongside the model
+   predictions.~~ Done — see "The buttons on the EC result page" below.
 5. Decide DIAMOND's fate.
 6. Move the build to whatever schedule the database refresh follows.
+
+## The buttons on the EC result page, 2026-08-08
+
+The lab asked for BLAST and HMMER as options underneath the three model
+predictions, so a reader can compare sequence-comparison evidence against what
+ECPICK, HIT-EC and CLEAN said, and for buttons rather than something that runs
+by itself.
+
+`_panel.jinja2` is included inside the per-sequence loop of
+`templates/ec/result.jinja2` and renders one button per available method.
+Clicking one posts the sequence to `/search/sequence.do`, which runs that method
+alone and returns the hit table as an HTML fragment.
+
+Design points, and why:
+
+| Decision | Reason |
+| --- | --- |
+| One method per request | Both together take ~15 s. Nobody who opened the page to read a prediction should wait for a search they did not ask for. |
+| Nothing runs on page load | Same reason. The panel starts empty and says so. |
+| The endpoint returns HTML, not JSON | `_method.jinja2` is the only definition of a hit table, included by both the standalone result page and the fragment. The JavaScript formats nothing, so the two cannot drift. |
+| Config via `request.sequence_search` | Registered by `includeme`, so `views/ec.py` keeps its own return dict and the diff to code we do not own stays at two lines. |
+| Only available methods get a button | A button whose only function is to report its own unavailability is worse than no button. With no build at all the panel renders nothing and the page is unchanged. |
+| The endpoint requires a login | The page it sits on redirects anonymous visitors to the login. The standalone `/search` page stays open, as it writes nothing. |
+
+Verified against ECPICK's real `layout.jinja2` and build `161bdee61cbb`
+(278,573 references), through WSGI:
+
+| Check | Result |
+| --- | --- |
+| Panel inside the real layout | 200, 19,744 bytes, buttons for blastp and phmmer only |
+| Runs anything on page load | No |
+| blastp fragment | 200, 25 hits, top `EXRP00330` EC `1.1.1.1;1.1.1.54;1.1.1.78`, 3.4 s |
+| phmmer fragment | 200, 25 hits, same top hit, 12.5 s |
+| Fragment is not a page | No `<html>` in either |
+| Custom parameters (PAM70 / 5 hits / 1e-30 / 80% coverage) | 200, 5 hits, all three echoed back |
+| `matrix=BLOSUM62 -out /tmp/pwned2` | 400, refused, no file created |
+| `method=; rm -rf /` | 400, refused |
+| Newline in the record label | Cannot open a second FASTA record |
+
+hmmscan has no button because the profile layer is not built on this machine;
+`reference_status` reports it unavailable and the panel omits it.
 
 ## The EnzymeX view, 2026-08-07
 
