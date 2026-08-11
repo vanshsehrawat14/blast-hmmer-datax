@@ -231,42 +231,20 @@ deflines: zero mismatches in both directions. Identity, E-value, bit score and
 coverage on the page were compared against a standalone `blastp` run and
 matched exactly. See [`HANDOFF.md`](../HANDOFF.md).
 
-## What changes once EnzymeX access is granted
+## What changed once EnzymeX access was granted
 
-The search core is framework-independent, but the host integration is more
-than a template change. EnzymeX needs adapters for its settings, scheduler,
-job/result persistence, temporary directories and result-page composition:
+The search core is framework-independent, but the host integration was more
+than a template change: EnzymeX needed adapters for its settings, job and
+result persistence, temporary directories and result-page composition.
 
-1. **Confirm the schema first, before anything else.** The column alias table
-   in `db.py` was written against the documented column list and verified only
-   against a synthetic fixture. Run `enzymex-refbuild inspect` against the real
-   copy; if a column resolves to the wrong name that table is the only edit. If
-   the real table has no primary key, export from a view that supplies a stable
-   unique `id`, because identifiers and ordering both depend on it. Confirm the
-   physical table uses InnoDB, or that a view reads only transactional tables.
-2. **Every number in these docs is void.** They all come from a
-   1,574-reference fixture build. Cluster thresholds and QC gates were chosen at that
-   scale. Expect `ENZYMEX_PROFILE_MIN_MEMBERS` to need raising, and read
-   `profile_member_coverage` in the manifest before trusting the profile layer.
-3. **Re-run the provenance check on real data** before any UI work: pick hits,
-   trace them back to `enzymesdata` rows by `source_pk`, confirm the EC and
-   source on the page match the row. That is the check that catches a clean
-   pipeline with a wrong mapping.
-4. **Execution mode is a real decision.** EnzymeX already schedules ECPICK,
-   HIT-EC and CLEAN. If these results are to share a page, run `run_search` as
-   another step in that job rather than inside a request.
-5. **Reconcile with DIAMOND.** EnzymeX already uses it for similar-protein
-   retrieval. It and blastp answer the same question at different sensitivity,
-   so present both with the difference labelled or drop one. The
-   proof-of-concept comparison quantifies it: DIAMOND's default mode missed the
-   most distant positive that `--very-sensitive`, BLAST and HMMER all found.
-6. **Settle identifier policy.** References are `EXR<stable copy/view key>`
-   internally. `source_pk` stores that key, while `UniprotID` is currently
-   embedded only in the description. Add a structured source-identifier field
-   during integration if the page needs it, while keeping the safe internal ID
-   for BLAST/HMMER deflines.
-7. **Drop `app/web/`.** The results page is a reference for what to show, not
-   markup to lift. The one thing worth preserving is that the three tables stay
-   separate.
+That work is done and recorded in [`integration.md`](integration.md). The parts
+that bear on this pipeline: the real table has no primary key and stores one
+row per protein-EC pair, so the export reads a copy-side view that groups by
+`UniprotID` and folds the EC values together; `source_pk` holds that key; and
+every runtime figure above still comes from the 1,574-reference fixture, not
+from the 278,573-reference build the view produces.
 
-Longer form in [`integration.md`](integration.md).
+`app/web/` was not ported. The results page is a reference for what to show,
+not markup to lift; the EnzymeX-side markup is a separate Pyramid view under
+[`enzymex/`](../enzymex/README.md), and the three method tables stay separate
+there too.

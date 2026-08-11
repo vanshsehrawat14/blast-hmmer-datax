@@ -7,8 +7,10 @@ from a *copy* of the EnzymeX `enzymesdata` table.
 > **This repository is an independent test environment. It is not the official
 > EnzymeX production codebase and does not modify the live EnzymeX service.**
 > Nothing here has been deployed to, or pushed at, the EnzymeX repository.
-> Once reviewed, the modules under `app/search/` and `app/references/` are
-> intended to be lifted into EnzymeX; see [`docs/integration.md`](docs/integration.md).
+> The EnzymeX-side half is written and sits under [`enzymex/`](enzymex/README.md)
+> as a drop-in for the lab to review and apply; the rest of this repository is
+> the test server it was developed against. Status and open questions:
+> [`docs/integration.md`](docs/integration.md).
 
 Part of a UNLV independent study.
 
@@ -170,10 +172,38 @@ field.
 Note also that human SOD2 is present in this set, so the held-out positive demo
 in `data/demo/` only behaves as a holdout against the fixture build.
 
+## The real build, and the EnzymeX drop-in
+
+Access to `datax-lab/enzymex` was granted on 2026-08-05, and the pipeline has
+since been run against a copy of the actual `enzymesdata` rather than a proxy
+for it. Build `161bdee61cbb`: 404,340 view rows → **278,573 references**
+(234,839 Swiss-Prot, 43,734 PDB), 23,184 carrying more than one EC. Export
+395 s, `makeblastdb` 11 s for a 151 MB index; blastp answers a 348-residue
+query in about 2.4 s and phmmer in about 7.8 s. Two consecutive exports gave
+identical counts and the same FASTA digest.
+
+The real table has no primary key and stores one row per (protein, EC), so the
+export reads a copy-side view that groups by `UniprotID`. Without that grouping
+a multi-EC protein loses all but one of its EC numbers. The view is in
+[`docs/database.md`](docs/database.md); the reasoning is in
+[`docs/integration.md`](docs/integration.md).
+
+[`enzymex/`](enzymex/README.md) holds the EnzymeX-side half: a Pyramid view and
+templates that put BLAST and HMMER buttons on the EC result page underneath the
+ECPICK, HIT-EC and CLEAN predictions, plus a standalone `/search` page. Nothing
+runs on page load and each button is one method. It installs as two file copies,
+one `config.include` line and one template `include`. It is exercised by
+`tests/test_enzymex_view.py`, which performs that install into a throwaway
+package and drives the pages through WSGI; it has not been deployed anywhere.
+
+The profile layer has not been built at this scale, so `hmmscan` has no button
+and every `hmmscan` figure here still comes from the fixture build.
+
 ## Documentation
 
 | | |
 |---|---|
+| [enzymex/README.md](enzymex/README.md) | the drop-in: install, runtime requirements, decisions, open questions |
 | [HANDOFF.md](HANDOFF.md) | verified setup, build and test figures, demo inputs and expected output, transfer plan |
 | [pipeline.md](docs/pipeline.md) | end to end walkthrough: where the copy enters, what each method does, what is shown |
 | [architecture.md](docs/architecture.md) | module layout, framework choice, execution model |
@@ -185,25 +215,26 @@ in `data/demo/` only behaves as a holdout against the fixture build.
 | [security.md](docs/security.md) | subprocess safety, input validation, secrets |
 | [testing.md](docs/testing.md) | suite layout, manual procedure, runtime figures |
 | [external-validation.md](docs/external-validation.md) | supplied fold reproduction, leakage controls and benchmark cohorts |
-| [integration.md](docs/integration.md) | what to change when EnzymeX access is granted |
+| [integration.md](docs/integration.md) | what the real schema and database turned out to be, what is done, what is still open |
 | [setup_notes.md](docs/setup_notes.md) | environment notes from the proof of concept |
 | [ATTRIBUTION.md](ATTRIBUTION.md) | tool versions, exact commands, citations, licences |
 
 ## Limitations
 
 * Profile HMMs cover a QC-passing subset, never the whole reference set.
-* The 272,112-reference public build has no profile layer, so `hmmscan` figures
-  come only from the 1,574-reference fixture build.
+* Neither large build has a profile layer, so `hmmscan` figures come only from
+  the 1,574-reference fixture build. Clustering at 278,573 references has not
+  been timed and should not be assumed to fit the same budget.
 * `phmmer` is the slowest method and scales with reference count; it is the
   first thing that will need its timeout raised on a large copy.
 * Searches run synchronously. Fine at the scale measured above; the service
   layer is structured so a worker queue is a one-function change.
 * No authentication, no per-client rate limiting. Internal test server.
 * Job results are files with a 24-hour retention.
-* The public `datax-lab/enzymex` repository was not reachable while this was
-  built, so the eventual UI and schema compatibility work is based on the
-  documented column list and the live site, and must be re-verified against
-  the real codebase.
+* `datax-lab/enzymex` holds `views/`, `templates/`, `pull_data/` and
+  `schedule/` only. The `routes.py` the drop-in needs one line in is not in it,
+  and the copy that is in the lab's local-server archive is older than the
+  deployed tree, so that line has to be applied on the server itself.
 
 ## The proof of concept
 

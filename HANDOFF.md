@@ -1,8 +1,15 @@
 # Handoff
 
-Final state of the standalone BLAST/HMMER test server, verified end to end
-after the Swiss-Prot/PDB source-policy rebuild on 2026-07-31 UTC. Everything
-below was re-run from a clean `var/` on this commit.
+State of the standalone BLAST/HMMER test server, verified end to end after the
+Swiss-Prot/PDB source-policy rebuild on 2026-07-31 UTC. Everything below was
+re-run from a clean `var/` at that point and still describes how to set the
+server up and what it does.
+
+> Written before EnzymeX repository access. Everything about the real schema,
+> the real build and the EnzymeX-side view happened afterwards and lives in
+> [`docs/integration.md`](docs/integration.md) and
+> [`enzymex/README.md`](enzymex/README.md). Where the two disagree about the
+> database or the integration, those two are current and this is not.
 
 > Independent test environment. Not the official EnzymeX codebase, nothing was
 > pushed at the EnzymeX repository, and no EnzymeX service was touched.
@@ -336,18 +343,18 @@ raw-artifact hashes and results are in
 * E-values are not comparable across the three tables. The page repeats this;
   any port must keep doing so.
 * The fixture's `source` labels are simulated. The public `56b491bee73d` build
-  supplies genuine PDB provenance, but it is still a proxy; real provenance comes
-  from the real copy.
-* The 272,112-reference public build has no profile layer, so every `hmmscan`
-  figure in these documents comes from the 1,574-reference fixture build.
-  Building profiles on that generation is the next step, and
-  `ENZYMEX_PROFILE_MIN_MEMBERS` should be reviewed before it runs.
+  supplies genuine PDB provenance, but it is still a proxy. Real provenance
+  came later, from the copy described in `docs/integration.md`.
+* No large build has a profile layer, so every `hmmscan` figure in these
+  documents comes from the 1,574-reference fixture build.
+  `ENZYMEX_PROFILE_MIN_MEMBERS` should be reviewed before one runs.
 * PDB fusion constructs let a query inherit an EC that belongs to the fusion
   partner. Coverage asymmetry exposes it on the page, but nothing rejects those
   hits automatically.
 * `datax-lab/enzymex` was unreachable while this was built, so all UI and
-  schema compatibility work is based on the documented column list and the live
-  site and must be re-verified against the real codebase.
+  schema compatibility work here is based on the documented column list and the
+  live site. It has since been re-verified against the real codebase;
+  `docs/integration.md` records what changed.
 * `live_settings` in `tests/conftest.py` is currently unused. Left in place
   rather than removed as part of this audit.
 
@@ -388,40 +395,19 @@ result  = run_search(settings, records, ["blastp", "phmmer", "hmmscan"])
 # result.flat_rows() is the tabular form
 ```
 
-## 12. First steps once EnzymeX access is granted
+## 12. What happened after this document
 
-1. **`enzymex-refbuild inspect` against the real copy, before anything else.**
-   The column alias table in `app/references/db.py` was written against the
-   documented column list and verified only against the fixture. If a column
-   resolves to the wrong name, that table is the only thing to edit. If the
-   real table has no primary key, export from a view that supplies one.
-2. **Full build, then read the manifest, not the logs.** Check
-   `skipped.tsv`, `skipped_clusters.tsv` and `profile_member_coverage`. Expect
-   `ENZYMEX_PROFILE_MIN_MEMBERS` to need raising if the accepted-cluster count
-   makes the MAFFT loop too slow. Every runtime figure in these docs comes from
-   1,574 references; none of them transfer.
-3. **Wire `run_search` into a scratch view and re-run check 9.4 above** on real
-   data: pick hits and trace them back to `enzymesdata` rows by `source_pk`.
-   Do this before any UI work.
-4. **Decide execution mode.** EnzymeX already schedules ECPICK, HIT-EC and
-   CLEAN. If these results are to share a page, run `run_search` as another
-   step in that job rather than in the request.
-5. **Reconcile with DIAMOND.** EnzymeX already uses it for similar-protein
-   retrieval. DIAMOND and blastp answer the same question at different
-   sensitivity, so either present both with the difference labelled or drop
-   one. `results/comparison/comparison_report.md` quantifies it: DIAMOND's
-   default mode missed the most distant positive that `--very-sensitive`,
-   BLAST and HMMER all found.
-6. **Settle identifier policy.** References are
-   `EXR<stable copy/view key>`. A copy-side view must expose a stable unique
-   `id` if the real table has no primary key. `source_pk` stores that key;
-   `UniprotID`, including PDB-style values, is currently embedded only in
-   `description`. Add a structured source-identifier field during integration
-   if the production page needs it. Keep the safe internal ID for tool
-   deflines.
-7. **Port the markup last**, keeping the three tables separate.
+The seven first steps this section used to list were worked through in
+[`docs/integration.md`](docs/integration.md), which is the current record.
+In short: the schema was confirmed (no primary key, one row per protein-EC
+pair, so the export reads a grouping view), the build was re-run against a copy
+of the real table at 278,573 references, hits were traced back to their rows,
+execution mode was settled as synchronous, the identifier policy was corrected
+onto `UniprotID`, and the markup was ported into the Pyramid drop-in under
+[`enzymex/`](enzymex/README.md).
 
-Longer form in [`docs/integration.md`](docs/integration.md).
+Still open: DIAMOND's presentation on the real page, the profile layer at full
+scale, and putting the build on whatever schedule the database refresh follows.
 
 ## 13. Changes made during the final audit
 
