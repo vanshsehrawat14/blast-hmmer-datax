@@ -53,3 +53,8 @@ Thumbs.db
 NOTES.local.md
 scratch/
 AGENTS.md
+
+# Meeting handouts and the deck that builds them. Prep material, not project
+# documentation, and it goes stale one build after it is written.
+docs/presentations/
+scripts/build_meeting_deck.py

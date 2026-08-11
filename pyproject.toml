@@ -23,7 +23,6 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = ["pytest>=8.0", "httpx>=0.27"]
-slides = ["python-pptx>=1.0"]
 # The EnzymeX drop-in under `enzymex/` is a Pyramid view. These are needed to
 # render it in the test suite; the test server itself does not import Pyramid.
 enzymex = ["pyramid>=2.0", "pyramid_jinja2>=2.10"]
