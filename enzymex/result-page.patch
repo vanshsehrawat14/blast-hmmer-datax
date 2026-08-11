@@ -1,0 +1,15 @@
+--- a/ecpick/templates/ec/result.jinja2
++++ b/ecpick/templates/ec/result.jinja2
+@@ -358,6 +358,12 @@
+           {% endfor %}
+         </div>
+       </div>
++
++      {% with panel_id = outer_index,
++              sequence = results[0].record_sequence,
++              record_label = results[0].record_description %}
++        {% include "ecpick:templates/search/_panel.jinja2" %}
++      {% endwith %}
+       <br>
+       <br>
+     {% endfor %}

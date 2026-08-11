@@ -408,6 +408,35 @@ so the archive is scaffolding for standing a copy up locally, not the file to
 patch. The one-line change still has to be applied to whatever `routes.py` the
 server actually runs.
 
+## Against the deployed result page, 2026-08-11
+
+Everything before this rendered the panel inside a stub result page. This is
+the deployed one: the 617-line `templates/ec/result.jinja2` from
+`datax-lab/enzymex`, extending ECPICK's own `layout.jinja2`, with the include
+applied by patch and the view driven through WSGI. `tests/test_real_result_page.py`
+does it, and skips when no checkout is present, since that template is not ours
+to vendor.
+
+| Check | Result |
+| --- | --- |
+| Patched page renders | 200, 51,052 bytes |
+| Panel position | after the ECPICK, HIT-EC and CLEAN rows |
+| Panels per submitted sequence | 1 |
+| Buttons | blastp and phmmer; no hmmscan, no profile layer at this scale |
+| Runs anything on page load | No |
+| blastp button | 200, 14,103 bytes, 25 hits, 4.8 s |
+| phmmer button | 200, 16,060 bytes, 25 hits, 20.0 s |
+| Fragment is not a page | No `<html>` in either |
+
+The two runtimes are this laptop against build `161bdee61cbb` through WSGI, so
+they are slower than the 2.4 s and 7.8 s measured for the tools alone. Quote a
+range rather than either figure until it has run on lab hardware.
+
+The template edit is `enzymex/result-page.patch`: six lines added at line 358,
+nothing removed. The anchor is the close of the per-sequence card inside the
+`job_result` loop, and the test asserts it is still there, so a template that
+has moved on fails here instead of on the server.
+
 ### Search parameters
 
 The lab asked for neutral defaults with the choice left to the user, and both

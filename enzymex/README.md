@@ -37,8 +37,7 @@ half-applied install fails at startup instead of at the first click.
 `config.scan()` still picks the views up from their `@view_config` decorators.
 
 One include in `ecpick/templates/ec/result.jinja2`, inside the
-`{% for results in job_result %}` loop, after the prediction tables and before
-that loop's closing `</div>`:
+`{% for results in job_result %}` loop, after the prediction tables:
 
 ```jinja
     {% with panel_id = outer_index,
@@ -47,6 +46,20 @@ that loop's closing `</div>`:
       {% include "ecpick:templates/search/_panel.jinja2" %}
     {% endwith %}
 ```
+
+That edit is also here as `result-page.patch`, generated against the
+`result.jinja2` in `datax-lab/enzymex` and applying at line 358 with six lines
+added and nothing removed:
+
+```
+git apply --directory=. enzymex/result-page.patch     # from the ECPICK root
+```
+
+Apply the patch rather than the snippet if the deployed template still matches
+that one. `tests/test_real_result_page.py` applies it to the real template,
+renders the page through WSGI in ECPICK's own layout and fails if the anchor
+has moved, so a template that has drifted shows up here rather than on the
+server.
 
 `ecpick/views/ec.py` does not change. The panel gets what it needs from
 `request.sequence_search`, so the EC result view's return dict is left alone.
@@ -123,11 +136,13 @@ that setting fails the suite rather than the deployment.
 
 ## Open questions for the lab
 
-1. **`ecpick/routes.py` is not in the `datax-lab/enzymex` repository.** That
-   repository holds `views/`, `templates/`, `pull_data/` and `schedule/` only —
-   no `routes.py`, no `models/`, no `ecpick/__init__.py`, no `.ini`. The
-   `config.include` line above cannot be applied from it. Either those files
-   come from somewhere else, or the change has to be made on the server.
+1. **Which `routes.py` gets the line.** It is not in the `datax-lab/enzymex`
+   repository, which holds `views/`, `templates/`, `pull_data/` and `schedule/`
+   only. The local-server archive has one, but that archive is older than the
+   deployed tree: its `ec/result.jinja2` predates HIT-EC and CLEAN, and its
+   `routes.py` defines 23 routes where the current `views/` reference 42. So
+   the line has to go into whatever `routes.py` the server actually runs, which
+   needs either server access or someone applying it there.
 
 2. **The `app` package name is generic.** Nothing in the ECPICK tree imports a
    top-level `app` today, so there is no collision, but it is a broad name to
