@@ -88,9 +88,9 @@ these exact values: `Swiss-Prot` → `swissprot` and `PDB` → `pdb` are exporte
 `KEGG` and `Test` are excluded. No change needed.
 
 TrEMBL is not a `Source` value. It lives in a **separate `trembldata` table**
-(170,502 rows, a different and smaller column set: no `UniprotID`, everything
-nullable). Handoff documents that describe `enzymesdata` as including TrEMBL
-are describing the database, not the table. Nothing in this project reads it.
+with a different and smaller column set: no `UniprotID`, everything nullable.
+Handoff documents that describe `enzymesdata` as including TrEMBL are
+describing the database, not the table. Nothing in this project reads it.
 
 **The repository is a partial subtree of the deployed application**, not a
 buildable project. It contains `templates/`, `views/`, `schedule/`,
@@ -99,23 +99,19 @@ buildable project. It contains `templates/`, `views/`, `schedule/`,
 any `.ini`, `requirements.txt`, `ecpick/__init__.py`, `ecpick/models/`,
 `ecpick/csv_to_fasta.py`, `static/`.
 
-Those files are not lost — they are in the local-server archive
-(`ECPICK-Python.zip`), which carries the full package root: `setup.py`,
-`production.ini`, `pytest.ini`, `ecpick/models/`, `dependent.txt` and
-`ecpick_ddl.sql`. So the answer to "does the build make sense" is that the
+Those files are not lost — the lab holds a local-server archive that carries
+the full package root, including the `setup.py` and the `.ini` the GitHub
+repository omits. So the answer to "does the build make sense" is that the
 GitHub repository is a subset of a working Pyramid application, not a broken
-project: `setup.py` declares Pyramid, SQLAlchemy, alembic, apscheduler,
-biopython and mysql-connector-python, exposes `main = ecpick:main` as the
-`paste.app_factory`, and `production.ini` serves it under waitress on 6543 in
-development and uwsgi from `/var/www/ecpick-python/ECPICK-Python-master` in
-production. The archive is dated 2024 and predates the `schedule/` code in the
-GitHub repository, so it is a reference for structure, not the current tree.
+project. That archive predates the `schedule/` code in the GitHub repository,
+so it is a reference for structure, not the current tree.
 
-## Confirmed from the production database dump
+## Confirmed from a copy of the production database
 
-Read from `enzymex.sql` (mysqldump 10.13, MySQL 8.0.43, database
-`ecpick_python`), which supersedes the inferred figures wherever the two
-disagree. The dump is not in this repository and must not be committed.
+Read from a dump the lab provided, which supersedes the inferred figures
+wherever the two disagree. The dump is not in this repository and must not be
+committed, and neither are figures about the deployment it came from. What is
+recorded below is what the export design depends on.
 
 The deployed `enzymesdata` DDL matches `pull_ecpick_data.py` exactly and adds
 what the script omits: `ENGINE=InnoDB`, `CHARSET=utf8mb4`,
@@ -123,19 +119,15 @@ what the script omits: `ENGINE=InnoDB`, `CHARSET=utf8mb4`,
 transactional requirement**, and the absence of a primary key is confirmed at
 the deployed level, not just in the statement that creates the table.
 
-| | rows |
+| `enzymesdata` | rows |
 |---|---:|
-| `enzymesdata` total | 561,510 |
+| total | 561,510 |
 | — `Swiss-Prot` | 302,500 |
 | — `PDB` | 152,480 |
 | — `KEGG` (excluded) | 87,441 |
 | — `Test` (excluded) | 19,089 |
 | **exported under the current source policy** | **454,980** |
 | distinct sequences within that | 280,309 |
-| `trembldata` | 170,502 |
-| `ref_data` | 1,145 |
-| `job` / `job_result` | 449 / 372 |
-| `user` | 1 |
 
 Exact-sequence deduplication removes 174,671 rows, so a full build produces
 roughly **280,309 references** — about 100× the 1,574-reference fixture every
@@ -170,10 +162,10 @@ The longest folded EC string is 107 characters, comfortably inside MySQL's
 default `group_concat_max_len` of 1024, but a view that relies on
 `GROUP_CONCAT` should assert that rather than assume it.
 
-The `user` table holds a single row, so the "secured user accounts data"
-mentioned in the handover is one administrative account rather than a user
-base. It still never enters this project: the export reads `enzymesdata` only,
-and the dump stays out of git and out of any fixture.
+The "secured user accounts data" mentioned in the handover is an
+administrative table, not a user base, and it never enters this project: the
+export reads `enzymesdata` only, and the dump stays out of git and out of any
+fixture.
 
 **Item 6 stays blocked.** `execute_diamond` is imported from
 `ecpick.csv_to_fasta` by `schedule/hitec_predictor.py:26`,
@@ -392,10 +384,29 @@ against build `161bdee61cbb`:
 | `matrix=BLOSUM62 -out /tmp/pwned` | rejected on the form; no file written |
 
 Three things the lab has to decide are listed at the end of `enzymex/README.md`.
-The first is a blocker for the test-server phase: **`ecpick/routes.py` is not in
-the `datax-lab/enzymex` repository.** That repository holds `views/`,
-`templates/`, `pull_data/` and `schedule/` only — no `routes.py`, no `models/`,
-no `ecpick/__init__.py`, no `.ini`. The route lines cannot be applied from it.
+
+## Where `routes.py` comes from, 2026-08-10
+
+`ecpick/routes.py` is not in the `datax-lab/enzymex` repository — it holds
+`views/`, `templates/`, `pull_data/` and `schedule/` only. The lab's answer is
+the local-server archive, which does carry `routes.py`, `__init__.py`,
+`models/`, `static/` and the `.ini`. Its `includeme(config)` is a flat list of
+`config.add_route` calls, so the install line goes in unchanged.
+
+The archive is not the deployed tree, though, and the gap is wide enough to
+matter:
+
+| | archive | `datax-lab/enzymex` |
+|---|---|---|
+| `templates/ec/result.jinja2` | 101 lines, one prediction column | 617 lines, ECPICK / HIT-EC / CLEAN |
+| routes defined | 23 | 42 referenced by `views/` |
+
+Nineteen routes the current views call are absent from the archive's
+`routes.py`, among them `ref_data_info`, `job_status`, `queue_data`, `members`,
+`news` and `version_history`. The panel include targets the 617-line template,
+so the archive is scaffolding for standing a copy up locally, not the file to
+patch. The one-line change still has to be applied to whatever `routes.py` the
+server actually runs.
 
 ### Search parameters
 
